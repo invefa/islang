@@ -10,7 +10,7 @@ compiler_name		:= gcc
 compiler_flags		:= -fdiagnostics-color=always -std=gnu11 -W
 build_version_flags	:= -g -m64 #-static -o3
 enable_warnings		:=
-optional_macros		:= ISL_BWMF  #islang build with makefile
+optional_macros		:= _DEBUG ISL_BWMF #islang build with makefile
 
 #debugger relevants
 debugger_name	:= gdb
