@@ -37,49 +37,7 @@ int main(void) {
 
 void isl_test_xssert(void) {
 
-#   define ISL_ASSERT_FAILURE_CODE 24605
-#   define __ISL_XSSERT_EXIT_a() exit(ISL_ASSERT_FAILURE_CODE);
-#   define __ISL_XSSERT_EXIT_w()
 
-#   define __ISL_XSSERT_SELECTOR_0()
-#   define __ISL_XSSERT_EXT_0()
-
-
-#   define __ISL_XSSERT_SELECTOR_1(_expl) \
-        "\tit can be explained as: " ANSI_HIL _expl ANSI_RST "\n"
-
-#   define __ISL_XSSERT_EXT_1(_expl)
-
-
-#   define __ISL_XSSERT_SELECTOR_2(_expl, _details) \
-        __ISL_XSSERT_SELECTOR_1(_expl)\
-        "\tthere are some details: " ANSI_HIL _details ANSI_RST "\n"
-
-#   define __ISL_XSSERT_EXT_2(_expl, _details)
-
-
-
-#   define __ISL_XSSERT_SELECTOR_3(_expl, _details_fmt, _fmt_args) \
-        __ISL_XSSERT_SELECTOR_2(_expl, _details_fmt)
-
-#   define __ISL_XSSERT_EXT_3(_expl, _details_fmt, _fmt_args) \
-        ,__ISL_MACRO_UNPACKAGER _fmt_args
-
-
-#   define __ISL_XSSERT(_x, _expr, _vargs...)                                       \
-        do{                                                                         \
-            if(!(_expr)) {                                                          \
-                fprintf(stderr, ANSI_HIR #_x "ssert failure:" ANSI_RST              \
-                "\n\tin file '"__FILE__"':\n\tat fn %s(...): expression: "          \
-                ANSI_HIL #_expr ANSI_RST " <line:%d>.\n"                            \
-                _isl_overload(__ISL_XSSERT_SELECTOR,##_vargs)                       \
-                , __func__, __LINE__ _isl_overload(__ISL_XSSERT_EXT,##_vargs));     \
-                __ISL_XSSERT_EXIT_##_x()                                            \
-            }\
-        } while(0)
-
-#   define isl_assert(_expr, _vargs...) __ISL_XSSERT(a, _expr, ##_vargs)
-#   define isl_wssert(_expr, _vargs...) __ISL_XSSERT(w, _expr, ##_vargs)
 
     /*
         __ISL_XSSERT(w, num != 1);
