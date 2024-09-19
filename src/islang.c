@@ -58,7 +58,6 @@ void isl_test_xssert(void) {
 #   define __ISL_XSSERT_EXT_2(_expl, _details)
 
 
-#   define __ISL_MACRO_UNPACKAGER(_package...) _package
 
 #   define __ISL_XSSERT_SELECTOR_3(_expl, _details_fmt, _fmt_args) \
         __ISL_XSSERT_SELECTOR_2(_expl, _details_fmt)
