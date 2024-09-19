@@ -23,7 +23,7 @@
     xssert is used in debug mode to detect the error of the core code of islang.
 */
 #define ISL_ENABLE_XSSERT
-#define ISL_ASSERT_FAILURE_CODE 24605
+#define ISL_ASSERT_FAILURE_CODE 0x24AD6F05
 
 #endif
 
