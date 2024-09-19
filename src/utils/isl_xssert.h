@@ -24,28 +24,39 @@
     It is optional, can make the output more readable.
 */
 
+//extension for null.
 #define __ISL_XSSERT_EXT_TEXT_0()
 #define __ISL_XSSERT_EXT_ARGS_0()
 
 
+//extension for one argument.
 #define __ISL_XSSERT_EXT_TEXT_1(_expl) \
         "\tit can be explained as: " ANSI_HIL _expl ANSI_RST "\n"
 #define __ISL_XSSERT_EXT_ARGS_1(_expl)
 
 
+//extension for two argument.
 #define __ISL_XSSERT_EXT_TEXT_2(_expl, _details) \
     __ISL_XSSERT_EXT_TEXT_1(_expl) \
     "\tthere are some details: " _details "\n"
 #define __ISL_XSSERT_EXT_ARGS_2(_expl, _details)
 
 
-
+//extension for three argument.
 #define __ISL_XSSERT_EXT_TEXT_3(_expl, _details_fmt, _fmt_args_package) \
     __ISL_XSSERT_EXT_TEXT_2(_expl, _details_fmt)
 #define __ISL_XSSERT_EXT_ARGS_3(_expl, _details_fmt, _fmt_args_package) \
     ,__ISL_MACRO_UNPACKAGER _fmt_args_package
 
 
+
+/*
+    This is the core of isl_assert and isl_wssert.
+    And the difference occurs in the argument: _x.
+    Why do we need to write __ISL_XSSERT instead of directly implementing isl_assert and isl_wssert?
+    Because in order to make the code less and easier to maintain,
+    we can make one change and adapt to multiple places.
+*/
 #define __ISL_XSSERT(_x, _expr, _exts...)                                   \
 do{                                                                         \
     if(!(_expr)) {                                                          \
@@ -76,8 +87,8 @@ do{                                                                         \
 
 #else
 
-#define isl_assert(_expr, _vargs...)
-#define isl_wssert(_expr, _vargs...)
+#define isl_assert(_expr, _exts...)
+#define isl_wssert(_expr, _exts...)
 
 #endif
 #endif
