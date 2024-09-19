@@ -5,8 +5,11 @@
     which are used in debug mode to detect the error of the core code of islang.
 */
 
+#include <stdio.h>
+
 #include "isl_options.h"
 #include "isl_ansictrl.h"
+#include "isl_overload.h"
 
 #ifdef ISL_ENABLE_XSSERT
 

@@ -79,7 +79,7 @@
 
     On this example, when the expanding come to __ISL_MACRO_CONCAT_WITH_UNDERLINE(...),
     the args will be concatenated, so they should not be expanded anyway according to the prescan rule.
-    So the function of __ISL_MACRO_CONCAT_WITH_UNDERLINE_IMPL(...)was wait the expanding
+    So the function of __ISL_MACRO_CONCAT_WITH_UNDERLINE_IMPL(...) was wait the expanding
     of _ISL_MACRO_GET_ARGS_COUNT(...), then to concat test_overload and the result with underline.
 */
 
