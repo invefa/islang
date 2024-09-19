@@ -79,11 +79,22 @@ void isl_test_xssert(void) {
             }\
         } while(0)
 
+#   define isl_assert(_expr, _vargs...) __ISL_XSSERT(a, _expr, ##_vargs)
+#   define isl_wssert(_expr, _vargs...) __ISL_XSSERT(w, _expr, ##_vargs)
+
+    /*
+        __ISL_XSSERT(w, num != 1);
+        __ISL_XSSERT(w, num != 1, "num should not be 1.");
+        __ISL_XSSERT(w, num != 1, "num should not be 1.", "this is just a test.");
+        __ISL_XSSERT(a, num != 1, "num should not be 1.", "num = %d, num + 1 = %d.", (num, num + 1));
+    */
+
     int num = 1;
-    __ISL_XSSERT(w, num != 1);
-    __ISL_XSSERT(w, num != 1, "num should not be 1.");
-    __ISL_XSSERT(w, num != 1, "num should not be 1.", "you mutherfucker~");
-    __ISL_XSSERT(a, num != 1, "num should not be 1.", "num = %d, num + 1 = %d", (num, num + 1));
+    isl_wssert(num != 1);
+    isl_wssert(num != 1, "num should not be 1.");
+    isl_wssert(num != 1, "num should not be 1.", "this is just a test.");
+    isl_assert(num != 1, "num should not be 1.", "num = %d, num + 1 = %d.", (num, num + 1));
+
 
 }
 
