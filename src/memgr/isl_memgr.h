@@ -51,12 +51,14 @@ void* _isl_set_adr_usize_value(void* _adr, ist_usize _value);
     'ptr' same as 'adr', but with type information, so you can read and write the memory by the type (same as int*..).
     Notice: list adr is the address of the first element of the list in default, ptr as same.
     Notice: 'ptrv' was indicated a pointer variable.
+    Operability: ptrv > ptr > adr.
 */
 
 #define isl_list_base_regress_head_ptr(_list_base_adr, _element_type)   ((_element_type*)(((ist_usize*)(_list_base_adr))+1))
 #define isl_list_base_regress_head_adr(_list_base_adr)                  isl_list_base_regress_head_ptr(_list_base_adr,void)
 
 
+// components for __ISL_XALLOC_LIST
 #define __ISL_XALLOC_FLAG_m 0
 #define __ISL_XALLOC_FLAG_c 1
 
@@ -73,29 +75,29 @@ void* _isl_set_adr_usize_value(void* _adr, ist_usize _value);
 #define isl_calloc_list(_type, _count) __ISL_XALLOC_LIST(c,_type,_count)
 
 
-// components for ist_list_resizex, this provide an alernative option to storage the result of resize.
+// components for __ISL_LIST_RESIZEX, this provide an alernative option to storage the result of resize.
 #define __ISL_LIST_RESIZE_STORAGE_2(_ptrv, _list)               _ptrv=_list
 #define __ISL_LIST_RESIZE_STORAGE_3(_ptrv, _list, _stv)         _stv =_list
 #define __ISL_LIST_RESIZE_STORAGE_4(_ptrv, _list, _stv, _wtf)   isl_assert(0)
 
 /*
     stv: storager variable, if there are some reason cause
-    that you can't provide ptrv, it was an alternative option.
+    that you can't provide ptrv but ptr, it was an alternative option.
 */
-#define ist_list_resizex(_x, _ptrv, _size, _stv...)                                     \
+#define __ISL_LIST_RESIZEX(_x, _ptr, _size, _stv...)                                    \
 do{                                                                                     \
-    isl_assert(_ptrv&&_size);                                                           \
-    typedef typeof(*_ptrv) _element_type_;                                              \
-    ist_usize _capacity_=isl_list_ptr_get_capacity(_ptrv);                              \
-    _element_type_* _list_=__ISL_XALLOC_LIST(_x,_element_type_,_size);                  \
-    memcpy(_list_,_ptrv,(_size<_capacity_?_size:_capacity_)*sizeof(_element_type_));    \
-    isl_list_catch_length(_list_)=sizeof(_element_type_)*_size;                         \
-    isl_free_list(_ptrv);                                                               \
-    _isl_overload(__ISL_LIST_RESIZE_STORAGE,_ptrv,_list_,##_stv);                       \
+    isl_assert((_ptr)&&(_size));                                                        \
+    typedef typeof(*_ptr) _element_type_;                                               \
+    ist_usize _capacity_=isl_list_ptr_get_capacity(_ptr);                               \
+    _element_type_* _list_=__ISL_XALLOC_LIST(_x,_element_type_,(_size));                \
+    memcpy(_list_,_ptr,((_size)<_capacity_?(_size):_capacity_)*sizeof(_element_type_)); \
+    isl_list_catch_length(_list_)=sizeof(_element_type_)*(_size);                       \
+    isl_free_list(_ptr);                                                                \
+    _isl_overload(__ISL_LIST_RESIZE_STORAGE,_ptr,_list_,##_stv);                        \
 }while(0)
 
-#define ist_list_resizec(_ptrv, _size, _stv...) ist_list_resizex(c,_ptrv,_size,##_stv)
-#define ist_list_resizem(_ptrv, _size, _stv...) ist_list_resizex(m,_ptrv,_size,##_stv)
+#define ist_list_resizec(_ptr, _size, _stv...) __ISL_LIST_RESIZEX(c,_ptr,_size,##_stv)
+#define ist_list_resizem(_ptr, _size, _stv...) __ISL_LIST_RESIZEX(m,_ptr,_size,##_stv)
 
 // freev list means free the list and set the ptr variable to NULL.
 #define isl_freev_list(_list_ptrv)                              \
