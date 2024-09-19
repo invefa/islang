@@ -1,7 +1,11 @@
 #ifndef ISL_MEMGR_H
 #define ISL_MEMGR_H
 
+#include <string.h>
+
 #include "isl_types.h"
+#include "isl_xssert.h"
+#include "isl_overload.h"
 
 // all we allocated memory will be recorded at this variable.
 extern ist_usize isl_allocated_length;
@@ -32,7 +36,7 @@ void* _isl_set_adr_usize_value(void* _adr, ist_usize _value);
 */
 #define isl_list_catch_length(_list_adr)                    (((ist_usize*)(_list_adr))[-1])
 #define isl_list_adr_get_capacity(_list_adr, _element_type) (isl_list_catch_length(_list_adr)/sizeof(_element_type))
-#define isl_list_ptr_get_capacity(_list_ptr)                isl_list_adr_get_capacity(_list_adr,typeof(*_list_ptr))
+#define isl_list_ptr_get_capacity(_list_ptr)                isl_list_adr_get_capacity(_list_ptr,typeof(*_list_ptr))
 
 /*
     head regress base: convert the first element address of the list to the base address.
@@ -65,12 +69,38 @@ void* _isl_set_adr_usize_value(void* _adr, ist_usize _value);
             sizeof(_type)*(_count)),                        \
         _type)
 
-#define isl_malloc_list(_type, _count) __ISL_XALLOC_LIST(m, _type, _count)
-#define isl_calloc_list(_type, _count) __ISL_XALLOC_LIST(c, _type, _count)
+#define isl_malloc_list(_type, _count) __ISL_XALLOC_LIST(m,_type,_count)
+#define isl_calloc_list(_type, _count) __ISL_XALLOC_LIST(c,_type,_count)
+
+
+// components for ist_list_resizex, this provide an alernative option to storage the result of resize.
+#define __ISL_LIST_RESIZE_STORAGE_2(_ptrv, _list)               _ptrv=_list
+#define __ISL_LIST_RESIZE_STORAGE_3(_ptrv, _list, _stv)         _stv =_list
+#define __ISL_LIST_RESIZE_STORAGE_4(_ptrv, _list, _stv, _wtf)   isl_assert(0)
+
+/*
+    stv: storager variable, if there are some reason cause
+    that you can't provide ptrv, it was an alternative option.
+*/
+#define ist_list_resizex(_x, _ptrv, _size, _stv...)                                     \
+do{                                                                                     \
+    isl_assert(_ptrv&&_size);                                                           \
+    typedef typeof(*_ptrv) _element_type_;                                              \
+    ist_usize _capacity_=isl_list_ptr_get_capacity(_ptrv);                              \
+    _element_type_* _list_=__ISL_XALLOC_LIST(_x,_element_type_,_size);                  \
+    memcpy(_list_,_ptrv,(_size<_capacity_?_size:_capacity_)*sizeof(_element_type_));    \
+    isl_list_catch_length(_list_)=sizeof(_element_type_)*_size;                         \
+    isl_free_list(_ptrv);                                                               \
+    _isl_overload(__ISL_LIST_RESIZE_STORAGE,_ptrv,_list_,##_stv);                       \
+}while(0)
+
+#define ist_list_resizec(_ptrv, _size, _stv...) ist_list_resizex(c,_ptrv,_size,##_stv)
+#define ist_list_resizem(_ptrv, _size, _stv...) ist_list_resizex(m,_ptrv,_size,##_stv)
 
 // freev list means free the list and set the ptr variable to NULL.
 #define isl_freev_list(_list_ptrv)                              \
 do{                                                             \
+    isl_assert(_list_ptrv);                                     \
     isl_release(                                                \
         isl_list_head_regress_base(_list_ptrv),                 \
         sizeof(ist_usize)+isl_list_catch_length(_list_ptrv));   \
@@ -80,6 +110,7 @@ do{                                                             \
 // just free the list.
 #define isl_free_list(_list_adr)                                \
 do{                                                             \
+    isl_assert(_list_adr);                                      \
     isl_release(                                                \
         isl_list_head_regress_base(_list_adr),                  \
         sizeof(ist_usize)+isl_list_catch_length(_list_adr));    \
@@ -94,6 +125,7 @@ do{                                                             \
 // freev means free the memory and set the ptr variable to NULL.
 #define isl_freev(_ptrv)            \
 do{                                 \
+    isl_assert(_ptrv);              \
     isl_release(_ptrv,              \
         sizeof(typeof(*_ptrv)));    \
     _ptrv = NULL;                   \
@@ -102,6 +134,7 @@ do{                                 \
 // just free the memory.
 #define isl_free(_ptr)              \
 do{                                 \
+    isl_assert(_ptr);               \
     isl_release(_ptr,               \
         sizeof(typeof(*_ptr)));     \
 }while(0)
