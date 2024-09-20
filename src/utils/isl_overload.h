@@ -33,8 +33,8 @@
 
     test_overload()
     prescan ->  test_overload()
-    call    ->  _ISL_OVERLOAD(test_overload)
-    prescan ->  _ISL_OVERLOAD(test_overload)
+    call    ->  _isl_overload(test_overload)
+    prescan ->  _isl_overload(test_overload)
     call    ->  __ISL_OVERLOAD_FORWARD_CALL(test_overload)
     prescan ->  __ISL_OVERLOAD_FORWARD_CALL(test_overload)
     call    ->  __ISL_MACRO_CONCAT_WITH_UNDERLINE(test_overload, _ISL_MACRO_GET_ARGS_COUNT())()
@@ -50,8 +50,8 @@
 
     test_overload(123456)
     prescan ->  test_overload(123456)
-    call    ->  _ISL_OVERLOAD(test_overload, 123456)
-    prescan ->  _ISL_OVERLOAD(test_overload, 123456)
+    call    ->  _isl_overload(test_overload, 123456)
+    prescan ->  _isl_overload(test_overload, 123456)
     call    ->  __ISL_OVERLOAD_FORWARD_CALL(test_overload, 123456)
     prescan ->  __ISL_OVERLOAD_FORWARD_CALL(test_overload, 123456)
     call    ->  __ISL_MACRO_CONCAT_WITH_UNDERLINE(test_overload, _ISL_MACRO_GET_ARGS_COUNT(123456))(123456)
@@ -68,8 +68,8 @@
 
     test_overload(123456)
     prescan ->  test_overload(123456)
-    call    ->  _ISL_OVERLOAD(test_overload, 123456)
-    prescan ->  _ISL_OVERLOAD(test_overload, 123456)
+    call    ->  _isl_overload(test_overload, 123456)
+    prescan ->  _isl_overload(test_overload, 123456)
     call    ->  __ISL_OVERLOAD_FORWARD_CALL(test_overload, 123456)
     prescan ->  __ISL_OVERLOAD_FORWARD_CALL(test_overload, 123456)
     call    ->  __ISL_MACRO_CONCAT_WITH_UNDERLINE(test_overload, _ISL_MACRO_GET_ARGS_COUNT(123456))(123456)

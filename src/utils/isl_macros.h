@@ -18,8 +18,10 @@
 #define __ISL_MACRO_GET_ARGS_COUNT(_vargs...) \
     __ISL_MACRO_GET_TWELFTH_ARG(,##_vargs, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
 
-// Unpackager macro, it can make args_package: '(arg1,arg2,arg3)' convert to args_series: 'arg1,arg2,arg3'.
-// Usage: __ISL_MACRO_UNPACKAGER args_package.
+/*
+    Unpackager macro, it can make args_package: '(arg1,arg2,arg3)' convert to args_series: 'arg1,arg2,arg3'.
+    Usage: __ISL_MACRO_UNPACKAGER args_package.
+*/
 #define __ISL_MACRO_UNPACKAGER(_args_series...) _args_series
 
 #endif
