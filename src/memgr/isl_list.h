@@ -86,8 +86,8 @@ do{                                                                             
     _isl_overload(__ISL_LIST_RESIZE_STORAGE,_ptr,_new_list_,##_stv);                                        \
 }while(0)
 
-#define ist_list_resizec(_ptr, _new_capcaity, _stv...) __ISL_LIST_RESIZEX(c,_ptr,_new_capcaity,##_stv)
-#define ist_list_resizem(_ptr, _new_capcaity, _stv...) __ISL_LIST_RESIZEX(m,_ptr,_new_capcaity,##_stv)
+#define isl_list_resizec(_ptr, _new_capcaity, _stv...) __ISL_LIST_RESIZEX(c,_ptr,_new_capcaity,##_stv)
+#define isl_list_resizem(_ptr, _new_capcaity, _stv...) __ISL_LIST_RESIZEX(m,_ptr,_new_capcaity,##_stv)
 
 // freev list means free the list and set the ptr variable to NULL.
 #define isl_freev_list(_list_ptrv)                              \
@@ -108,5 +108,11 @@ do{                                                             \
         isl_list_head_regress_base(_list_adr_),                 \
         sizeof(ist_usize)+isl_list_catch_length(_list_adr_));   \
 }while(0)
+
+/*
+    this function will obtain a value, and return the nearest power of two,
+    and if you submit a number that was power of two, the function will return itself.
+*/
+ist_usize ceil_upon_powertwo(ist_usize _value);
 
 #endif

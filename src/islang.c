@@ -22,6 +22,8 @@
 #include "isl_memgr.h"
 #include "isl_list.h"
 #include "isl_string.h"
+#include "isl_utf8.h"
+#include "isl_dbgutils.h"
 
 void isl_test_overload(void);
 void isl_test_xssert(void);
@@ -43,7 +45,7 @@ int main(void) {
 #define pal() printf("allocated length = %u\n", isl_allocated_length)
 
 void isl_test_string(void) {
-    ist_string* str1 = ist_string_create(u8"你好", 6);
+    ist_string* str1 = ist_string_create(u8"abcdef", 6);
     ist_string* str2 = ist_string_create(u8"world", 5);
 
     ist_string str3;
@@ -54,8 +56,23 @@ void isl_test_string(void) {
     printf("str3 = %s\n", str3);
     pal();
 
+    ist_string* buffer = ist_string_create_buffer(8);
+    ist_usize index = 0;
+    index += isl_utf8_encode(0b10101, buffer, index);
+    index += isl_utf8_encode(0b101, buffer, index);
+    index += isl_utf8_encode(0b1010101010, buffer, index);
+    index += isl_utf8_encode(0b101011010, buffer, index);
+    index += isl_utf8_encode(0b101101010, buffer, index);
+    index += isl_utf8_encode(0b10101010, buffer, index);
+    char tmp_buffer[33] = "\0";
+    for (ist_usize i = 0;i < isl_list_catch_length(*buffer);++i) {
+        print_byte_binary_aline((*buffer)[i]);
+    }
+    pal();
+
     ist_string_delete(str1);
     ist_string_delete(str2);
+    ist_string_delete(buffer);
     ist_string_clean(&str3);
     pal();
 }
@@ -100,9 +117,9 @@ void isl_test_memgr(void) {
     pal();
     list2 = isl_calloc(ist_i32_list);
     pal();
-    ist_list_resizec(isl_emit_i32_list(), 20, list2->data);
+    isl_list_resizec(isl_emit_i32_list(), 20, list2->data);
     pal();
-    ist_list_resizec(list, 20);
+    isl_list_resizec(list, 20);
     pal();
     isl_free_list(list);
     pal();
@@ -110,7 +127,7 @@ void isl_test_memgr(void) {
     pal();
     isl_free(list2);
     pal();
-    ist_list_resizec(isl_emit_i32_list(), 100, list);
+    isl_list_resizec(isl_emit_i32_list(), 100, list);
     pal();
     isl_free_list(list);
     pal();
@@ -128,18 +145,19 @@ void isl_test_list(void) {
     list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5,
         list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
 
-    ist_list_resizec(list, 20);
+    isl_list_resizec(list, 20);
     pal();
-    ist_list_resizec(list, 30);
+    isl_list_resizec(list, 30);
     pal();
-    ist_list_resizem(list, 6);
-    pal();
-    isl_freev_list(list);
-    pal();
-    ist_list_resizem(isl_emit_i32_list(), 5, list);
+    isl_list_resizem(list, 6);
     pal();
     isl_freev_list(list);
     pal();
+    isl_list_resizem(isl_emit_i32_list(), 5, list);
+    pal();
+    isl_freev_list(list);
+    pal();
+
 }
 
 

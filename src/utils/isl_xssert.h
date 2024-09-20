@@ -35,7 +35,7 @@
 
 //extension for one argument.
 #define __ISL_XSSERT_EXT_TEXT_1(_expl) \
-        "\tit can be explained as: " ANSI_HIL _expl ANSI_RST "\n"
+        "\tit can be explained as: " _expl "\n"
 #define __ISL_XSSERT_EXT_ARGS_1(_expl)
 
 
