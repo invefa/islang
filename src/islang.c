@@ -23,12 +23,14 @@
 void isl_test_overload(void);
 void isl_test_xssert(void);
 void isl_test_list(void);
+void isl_test_memgr(void);
 
 int main(void) {
 
     isl_test_overload();
     isl_test_xssert();
     isl_test_list();
+    isl_test_memgr();
 
     return 0;
 }
@@ -48,6 +50,45 @@ ist_i32* isl_emit_i32_list() {
         list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
     return list;
 }
+
+void isl_test_memgr(void) {
+    printf("test for memgr\n");
+    pal();
+    ist_i32* list = isl_calloc_list(ist_i32, 10);
+    list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5;
+    list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
+    pal();
+    ist_i32_list* list2 = isl_calloc(ist_i32_list);
+    pal();
+    list2->data = isl_calloc_list(ist_i32, 10);
+    list2->data[0] = 1, list2->data[1] = 2, list2->data[2] = 3, list2->data[3] = 4, list2->data[4] = 5;
+    list2->data[5] = 6, list2->data[6] = 7, list2->data[7] = 8, list2->data[8] = 9, list2->data[9] = 10;
+    list2->size = 10;
+    pal();
+    isl_freev_list(list);
+    pal();
+    isl_freev_list(list2->data);
+    pal();
+    isl_free(list2);
+    pal();
+    list = isl_emit_i32_list();
+    pal();
+    list2 = isl_calloc(ist_i32_list);
+    pal();
+    ist_list_resizec(isl_emit_i32_list(), 20, list2->data);
+    pal();
+    ist_list_resizec(list, 20);
+    pal();
+    isl_free_list(list);
+    pal();
+    isl_free_list(list2->data);
+    pal();
+    isl_free(list2);
+    pal();
+}
+
+
+
 
 void isl_test_list(void) {
 

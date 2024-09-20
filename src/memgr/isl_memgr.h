@@ -98,8 +98,8 @@ do{                                                                             
     _isl_overload(__ISL_LIST_RESIZE_STORAGE,_ptr,_new_list_,##_stv);                                        \
 }while(0)
 
-#define ist_list_resizec(_ptr, _size, _stv...) __ISL_LIST_RESIZEX(c,_ptr,_size,##_stv)
-#define ist_list_resizem(_ptr, _size, _stv...) __ISL_LIST_RESIZEX(m,_ptr,_size,##_stv)
+#define ist_list_resizec(_ptr, _new_capcaity, _stv...) __ISL_LIST_RESIZEX(c,_ptr,_new_capcaity,##_stv)
+#define ist_list_resizem(_ptr, _new_capcaity, _stv...) __ISL_LIST_RESIZEX(m,_ptr,_new_capcaity,##_stv)
 
 // freev list means free the list and set the ptr variable to NULL.
 #define isl_freev_list(_list_ptrv)                              \
@@ -114,10 +114,11 @@ do{                                                             \
 // just free the list.
 #define isl_free_list(_list_adr)                                \
 do{                                                             \
-    isl_assert(_list_adr);                                      \
+    void* _list_adr_ = _list_adr; /*to eliminate side effects*/ \
+    isl_assert(_list_adr_);                                     \
     isl_release(                                                \
-        isl_list_head_regress_base(_list_adr),                  \
-        sizeof(ist_usize)+isl_list_catch_length(_list_adr));    \
+        isl_list_head_regress_base(_list_adr_),                 \
+        sizeof(ist_usize)+isl_list_catch_length(_list_adr_));   \
 }while(0)
 
 // after there, we define some useful macros to allocate and release single type memory.
@@ -138,8 +139,9 @@ do{                                 \
 // just free the memory.
 #define isl_free(_ptr)              \
 do{                                 \
-    isl_assert(_ptr);               \
-    isl_release(_ptr,               \
+    void* _ptr_ = _ptr;             \
+    isl_assert(_ptr_);              \
+    isl_release(_ptr_,              \
         sizeof(typeof(*_ptr)));     \
 }while(0)
 
