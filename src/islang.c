@@ -42,6 +42,13 @@ typedef struct ist_i32_list {
 
 #define pal() printf("allocated length = %u\n", isl_allocated_length)
 
+ist_i32* isl_emit_i32_list() {
+    ist_i32* list = isl_malloc_list(ist_i32, 10);
+    list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5,
+        list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
+    return list;
+}
+
 void isl_test_list(void) {
 
     ist_i32* list = isl_calloc_list(ist_i32, 10);
@@ -57,11 +64,14 @@ void isl_test_list(void) {
     pal();
     ist_list_resizec(list, 30);
     pal();
-    ist_list_resizem(list, 6, new_list);
+    ist_list_resizem(list, 6);
     pal();
-    isl_freev_list(new_list);
+    isl_freev_list(list);
     pal();
-
+    ist_list_resizem(isl_emit_i32_list(), 5, list);
+    pal();
+    isl_freev_list(list);
+    pal();
 }
 
 

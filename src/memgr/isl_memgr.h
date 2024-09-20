@@ -77,23 +77,25 @@ void* _isl_set_adr_usize_value(void* _adr, ist_usize _value);
 
 // components for __ISL_LIST_RESIZEX, this provide an alernative option to storage the result of resize.
 #define __ISL_LIST_RESIZE_STORAGE_2(_ptrv, _list)               _ptrv=_list
-#define __ISL_LIST_RESIZE_STORAGE_3(_ptrv, _list, _stv)         _stv =_list
-#define __ISL_LIST_RESIZE_STORAGE_4(_ptrv, _list, _stv, _wtf)   isl_assert(0)
+#define __ISL_LIST_RESIZE_STORAGE_3(_ptr, _list, _stv)          _stv =_list
+#define __ISL_LIST_RESIZE_STORAGE_4(_ptr, _list, _stv, _wtf)    isl_assert(0)
 
 /*
     stv: storager variable, if there are some reason cause
     that you can't provide ptrv but ptr, it was an alternative option.
 */
-#define __ISL_LIST_RESIZEX(_x, _ptr, _size, _stv...)                                    \
-do{                                                                                     \
-    isl_assert((_ptr)&&(_size));                                                        \
-    typedef typeof(*_ptr) _element_type_;                                               \
-    ist_usize _capacity_=isl_list_ptr_get_capacity(_ptr);                               \
-    _element_type_* _list_=__ISL_XALLOC_LIST(_x,_element_type_,(_size));                \
-    memcpy(_list_,_ptr,((_size)<_capacity_?(_size):_capacity_)*sizeof(_element_type_)); \
-    isl_list_catch_length(_list_)=sizeof(_element_type_)*(_size);                       \
-    isl_free_list(_ptr);                                                                \
-    _isl_overload(__ISL_LIST_RESIZE_STORAGE,_ptr,_list_,##_stv);                        \
+#define __ISL_LIST_RESIZEX(_x, _ptr, _new_capcaity, _stv...)                                                \
+do{                                                                                                         \
+    typedef typeof(*_ptr) _element_type_;                                                                   \
+    _element_type_* _ptr_=_ptr;                /*to eliminate side effects*/                                \
+    ist_usize _new_capcaity_=_new_capcaity;    /*to eliminate side effects*/                                \
+    isl_assert(_ptr_&&_new_capcaity_);                                                                      \
+    ist_usize _capacity_=isl_list_ptr_get_capacity(_ptr_);                                                  \
+    _element_type_* _new_list_=__ISL_XALLOC_LIST(_x,_element_type_,_new_capcaity_);                         \
+    memcpy(_new_list_,_ptr_,(_new_capcaity_<_capacity_?_new_capcaity_:_capacity_)*sizeof(_element_type_));  \
+    isl_list_catch_length(_new_list_)=sizeof(_element_type_)*_new_capcaity_;                                \
+    isl_free_list(_ptr_);                                                                                   \
+    _isl_overload(__ISL_LIST_RESIZE_STORAGE,_ptr,_new_list_,##_stv);                                        \
 }while(0)
 
 #define ist_list_resizec(_ptr, _size, _stv...) __ISL_LIST_RESIZEX(c,_ptr,_size,##_stv)
