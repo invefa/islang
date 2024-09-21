@@ -75,9 +75,9 @@ typedef enum isp_attribute {
     So I call it replocation, meaning the location of the repid.
 */
 typedef struct isp_replocation {
-    isp_level       level : 3;
-    isp_domain      domain : 3;
-    isp_attribute   attribute : 10;
+    isp_level       level : 4;
+    isp_domain      domain : 4;
+    isp_attribute   attribute : 24;
 } isp_replocation;
 
 /* generate a replocation for repid */
@@ -105,16 +105,15 @@ typedef enum isp_repid {
 /* the only function of the reporting system */
 void isl_report(isp_repid _rid, ...);
 
+/* if expr is false, then report */
 #define isl_ifnreport(_expr,_vargs...)  \
-do{                                     \
-    if (!(_expr)) isl_report(_vargs);   \
-}while(0)
+    do{if(!(_expr))isl_report(_vargs);}while(0)
 
+/* if expr is true, then report */
 #define isl_ifreport(_expr,_vargs...)   \
-do{                                     \
-    if (_expr) isl_report(_vargs);      \
-}while(0)
+    do{if(_expr)isl_report(_vargs);}while(0)
 
-#define isp_catch_core_location __FILE__,__func__,(ist_usize)__LINE__
+/* catch the core location for attribute:CORELOC of report */
+#define isp_catch_coreloc __FILE__,__func__,(ist_usize)__LINE__
 
 #endif

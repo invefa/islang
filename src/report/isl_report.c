@@ -78,6 +78,7 @@ void isl_report(isp_repid _rid, ...) {
         goto isl_report_label_ending;
     }
 
+    /* if reploc.attribute == ISP_ATTR_CORELOC, then we will obtain the core location to report */
     if (reploc.attribute == ISP_ATTR_CORELOC) {
         ist_string file_name = va_arg(vargs, ist_string);
         ist_string func_name = va_arg(vargs, ist_string);

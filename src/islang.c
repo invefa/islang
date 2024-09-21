@@ -62,7 +62,7 @@ void isl_test_report(void) {
     isl_report(rid_custom_core_panic, "the second arg was %d.", 123456);
     // isl_report(rid_custom_core_fatal, "the second arg was %d.", 123456);
 
-    isl_report(rid_utf8_negative_codepoint, isp_catch_core_location);
+    isl_report(rid_utf8_negative_codepoint, isp_catch_coreloc);
     isl_utf8_encode_length(-22);
     isl_report(rid_unknown);
     // isl_ifnreport(NULL, rid_catch_nullptr, isp_catch_core_location);
@@ -192,8 +192,8 @@ void isl_test_list(void) {
     printf("length of list = %u\n", isl_list_catch_length(list));
     printf("capacity of list = %u\n", isl_list_ptr_get_capacity(list));
     pal();
-    list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5,
-        list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
+    list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5;
+    list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
 
     isl_list_resizec(list, 20);
     pal();
