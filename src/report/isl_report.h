@@ -77,7 +77,7 @@ typedef enum isp_attribute {
 typedef struct isp_replocation {
     isp_level       level : 3;
     isp_domain      domain : 3;
-    isp_attribute   attribute : 2;
+    isp_attribute   attribute : 10;
 } isp_replocation;
 
 /* generate a replocation for repid */
