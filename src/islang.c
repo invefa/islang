@@ -68,15 +68,19 @@ void isl_test_string(void) {
     index += isl_utf8_encode('b', buffer, index);
     index += isl_utf8_encode('c', buffer, index);
     index += isl_utf8_encode('d', buffer, index);
-    ist_string* tmp_buffer = ist_string_create_buffer(128);
+    ist_string* tmp_buffer = ist_string_create_buffer(1);
     for (ist_usize i = 0;i < isl_list_catch_length(*buffer);++i) {
-        u64_to_string((*buffer)[i], tmp_buffer, 2);
+        u8_to_string((*buffer)[i], tmp_buffer, 2);
         printf("%s\n", *tmp_buffer);
         // print_u8_binary_aline((*buffer)[i]);
     }
     pal();
 
-    print_u32_binary_aline(0x6C49);
+    index = 0;
+    for (ist_usize i = 0;i < 10;++i) {
+        printf("codepoint = %u\n", isl_utf8_decode(buffer, &index));
+
+    }
 
     ist_string_delete(str1);
     ist_string_delete(str2);

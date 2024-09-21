@@ -37,4 +37,19 @@ void ist_string_delete(ist_string* _string) {
     isl_free(_string);
 }
 
+void ist_string_buffer_ensure(ist_string* _buffer, ist_usize _buffer_size, ist_usize _required_length) {
+    isl_wssert(
+        isl_list_catch_length(*_buffer) - _buffer_size >= _required_length,
+        "there has not enough place to store the data, we will resize it.",
+        "remaining space length: %llu, but require length: %llu, and we will extend it to %llu.",
+        (
+            isl_list_catch_length(*_buffer) - _buffer_size,
+            _required_length,
+            ceil_upon_powertwo(_buffer_size + _required_length)
+            )
+    );
+    if (isl_list_catch_length(*_buffer) - _buffer_size < _required_length)
+        isl_list_resizec(*_buffer, ceil_upon_powertwo(_buffer_size + _required_length));
+
+}
 

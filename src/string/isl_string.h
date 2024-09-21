@@ -14,4 +14,6 @@ ist_string* ist_string_create_buffer(ist_usize _capacity);
 void ist_string_clean(ist_string* _string);
 void ist_string_delete(ist_string* _string);
 
+void ist_string_buffer_ensure(ist_string* _buffer, ist_usize _buffer_size, ist_usize _required_length);
+
 #endif
