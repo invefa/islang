@@ -58,20 +58,29 @@ void isl_test_string(void) {
 
     ist_string* buffer = ist_string_create_buffer(8);
     ist_usize index = 0;
-    index += isl_utf8_encode(0b10101, buffer, index);
-    index += isl_utf8_encode(0b101, buffer, index);
-    index += isl_utf8_encode(0b1010101010, buffer, index);
-    index += isl_utf8_encode(0b101011010, buffer, index);
-    index += isl_utf8_encode(0b101101010, buffer, index);
-    index += isl_utf8_encode(0b10101010, buffer, index);
-    char tmp_buffer[33] = "\0";
+    index += isl_utf8_encode(0x6C49, buffer, index);
+    index += isl_utf8_encode(0x6C49, buffer, index);
+    index += isl_utf8_encode(0x6C49, buffer, index);
+    index += isl_utf8_encode(0x6C49, buffer, index);
+    index += isl_utf8_encode(0x6C49, buffer, index);
+    index += isl_utf8_encode(0x6C49, buffer, index);
+    index += isl_utf8_encode('a', buffer, index);
+    index += isl_utf8_encode('b', buffer, index);
+    index += isl_utf8_encode('c', buffer, index);
+    index += isl_utf8_encode('d', buffer, index);
+    ist_string* tmp_buffer = ist_string_create_buffer(128);
     for (ist_usize i = 0;i < isl_list_catch_length(*buffer);++i) {
-        print_byte_binary_aline((*buffer)[i]);
+        u64_to_string((*buffer)[i], tmp_buffer, 2);
+        printf("%s\n", *tmp_buffer);
+        // print_u8_binary_aline((*buffer)[i]);
     }
     pal();
 
+    print_u32_binary_aline(0x6C49);
+
     ist_string_delete(str1);
     ist_string_delete(str2);
+    ist_string_delete(tmp_buffer);
     ist_string_delete(buffer);
     ist_string_clean(&str3);
     pal();

@@ -7,6 +7,7 @@
 typedef ist_byte* ist_string;
 
 void ist_string_init(ist_string* _string, char* _cstring, ist_usize _length);
+
 ist_string* ist_string_create(char* _cstring, ist_usize _length);
 ist_string* ist_string_create_buffer(ist_usize _capacity);
 

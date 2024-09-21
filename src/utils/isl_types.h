@@ -20,7 +20,7 @@ typedef float       ist_f32;
 typedef double      ist_f64;
 
 
-typedef ist_i8      ist_byte;
+typedef ist_u8      ist_byte;
 
 typedef ist_i8      ist_bool;
 
