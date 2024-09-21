@@ -26,7 +26,7 @@
 enum {
     INFO, WARNING, ERROR, PANIC, FATAL,
     CORE, LEXER, PARSER, COMPILER, VM,
-    NONE, CUSTOM, LOCATION,
+    NONE, CUSTOM, CORELOC, USERLOC,
 };
 
 
@@ -59,13 +59,14 @@ typedef enum isp_domain {
     Attribute for repid.
     NONE:       no attribute.
     CUSTOM:     indicate the fmt of repid will be provided by user.
-    LOCATION:   signed the user code file location will be provided
-                by user at the second arg of isl_report.
+    CORELOC:    signed the core code exact location will be provided, it consumes 3 args. (core code location)
+    USERLOC:    signed the user code file location will be provided by user at the second arg of isl_report. (user file location)
 */
 typedef enum isp_attribute {
     ISP_ATTR_NONE,
     ISP_ATTR_CUSTOM,
-    ISP_ATTR_LOCATION,
+    ISP_ATTR_CORELOC,
+    ISP_ATTR_USERLOC,
 } isp_attribute;
 
 /*
@@ -103,5 +104,17 @@ typedef enum isp_repid {
 
 /* the only function of the reporting system */
 void isl_report(isp_repid _rid, ...);
+
+#define isl_ifnreport(_expr,_vargs...)  \
+do{                                     \
+    if (!(_expr)) isl_report(_vargs);   \
+}while(0)
+
+#define isl_ifreport(_expr,_vargs...)   \
+do{                                     \
+    if (_expr) isl_report(_vargs);      \
+}while(0)
+
+#define isp_catch_core_location __FILE__,__func__,(ist_usize)__LINE__
 
 #endif

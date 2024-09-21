@@ -2,10 +2,12 @@
 
 #include "isl_xssert.h"
 #include "isl_list.h"
+#include "isl_report.h"
 
 ist_u8 isl_utf8_encode_length(ist_i32 _codepoint) {
     //TODO: replace assert with report.
-    isl_assert(_codepoint > 0, "can't encode negative codepoint.");
+    // isl_assert(_codepoint > 0, "can't encode negative codepoint.");
+    isl_ifnreport(_codepoint >= 0, rid_utf8_negative_codepoint, isp_catch_core_location);
 
     if (_codepoint <= 0x7F) return 1;
     else if (_codepoint <= 0x7FF)  return 2;

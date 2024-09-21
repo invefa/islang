@@ -24,14 +24,25 @@ const isp_replocation isp_replocs[] = {
 };
 
 ist_string level_fmts[] = {
-    ANSI_GRE_SET("info"),
-    ANSI_HIL_SET("reserved"),
-    ANSI_YEL_SET("warning"),
-    ANSI_HIL_SET("reserved"),
-    ANSI_HIR_SET("error"),
-    ANSI_MAG_SET("panic"),
-    ANSI_RED_SET("fatal"),
-    ANSI_HIL_SET("reserved"),
+    "info",
+    "reserved",
+    "warning",
+    "reserved",
+    "error",
+    "panic",
+    "fatal",
+    "reserved",
+};
+
+ist_string level_colors[] = {
+    ANSI_GRE,
+    ANSI_HIL,
+    ANSI_YEL,
+    ANSI_HIL,
+    ANSI_HIR,
+    ANSI_MAG,
+    ANSI_RED,
+    ANSI_HIL,
 };
 
 ist_string domain_fmts[] = {
@@ -58,7 +69,8 @@ void isl_report(isp_repid _rid, ...) {
     if (reploc.attribute == ISP_ATTR_CUSTOM) {
         ist_string custom_fmt = va_arg(vargs, ist_string);
 
-        sprintf(buffer, "%s %s: %s\n",
+        sprintf(buffer, "%s%s %s: %s\n"ANSI_RST,
+                level_colors[reploc.level],
                 domain_fmts[reploc.domain],
                 level_fmts[reploc.level],
                 custom_fmt);
@@ -66,8 +78,30 @@ void isl_report(isp_repid _rid, ...) {
         goto isl_report_label_ending;
     }
 
+    if (reploc.attribute == ISP_ATTR_CORELOC) {
+        ist_string file_name = va_arg(vargs, ist_string);
+        ist_string func_name = va_arg(vargs, ist_string);
+        ist_usize line = va_arg(vargs, ist_usize);
+
+        sprintf(buffer,
+                "%s%s %s:\n"
+                "\tin file '%s':\n"
+                "\tat fn %s(...) <line:%llu>:\n"
+                "\t%s\n"ANSI_RST,
+                level_colors[reploc.level],
+                domain_fmts[reploc.domain],
+                level_fmts[reploc.level],
+                file_name,
+                func_name,
+                line,
+                isp_fmts[_rid]);
+
+        goto isl_report_label_ending;
+    }
+
     /* default method for fmts concatenation */
-    sprintf(buffer, "%s %s: %s\n",
+    sprintf(buffer, "%s%s %s: %s\n"ANSI_RST,
+            level_colors[reploc.level],
             domain_fmts[reploc.domain],
             level_fmts[reploc.level],
             isp_fmts[_rid]);

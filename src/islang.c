@@ -49,19 +49,22 @@ int main(void) {
 
 void isl_test_report(void) {
 
-/*     fprintf(stderr, ANSI_GRE_SET("this is a info    message: %d\n"), 123456);
-    fprintf(stderr, ANSI_YEL_SET("this is a warning message: %d\n"), 123456);
-    fprintf(stderr, ANSI_HIR_SET("this is a error   message: %d\n"), 123456);
-    fprintf(stderr, ANSI_HIM_SET("this is a panic   message: %d\n"), 123456);
-    fprintf(stderr, ANSI_RED_SET("this is a fatal   message: %d\n"), 123456); */
+    /*     fprintf(stderr, ANSI_GRE_SET("this is a info    message: %d\n"), 123456);
+        fprintf(stderr, ANSI_YEL_SET("this is a warning message: %d\n"), 123456);
+        fprintf(stderr, ANSI_HIR_SET("this is a error   message: %d\n"), 123456);
+        fprintf(stderr, ANSI_HIM_SET("this is a panic   message: %d\n"), 123456);
+        fprintf(stderr, ANSI_RED_SET("this is a fatal   message: %d\n"), 123456); */
 
     isl_report(rid_unknown);
     isl_report(rid_custom_core_info, "the second arg was %d.", 123456);
     isl_report(rid_custom_core_warn, "the second arg was %d.", 123456);
     isl_report(rid_custom_core_error, "the second arg was %d.", 123456);
     isl_report(rid_custom_core_panic, "the second arg was %d.", 123456);
-    isl_report(rid_custom_core_fatal, "the second arg was %d.", 123456);
+    // isl_report(rid_custom_core_fatal, "the second arg was %d.", 123456);
 
+    isl_report(rid_utf8_negative_codepoint, isp_catch_core_location);
+    isl_utf8_encode_length(-22);
+    isl_report(rid_unknown);
     isl_wssert(0);
 }
 
