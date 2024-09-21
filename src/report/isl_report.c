@@ -44,18 +44,17 @@ ist_string domain_fmts[] = {
 
 
 void isl_report(isp_repid _rid, ...) {
-    typedef FILE* ist_iostream;
+    typedef FILE* isp_ostream;
 
     isp_replocation reploc = isp_replocs[_rid];
-    ist_string      fmt = isp_fmts[_rid];
-
-    ist_iostream output_stream = reploc.level >= ISP_LEVEL_ERROR ? stderr : stdout;
+    isp_ostream ostream = reploc.level >= ISP_LEVEL_ERROR ? stderr : stdout;
 
     va_list vargs;
     va_start(vargs, _rid);
 
     char buffer[4096] = {0};
 
+    /* if reploc.attribute == ISP_ATTR_CUSTOM, then the fmt will be provided by user */
     if (reploc.attribute == ISP_ATTR_CUSTOM) {
         ist_string custom_fmt = va_arg(vargs, ist_string);
 
@@ -67,14 +66,16 @@ void isl_report(isp_repid _rid, ...) {
         goto isl_report_label_ending;
     }
 
+    /* default method for fmts concatenation */
     sprintf(buffer, "%s %s: %s\n",
             domain_fmts[reploc.domain],
             level_fmts[reploc.level],
-            fmt);
+            isp_fmts[_rid]);
 
 isl_report_label_ending:
 
-    vfprintf(output_stream, buffer, vargs);
+    /* write to output stream, this is the core of the report */
+    vfprintf(ostream, buffer, vargs);
 
     va_end(vargs);
     if (reploc.level >= ISP_LEVEL_FATAL) exit(_rid);
