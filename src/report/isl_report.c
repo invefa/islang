@@ -18,7 +18,7 @@ const ist_string isp_repid_names[] = {
 };
 
 const isp_replocation isp_replocs[] = {
-#   define manifest(_name, _reploc, _fmt) _reploc,
+#   define manifest(_name, _reploc, _fmt) isp_gen_reploc _reploc,
 #   include "isl_repids.h"
 #   undef manifest
 };
@@ -44,28 +44,38 @@ ist_string domain_fmts[] = {
 
 
 void isl_report(isp_repid _rid, ...) {
+    typedef FILE* ist_iostream;
 
     isp_replocation reploc = isp_replocs[_rid];
     ist_string      fmt = isp_fmts[_rid];
 
+    ist_iostream output_stream = reploc.level >= ISP_LEVEL_ERROR ? stderr : stdout;
+
     va_list vargs;
     va_start(vargs, _rid);
 
-    char buffer[1024] = {0};
+    char buffer[4096] = {0};
 
+    if (reploc.attribute == ISP_ATTR_CUSTOM) {
+        ist_string custom_fmt = va_arg(vargs, ist_string);
 
-    ist_string custom_fmt;
-    if (_rid == rid_custom_info) {
-        custom_fmt = va_arg(vargs, ist_string);
-        sprintf(buffer, "%s %s: %s\n", domain_fmts[reploc.domain], level_fmts[reploc.level], custom_fmt);
-        vfprintf(reploc.level >= ISP_LEVEL_ERROR ? stderr : stdout, buffer, vargs);
+        sprintf(buffer, "%s %s: %s\n",
+                domain_fmts[reploc.domain],
+                level_fmts[reploc.level],
+                custom_fmt);
+
+        goto isl_report_label_ending;
     }
-    else {
-        sprintf(buffer, "%s %s: %s\n", domain_fmts[reploc.domain], level_fmts[reploc.level], fmt);
-        vfprintf(reploc.level >= ISP_LEVEL_ERROR ? stderr : stdout, buffer, vargs);
-    }
 
+    sprintf(buffer, "%s %s: %s\n",
+            domain_fmts[reploc.domain],
+            level_fmts[reploc.level],
+            fmt);
 
-    if (reploc.level >= ISP_LEVEL_FATAL) exit(_rid);
+isl_report_label_ending:
+
+    vfprintf(output_stream, buffer, vargs);
+
     va_end(vargs);
+    if (reploc.level >= ISP_LEVEL_FATAL) exit(_rid);
 }

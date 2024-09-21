@@ -52,12 +52,12 @@ typedef struct isp_replocation {
     isp_attribute   attribute : 2;
 } isp_replocation;
 
-#define isp_reploc(_level, _domain, _attr)  \
-    ((isp_replocation)                      \
-        {                                   \
-        .level=ISP_LEVEL_##_level ,         \
-        .domain=ISP_DOMAIN_##_domain ,      \
-        .attribute=ISP_ATTR_##_attr         \
+#define isp_gen_reploc(_domain, _level, _attr)  \
+    ((isp_replocation)                          \
+        {                                       \
+        .level=ISP_LEVEL_##_level,              \
+        .domain=ISP_DOMAIN_##_domain,           \
+        .attribute=ISP_ATTR_##_attr             \
         })
 
 

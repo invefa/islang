@@ -3,6 +3,15 @@
     This file was a generating file.
 */
 
-manifest(unknown, isp_reploc(INFO, CORE, NONE), "unknown")
-manifest(custom_info, isp_reploc(INFO, CORE, CUSTOM), "nothing")
-manifest(unreachable_brench, isp_reploc(ERROR, CORE, NONE), "program went into unreachable brench.")
+manifest(unknown, (CORE, INFO, NONE), "?")
+
+manifest(custom_core_info, (CORE, INFO, CUSTOM), NULL)
+manifest(custom_core_warn, (CORE, WARNING, CUSTOM), NULL)
+manifest(custom_core_error, (CORE, ERROR, CUSTOM), NULL)
+manifest(custom_core_panic, (CORE, PANIC, CUSTOM), NULL)
+manifest(custom_core_fatal, (CORE, FATAL, CUSTOM), NULL)
+
+manifest(unreachable_brench, (CORE, ERROR, NONE), \
+    "program went into unreachable brench.")
+
+
