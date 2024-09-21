@@ -58,30 +58,32 @@ void isl_test_string(void) {
 
     ist_string* buffer = ist_string_create_buffer(8);
     ist_usize index = 0;
-    index += isl_utf8_encode(0x6C49, buffer, index);
-    index += isl_utf8_encode(0x6C49, buffer, index);
-    index += isl_utf8_encode(0x6C49, buffer, index);
-    index += isl_utf8_encode(0x6C49, buffer, index);
-    index += isl_utf8_encode(0x6C49, buffer, index);
-    index += isl_utf8_encode(0x6C49, buffer, index);
+    for (ist_usize i = 0; i < 128; ++i) {
+        index += isl_utf8_encode(0x6C49, buffer, index);
+    }
+
     index += isl_utf8_encode('a', buffer, index);
     index += isl_utf8_encode('b', buffer, index);
     index += isl_utf8_encode('c', buffer, index);
     index += isl_utf8_encode('d', buffer, index);
+
     ist_string* tmp_buffer = ist_string_create_buffer(1);
+
     for (ist_usize i = 0;i < isl_list_catch_length(*buffer);++i) {
-        u8_to_string((*buffer)[i], tmp_buffer, 2);
-        printf("%s\n", *tmp_buffer);
+        u8_to_string((*buffer)[i], tmp_buffer, 16);
+        printf("0x%s\t", *tmp_buffer);
         // print_u8_binary_aline((*buffer)[i]);
     }
-    pal();
+    printf("\n\n");
 
     index = 0;
-    for (ist_usize i = 0;i < 10;++i) {
-        printf("codepoint = %u\n", isl_utf8_decode(buffer, &index));
-
+    for (ist_usize i = 0;i < 130;++i) {
+        u32_to_string(isl_utf8_decode(buffer, &index), tmp_buffer, 16);
+        printf("0x%s\t", *tmp_buffer);
     }
+    printf("\n");
 
+    pal();
     ist_string_delete(str1);
     ist_string_delete(str2);
     ist_string_delete(tmp_buffer);

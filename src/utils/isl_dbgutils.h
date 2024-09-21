@@ -13,6 +13,7 @@
 char digit_table[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
 void u64_to_string(ist_u64 _val, ist_string* _buffer, ist_u8 _base) {
+
     isl_assert(_buffer && (*_buffer) && (_base >= 2 && _base <= 16));
     ist_string_buffer_ensure(_buffer, 0, 65);
 
@@ -31,6 +32,7 @@ void u64_to_string(ist_u64 _val, ist_string* _buffer, ist_u8 _base) {
 }
 
 void u32_to_string(ist_u32 _val, ist_string* _buffer, ist_u8 _base) {
+
     isl_assert(_buffer && (*_buffer) && (_base >= 2 && _base <= 16));
     ist_string_buffer_ensure(_buffer, 0, 33);
 
@@ -49,6 +51,7 @@ void u32_to_string(ist_u32 _val, ist_string* _buffer, ist_u8 _base) {
 }
 
 void u16_to_string(ist_u16 _val, ist_string* _buffer, ist_u8 _base) {
+
     isl_assert(_buffer && (*_buffer) && (_base >= 2 && _base <= 16));
     ist_string_buffer_ensure(_buffer, 0, 17);
 
@@ -67,6 +70,7 @@ void u16_to_string(ist_u16 _val, ist_string* _buffer, ist_u8 _base) {
 }
 
 void u8_to_string(ist_u8 _val, ist_string* _buffer, ist_u8 _base) {
+
     isl_assert(_buffer && (*_buffer) && (_base >= 2 && _base <= 16));
     ist_string_buffer_ensure(_buffer, 0, 9);
 

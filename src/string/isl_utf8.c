@@ -3,7 +3,7 @@
 #include "isl_xssert.h"
 #include "isl_list.h"
 
-ist_u8 isl_utf8_codepoint_encode_length(ist_i32 _codepoint) {
+ist_u8 isl_utf8_encode_length(ist_i32 _codepoint) {
     isl_assert(_codepoint > 0, "can't encode negative codepoint.");
     if (_codepoint <= 0x7F) return 1;
     else if (_codepoint <= 0x7FF)  return 2;
@@ -13,10 +13,10 @@ ist_u8 isl_utf8_codepoint_encode_length(ist_i32 _codepoint) {
 }
 
 ist_u8 isl_utf8_encode(ist_i32 _codepoint, ist_string* _buffer, ist_usize _index) {
-    isl_assert(_buffer && (*_buffer));
+    isl_assert(_buffer);
+    isl_assert(_buffer[0]);
 
-    ist_usize buffer_length = isl_list_catch_length(*_buffer);
-    ist_u8 codepoint_encode_length = isl_utf8_codepoint_encode_length(_codepoint);
+    ist_u8 codepoint_encode_length = isl_utf8_encode_length(_codepoint);
 
     ist_string_buffer_ensure(_buffer, _index, codepoint_encode_length);
 
@@ -57,11 +57,13 @@ ist_u8 isl_utf8_decode_length(ist_string* _buffer, ist_usize _index) {
 }
 
 ist_i32 isl_utf8_decode(ist_string* _buffer, ist_usize* _index) {
-    ist_i32 result = 0;
-    ist_byte* buffer = *_buffer + *_index;
     ist_u8 utf8_decode_length = isl_utf8_decode_length(_buffer, *_index);
+    ist_byte* buffer = *_buffer + *_index;
+    ist_i32 result = 0;
+
     ist_string_buffer_ensure(_buffer, *_index, utf8_decode_length);
     *_index += utf8_decode_length;
+
     switch (utf8_decode_length) {
     case 4:
         result =
