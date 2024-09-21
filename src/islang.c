@@ -24,12 +24,14 @@
 #include "isl_string.h"
 #include "isl_utf8.h"
 #include "isl_dbgutils.h"
+#include "isl_report.h"
 
 void isl_test_overload(void);
 void isl_test_xssert(void);
 void isl_test_list(void);
 void isl_test_memgr(void);
 void isl_test_string(void);
+void isl_test_report(void);
 
 int main(void) {
 
@@ -38,11 +40,24 @@ int main(void) {
     isl_test_list();
     isl_test_memgr();
     isl_test_string();
+    isl_test_report();
 
     return 0;
 }
 
 #define pal() printf("allocated length = %u\n", isl_allocated_length)
+
+void isl_test_report(void) {
+
+    fprintf(stderr, ANSI_GRE_SET("this is a info    message: %d\n"), 123456);
+    fprintf(stderr, ANSI_YEL_SET("this is a warning message: %d\n"), 123456);
+    fprintf(stderr, ANSI_HIR_SET("this is a error   message: %d\n"), 123456);
+    fprintf(stderr, ANSI_HIM_SET("this is a panic   message: %d\n"), 123456);
+    fprintf(stderr, ANSI_RED_SET("this is a fatal   message: %d\n"), 123456);
+
+
+    isl_wssert(0);
+}
 
 void isl_test_string(void) {
     ist_string* str1 = ist_string_create(u8"abcdef", 6);
@@ -83,9 +98,17 @@ void isl_test_string(void) {
     }
     printf("\n");
 
+    ist_string* str4 = ist_string_create("汉", 5);
+    printf("str4 context = %s\n", *str4);
+    index = 0;
+    u32_to_string(isl_utf8_decode(str4, &index), tmp_buffer, 16);
+    printf("str4 codepoint = 0x%s\n", *tmp_buffer);
+
+
     pal();
     ist_string_delete(str1);
     ist_string_delete(str2);
+    ist_string_delete(str4);
     ist_string_delete(tmp_buffer);
     ist_string_delete(buffer);
     ist_string_clean(&str3);

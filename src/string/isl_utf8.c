@@ -4,7 +4,9 @@
 #include "isl_list.h"
 
 ist_u8 isl_utf8_encode_length(ist_i32 _codepoint) {
+    //TODO: replace assert with report.
     isl_assert(_codepoint > 0, "can't encode negative codepoint.");
+
     if (_codepoint <= 0x7F) return 1;
     else if (_codepoint <= 0x7FF)  return 2;
     else if (_codepoint <= 0xFFFF) return 3;
@@ -13,6 +15,7 @@ ist_u8 isl_utf8_encode_length(ist_i32 _codepoint) {
 }
 
 ist_u8 isl_utf8_encode(ist_i32 _codepoint, ist_string* _buffer, ist_usize _index) {
+    //TODO: replace assert with report.
     isl_assert(_buffer);
     isl_assert(_buffer[0]);
 
@@ -41,6 +44,7 @@ ist_u8 isl_utf8_encode(ist_i32 _codepoint, ist_string* _buffer, ist_usize _index
         buffer[0] = _codepoint & 0x7F;
         break;
     default:
+        //TODO: replace assert with report.
         isl_assert(0, "WTF.");
     }
 
@@ -88,6 +92,7 @@ ist_i32 isl_utf8_decode(ist_string* _buffer, ist_usize* _index) {
             buffer[0] & 0x7F;
         break;
     default:
+        //TODO: replace assert with report.
         isl_assert(0, "WTF.");
     }
 

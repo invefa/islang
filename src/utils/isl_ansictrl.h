@@ -57,4 +57,52 @@
 #define ANSI_BWHI           ANSI_ESC "47m"
 #define ANSI_BHIW           ANSI_ESC "1;47m"
 
+
+#define ANSI_RST_SET(_cstring)          ANSI_ESC "0m" _cstring ANSI_RST
+#define ANSI_HIL_SET(_cstring)          ANSI_ESC "1m" _cstring ANSI_RST
+#define ANSI_FAINT_SET(_cstring)        ANSI_ESC "2m" _cstring ANSI_RST
+#define ANSI_ITALIC_SET(_cstring)       ANSI_ESC "3m" _cstring ANSI_RST
+
+#define ANSI_UNDERLNE_SET(_cstring)     ANSI_ESC "4m"  _cstring ANSI_RST
+#define ANSI_NUNDERLNE_SET(_cstring)    ANSI_ESC "24m" _cstring ANSI_RST
+
+#define ANSI_SLOW_BLINK_SET(_cstring)   ANSI_ESC "5m" _cstring ANSI_RST
+#define ANSI_FAST_BLINK_SET(_cstring)   ANSI_ESC "6m" _cstring ANSI_RST
+#define ANSI_INV_SET(_cstring)          ANSI_ESC "7m" _cstring ANSI_RST
+#define ANSI_FADE_SET(_cstring)         ANSI_ESC "8m" _cstring ANSI_RST
+
+#define ANSI_BLK_SET(_cstring)  ANSI_ESC "30m"   _cstring ANSI_RST
+#define ANSI_GRY_SET(_cstring)  ANSI_ESC "1;30m" _cstring ANSI_RST
+#define ANSI_RED_SET(_cstring)  ANSI_ESC "31m"   _cstring ANSI_RST
+#define ANSI_HIR_SET(_cstring)  ANSI_ESC "1;31m" _cstring ANSI_RST
+#define ANSI_GRE_SET(_cstring)  ANSI_ESC "32m"   _cstring ANSI_RST
+#define ANSI_HIG_SET(_cstring)  ANSI_ESC "1;32m" _cstring ANSI_RST
+#define ANSI_YEL_SET(_cstring)  ANSI_ESC "33m"   _cstring ANSI_RST
+#define ANSI_HIY_SET(_cstring)  ANSI_ESC "1;33m" _cstring ANSI_RST
+#define ANSI_BLU_SET(_cstring)  ANSI_ESC "34m"   _cstring ANSI_RST
+#define ANSI_HIB_SET(_cstring)  ANSI_ESC "1;34m" _cstring ANSI_RST
+#define ANSI_MAG_SET(_cstring)  ANSI_ESC "35m"   _cstring ANSI_RST
+#define ANSI_HIM_SET(_cstring)  ANSI_ESC "1;35m" _cstring ANSI_RST
+#define ANSI_CLY_SET(_cstring)  ANSI_ESC "36m"   _cstring ANSI_RST
+#define ANSI_HIC_SET(_cstring)  ANSI_ESC "1;36m" _cstring ANSI_RST
+#define ANSI_WHI_SET(_cstring)  ANSI_ESC "37m"   _cstring ANSI_RST
+#define ANSI_HIW_SET(_cstring)  ANSI_ESC "1;37m" _cstring ANSI_RST
+
+#define ANSI_BBLK_SET(_cstring) ANSI_ESC "40m"   _cstring ANSI_RST
+#define ANSI_BGRY_SET(_cstring) ANSI_ESC "1;40m" _cstring ANSI_RST
+#define ANSI_BRED_SET(_cstring) ANSI_ESC "41m"   _cstring ANSI_RST
+#define ANSI_BHIR_SET(_cstring) ANSI_ESC "1;41m" _cstring ANSI_RST
+#define ANSI_BGRE_SET(_cstring) ANSI_ESC "42m"   _cstring ANSI_RST
+#define ANSI_BHIG_SET(_cstring) ANSI_ESC "1;42m" _cstring ANSI_RST
+#define ANSI_BYEL_SET(_cstring) ANSI_ESC "43m"   _cstring ANSI_RST
+#define ANSI_BHIY_SET(_cstring) ANSI_ESC "1;43m" _cstring ANSI_RST
+#define ANSI_BBLU_SET(_cstring) ANSI_ESC "44m"   _cstring ANSI_RST
+#define ANSI_BHIB_SET(_cstring) ANSI_ESC "1;44m" _cstring ANSI_RST
+#define ANSI_BMAG_SET(_cstring) ANSI_ESC "45m"   _cstring ANSI_RST
+#define ANSI_BHIM_SET(_cstring) ANSI_ESC "1;45m" _cstring ANSI_RST
+#define ANSI_BCLY_SET(_cstring) ANSI_ESC "46m"   _cstring ANSI_RST
+#define ANSI_BHIC_SET(_cstring) ANSI_ESC "1;46m" _cstring ANSI_RST
+#define ANSI_BWHI_SET(_cstring) ANSI_ESC "47m"   _cstring ANSI_RST
+#define ANSI_BHIW_SET(_cstring) ANSI_ESC "1;47m" _cstring ANSI_RST
+
 #endif
