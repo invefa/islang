@@ -7,7 +7,7 @@
 ist_u8 isl_utf8_encode_length(ist_i32 _codepoint) {
     //TODO: replace assert with report.
     // isl_assert(_codepoint > 0, "can't encode negative codepoint.");
-    isl_ifnreport(_codepoint >= 0, rid_utf8_negative_codepoint, isp_catch_core_location);
+    isl_ifreport(_codepoint < 0, rid_utf8_negative_codepoint, isp_catch_core_location);
 
     if (_codepoint <= 0x7F) return 1;
     else if (_codepoint <= 0x7FF)  return 2;
@@ -18,8 +18,10 @@ ist_u8 isl_utf8_encode_length(ist_i32 _codepoint) {
 
 ist_u8 isl_utf8_encode(ist_i32 _codepoint, ist_string* _buffer, ist_usize _index) {
     //TODO: replace assert with report.
-    isl_assert(_buffer);
-    isl_assert(_buffer[0]);
+    // isl_assert(_buffer);
+    // isl_assert(_buffer[0]);
+    isl_ifnreport(_buffer, rid_catch_nullptr, isp_catch_core_location);
+    isl_ifnreport(_buffer[0], rid_catch_nullptr, isp_catch_core_location);
 
     ist_u8 codepoint_encode_length = isl_utf8_encode_length(_codepoint);
 
@@ -47,7 +49,8 @@ ist_u8 isl_utf8_encode(ist_i32 _codepoint, ist_string* _buffer, ist_usize _index
         break;
     default:
         //TODO: replace assert with report.
-        isl_assert(0, "WTF.");
+        // isl_assert(0, "WTF.");
+        isl_report(rid_illegal_utf8_codepoint, isp_catch_core_location);
     }
 
     return codepoint_encode_length;
@@ -95,7 +98,8 @@ ist_i32 isl_utf8_decode(ist_string* _buffer, ist_usize* _index) {
         break;
     default:
         //TODO: replace assert with report.
-        isl_assert(0, "WTF.");
+        // isl_assert(0, "WTF.");
+        isl_report(rid_illegal_utf8_sequence, isp_catch_core_location);
     }
 
     return result;

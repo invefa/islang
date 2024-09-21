@@ -65,6 +65,9 @@ void isl_test_report(void) {
     isl_report(rid_utf8_negative_codepoint, isp_catch_core_location);
     isl_utf8_encode_length(-22);
     isl_report(rid_unknown);
+    // isl_ifnreport(NULL, rid_catch_nullptr, isp_catch_core_location);
+
+
     isl_wssert(0);
 }
 
