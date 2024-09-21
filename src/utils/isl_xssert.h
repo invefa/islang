@@ -64,9 +64,9 @@
 #define __ISL_XSSERT(_x, _expr, _exts...)                                   \
 do{                                                                         \
     if(!(_expr)) {                                                          \
-        fprintf(stderr, ANSI_HIR #_x "ssert failure:" ANSI_RST              \
+        fprintf(stderr, ANSI_HIR_SET(#_x "ssert failure:")                  \
         "\n\tin file '"__FILE__"':\n\tat fn %s(...): expression: "          \
-        ANSI_HIL #_expr ANSI_RST " <line:%d>.\n"                            \
+        ANSI_HIL_SET(#_expr) " <line:%d>.\n"                                \
         _isl_overload(__ISL_XSSERT_EXT_TEXT,##_exts)                        \
         ,__func__,__LINE__ _isl_overload(__ISL_XSSERT_EXT_ARGS,##_exts));   \
         __ISL_XSSERT_EXIT_##_x()                                            \

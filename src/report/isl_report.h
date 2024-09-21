@@ -16,19 +16,83 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-enum isr_level {
-    ISR_LEVEL_INFO = 0,
-    ISR_LEVEL_WARNING = 2,
-    ISR_LEVEL_ERROR = 4,
-    ISR_LEVEL_PANIC = 5,
-    ISR_LEVEL_FATAL = 6
+#include "isl_string.h"
+
+enum {
+    INFO, WARNING, ERROR, PANIC, FATAL,
+    CORE, LEXER, PARSER, COMPILER, VM,
+    NONE, CUSTOM, LOCATION,
 };
 
-void isl_report(enum isr_level _level, char* _format, ...) {
-    va_list args;
-    va_start(args, _format);
-    vprintf(_format, args);
-    va_end(args);
-}
+typedef enum isp_level {
+    ISP_LEVEL_INFO = 0,
+    ISP_LEVEL_WARNING = 2,
+    ISP_LEVEL_ERROR = 4,
+    ISP_LEVEL_PANIC = 5,
+    ISP_LEVEL_FATAL = 6
+} isp_level;
+
+typedef enum isp_domain {
+    ISP_DOMAIN_CORE,
+    ISP_DOMAIN_LEXER,
+    ISP_DOMAIN_PARSER,
+    ISP_DOMAIN_COMPILER,
+    ISP_DOMAIN_VM
+} isp_domain;
+
+typedef enum isp_attribute {
+    ISP_ATTR_NONE,
+    ISP_ATTR_CUSTOM,
+    ISP_ATTR_LOCATION,
+} isp_attribute;
+
+typedef struct isp_replocation {
+    isp_level       level : 3;
+    isp_domain      domain : 3;
+    isp_attribute   attribute : 2;
+} isp_replocation;
+
+#define isp_reploc(_level, _domain, _attr)  \
+    ((isp_replocation)                      \
+        {                                   \
+        .level=ISP_LEVEL_##_level ,         \
+        .domain=ISP_DOMAIN_##_domain ,      \
+        .attribute=ISP_ATTR_##_attr         \
+        })
+
+
+/* typedef struct isp_repcode {
+    ist_u32    repid : 24;
+    ISP_LEVEL  level : 3;
+    isp_domain domain : 3;
+    ist_bool   do_abort : 1;
+} isp_repcode;
+
+typedef ist_u32 isp_repcode_raw;
+
+#define isp_repcode_cast_raw(_repcode) \
+    ((isp_repcode_raw)((_repcode).level << 29 | (_repcode).domain << 26 | (_repcode).do_abort << 24 | (_repcode).repid))
+
+#define isp_raw_repcode_cast(_rawcode)          \
+    ((isp_repcode)                              \
+        {                                       \
+            .repid = (_rawcode) & 0xFFFFFF,     \
+            .level = (_rawcode) >> 29 & 0x7,    \
+            .domain = (_rawcode) >> 26 & 0x7,   \
+            .do_abort = (_rawcode) >> 24 & 0x1  \
+        }                                       \
+    ) */
+
+extern const ist_string         isp_fmts[];
+extern const ist_string         isp_repid_names[];
+extern const isp_replocation    isp_replocs[];
+
+typedef enum isp_repid {
+#   define manifest(_name, _reploc, _fmt) rid_##_name,
+#   include "isl_repids.h"
+#   undef manifest
+} isp_repid;
+
+void isl_report(isp_repid _rid, ...);
 
 #endif

@@ -55,6 +55,8 @@ void isl_test_report(void) {
     fprintf(stderr, ANSI_HIM_SET("this is a panic   message: %d\n"), 123456);
     fprintf(stderr, ANSI_RED_SET("this is a fatal   message: %d\n"), 123456);
 
+    isl_report(rid_unknown);
+    isl_report(rid_custom_info, "the second arg was %d.\n", 123456);
 
     isl_wssert(0);
 }
