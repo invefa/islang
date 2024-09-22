@@ -21,9 +21,11 @@ typedef struct ist_codepage {
     */
     ist_usize next_sequence_index;
 
+
     /* when codepage is created, decode the first utf8 sequence, and store the codepoint there */
     ist_codepoint current_codepoint;
     ist_u8        current_codepoint_decode_length;
+    ist_usize     decoded_codepoint_count;
 
     /* the current location in the source code file */
     ist_location location;

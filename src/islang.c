@@ -55,6 +55,9 @@ void isl_test_lexer(void) {
 
     ist_lexer* lexer = ist_lexer_create(codepage);
 
+    ist_token_print(&lexer->cur_token);
+    ist_token_print(&lexer->nex_token);
+    ist_token_print(&lexer->sec_token);
 
 }
 

@@ -41,5 +41,6 @@ void ist_token_init_full(
     ist_usize       _extract_length,
     ist_value       _value);
 
+void ist_token_print(ist_token* this);
 
 #endif

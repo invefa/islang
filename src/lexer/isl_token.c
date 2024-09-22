@@ -1,5 +1,7 @@
 #include "isl_token.h"
 
+#include <stdio.h>
+
 const ist_string ist_token_reflects[] = {
 #   define manifest(_name, _reflect) _reflect,
 #   include "isl_tokens.h"
@@ -45,3 +47,14 @@ inline void ist_token_init_full(
     this->extract_length = _extract_length;
     this->value = _value;
 }
+
+void ist_token_print(ist_token* this) {
+    ist_string* extract = ist_string_create(this->extract, this->extract_length);
+    printf("token<0x%p>:\n", this);
+    printf("type:     %s\n", ist_token_reflects[this->type]);
+    printf("location: %s:%llu:%llu\n", this->location.module, this->location.line, this->location.column);
+    printf("extract:  %s\n", extract);
+    printf("value:    %d\n", this->value.int_value);
+    ist_string_delete(extract);
+}
+

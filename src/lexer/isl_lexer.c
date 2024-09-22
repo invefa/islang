@@ -14,6 +14,8 @@ ist_codepage* ist_codepage_createby_source(ist_string _source) {
 
     codepage->source = _source;
     codepage->next_sequence_index = 0;
+    codepage->current_codepoint_decode_length = 0;
+    codepage->decoded_codepoint_count = 0;
 
     /* decode the first utf8 sequence */
     codepage->current_codepoint =
@@ -133,7 +135,9 @@ ist_token* ist_lexer_advance(ist_lexer* this) {
                 continue;
             }   analysis_token.type = ISL_TOKENT_DIV; break;
         }
-        case '"': ist_lexer_parse_string(this); return;
+        case '"':
+            ist_lexer_parse_string(this);
+            return &this->pre_token;
         default:
             if (isdigit(this->codepage->current_codepoint)) {
                 ist_lexer_parse_number(this);
