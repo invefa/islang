@@ -4,7 +4,7 @@
 #include "isl_list.h"
 #include "isl_report.h"
 
-ist_u8 isl_utf8_encode_length(ist_i32 _codepoint) {
+ist_u8 isl_utf8_encode_length(ist_codepoint _codepoint) {
     isl_ifreport(_codepoint < 0, rid_utf8_negative_codepoint, isp_catch_coreloc);
 
     if (_codepoint <= 0x7F) return 1;
@@ -14,7 +14,7 @@ ist_u8 isl_utf8_encode_length(ist_i32 _codepoint) {
     else return 0;
 }
 
-ist_u8 isl_utf8_encode(ist_i32 _codepoint, ist_string* _buffer, ist_usize _index) {
+ist_u8 isl_utf8_encode(ist_codepoint _codepoint, ist_string* _buffer, ist_usize _index) {
     isl_ifnreport(_buffer, rid_catch_nullptr, isp_catch_coreloc);
     isl_ifnreport(_buffer[0], rid_catch_nullptr, isp_catch_coreloc);
 
@@ -58,15 +58,14 @@ ist_u8 isl_utf8_decode_length(ist_string* _buffer, ist_usize _index) {
     else return 1;
 }
 
-ist_i32 isl_utf8_decode(ist_string* _buffer, ist_usize* _index) {
-    ist_u8 utf8_decode_length = isl_utf8_decode_length(_buffer, *_index);
-    ist_byte* buffer = *_buffer + *_index;
-    ist_i32 result = 0;
+ist_codepoint isl_utf8_decode(ist_string* _buffer, ist_usize _index, ist_u8* _decode_length_stv) {
+    *_decode_length_stv = isl_utf8_decode_length(_buffer, _index);
+    ist_byte* buffer = *_buffer + _index;
+    ist_codepoint result = 0;
 
-    ist_string_buffer_ensure(_buffer, *_index, utf8_decode_length);
-    *_index += utf8_decode_length;
+    ist_string_buffer_ensure(_buffer, _index, *_decode_length_stv);
 
-    switch (utf8_decode_length) {
+    switch (*_decode_length_stv) {
     case 4:
         result =
             ((buffer[0] & 0x07) << 18)
@@ -96,3 +95,19 @@ ist_i32 isl_utf8_decode(ist_string* _buffer, ist_usize* _index) {
     return result;
 
 }
+
+inline ist_bool isl_utf8_legal_varname_codepoint(ist_codepoint _codepoint, ist_bool _as_first) {
+    if (_as_first && (0x0030 <= _codepoint && _codepoint <= 0x0039))
+        return 0;                                           // 0-9
+    return _codepoint == 0x005F                             // UNDERLINE
+        || (0x0041 <= _codepoint && _codepoint <= 0x005A)   // A-Z
+        || (0x0061 <= _codepoint && _codepoint <= 0x007A)   // a-z
+        || (0x4E00 <= _codepoint && _codepoint <= 0x9FFF)   // CJK
+        || (0x0391 <= _codepoint && _codepoint <= 0x03A9)   // GREEK
+        || (0x03B1 <= _codepoint && _codepoint <= 0x03C9)   // GREEK
+        || (0x0410 <= _codepoint && _codepoint <= 0x044F)   // CYRILLIC
+        || (0x2160 <= _codepoint && _codepoint <= 0x2188)   // ARMENIAN
+        || (0x0030 <= _codepoint && _codepoint <= 0x0039);  // 0-9
+
+}
+

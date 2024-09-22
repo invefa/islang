@@ -25,6 +25,7 @@
 #include "isl_utf8.h"
 #include "isl_dbgutils.h"
 #include "isl_report.h"
+#include "isl_lexer.h"
 
 void isl_test_overload(void);
 void isl_test_xssert(void);
@@ -32,6 +33,7 @@ void isl_test_list(void);
 void isl_test_memgr(void);
 void isl_test_string(void);
 void isl_test_report(void);
+void isl_test_lexer(void);
 
 int main(void) {
 
@@ -41,9 +43,21 @@ int main(void) {
     isl_test_memgr();
     isl_test_string();
     isl_test_report();
+    isl_test_lexer();
 
     return 0;
 }
+
+
+void isl_test_lexer(void) {
+
+    ist_codepage* codepage = ist_codepage_createby_source("abc.123");
+
+    ist_lexer* lexer = ist_lexer_create(codepage);
+
+
+}
+
 
 // #define pal() printf("allocated length = %u\n", isl_allocated_length)
 
@@ -65,7 +79,7 @@ void isl_test_report(void) {
     isl_report(rid_utf8_negative_codepoint, isp_catch_coreloc);
     isl_utf8_encode_length(-22);
     isl_report(rid_unknown);
-    isl_ifnreport(NULL, rid_catch_nullptr, isp_catch_coreloc);
+    // isl_ifnreport(NULL, rid_catch_nullptr, isp_catch_coreloc);
 
 
     isl_wssert(0);
@@ -109,9 +123,11 @@ void isl_test_string(void) {
     }
     printf("}\n\n");
 
+    ist_u8 decode_length;
     index = 0;
     for (ist_usize i = 0;i < 132;++i) {
-        u32_to_string(isl_utf8_decode(buffer, &index), tmp_buffer, 16);
+        u32_to_string(isl_utf8_decode(buffer, index, &decode_length), tmp_buffer, 16);
+        index += decode_length;
         if (i == 0) {
             printf("decoded_utf8_codepoints = {");
             continue;
@@ -127,7 +143,8 @@ void isl_test_string(void) {
     ist_string* str4 = ist_string_create("汉", 5);
     printf("str4 context = %s\n", *str4);
     index = 0;
-    u32_to_string(isl_utf8_decode(str4, &index), tmp_buffer, 16);
+    u32_to_string(isl_utf8_decode(str4, index, &decode_length), tmp_buffer, 16);
+    index += decode_length;
     printf("str4 codepoint = 0x%s\n", *tmp_buffer);
 
     ist_string* str5 = ist_string_create("", 0);
