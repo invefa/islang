@@ -21,11 +21,10 @@ typedef double      ist_f64;
 
 /* To avoid complement, we set its type to u8 instead of i8. */
 typedef ist_u8      ist_byte;
-
 typedef ist_i8      ist_bool;
 
-/* unicode codepoint */
-typedef ist_i32     ist_codepoint;
 
+#define true  1
+#define false 0
 
 #endif

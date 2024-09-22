@@ -2,6 +2,7 @@
 #define ISL_LEXER_H
 
 #include "isl_token.h"
+#include "isl_utf8.h"
 
 /*
     Codepage is a tool for maintaining the source code file currently being read.
@@ -69,11 +70,13 @@ void ist_lexer_init(ist_lexer* this, ist_codepage* _codepage);
 
 ist_token* ist_lexer_advance(ist_lexer* this);
 
-void ist_lexer_skip_blanks(ist_lexer* this);
-
-void            ist_lexer_advance_codepoint(ist_lexer* this);
+void            ist_lexer_skip_blanks(ist_lexer* this);
+ist_codepoint   ist_lexer_advance_codepoint(ist_lexer* this);
 ist_codepoint   ist_lexer_get_next_codepoint(ist_lexer* this);
-ist_bool        ist_lexer_match_next_codepoint(ist_lexer* this, ist_codepoint _codepoint);
-
+ist_bool        ist_lexer_match_current_codepoint(ist_lexer* this, ist_codepoint _codepoint);
+void            ist_lexer_correct_next_codepoint_index(ist_lexer* this);
+void            ist_lexer_parse_identifier(ist_lexer* this);
+void            ist_lexer_parse_number(ist_lexer* this);
+void            ist_lexer_parse_string(ist_lexer* this);
 
 #endif

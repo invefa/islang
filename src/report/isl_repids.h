@@ -44,3 +44,6 @@ manifest(catch_zero_capacity_list, (CORE, WARNING, CORELOC),
 manifest(catch_zero_capacity_buffer, (CORE, WARNING, CORELOC),
 "there is a zero-capacity buffer<0x%p>, please note its existence.")
 
+manifest(advance_codepoint_when_eof, (LEXER, ERROR, CORELOC),
+"advance codepoint when EOF.")
+

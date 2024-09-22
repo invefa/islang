@@ -4,6 +4,7 @@
 
 #include "isl_memgr.h"
 #include "isl_utf8.h"
+#include "isl_report.h"
 
 ist_codepage* ist_codepage_createby_source(ist_string _source) {
 
@@ -68,6 +69,7 @@ ist_token* ist_lexer_advance(ist_lexer* this) {
     ist_lexer_skip_blanks(this);
 
     while (this->codepage->current_codepoint != 0) {
+        //TODO: remove this break statement.
         break;
         switch (this->codepage->current_codepoint) {
         case '+': analysis_token.type = ISL_TOKENT_ADD; break;
@@ -81,8 +83,35 @@ ist_token* ist_lexer_advance(ist_lexer* this) {
         case ')': analysis_token.type = ISL_TOKENT_RPARE; break;
         case '{': analysis_token.type = ISL_TOKENT_LBRACE; break;
         case '}': analysis_token.type = ISL_TOKENT_RBRACE; break;
+        case '[': analysis_token.type = ISL_TOKENT_LBRACKET; break;
+        case ']': analysis_token.type = ISL_TOKENT_RBRACKET; break;
+        case ',': analysis_token.type = ISL_TOKENT_COMMA; break;
+        case ';': analysis_token.type = ISL_TOKENT_EOS; break;
+        case ':': analysis_token.type = ISL_TOKENT_COLON; break;
+        case '.': analysis_token.type = ISL_TOKENT_DOT; break;
+        case '?': analysis_token.type = ISL_TOKENT_QUESTION; break;
+        case '<': analysis_token.type = ISL_TOKENT_LESSTHAN; break;
+        case '>': analysis_token.type = ISL_TOKENT_GREATERTHAN; break;
+        default:
+            if (isdigit(this->codepage->current_codepoint)) {
+                break;
+            }
+            else if (isl_utf8_legal_identifier_codepoint(this->codepage->current_codepoint, true)) {
+                analysis_token.type = ISL_TOKENT_ID;
+            }
+            break;
         }
+
+        analysis_token.extract_length =
+            (this->codepage->source
+                + this->codepage->next_sequence_index)
+            - analysis_token.extract;
+
+        ist_lexer_advance_codepoint(this);
+        return &this->pre_token;
     }
+
+    return &this->pre_token;
 
 #   undef analysis_token
 }
@@ -93,6 +122,8 @@ void ist_lexer_skip_blanks(ist_lexer* this) {
     }
 }
 
+//TODO: codepage switching will also only happen here when we read the file further.
+//      the another switching place was in the end of lookahead.
 ist_codepoint ist_lexer_get_next_codepoint(ist_lexer* this) {
     return isl_utf8_decode(
                 &this->codepage->source,
@@ -100,16 +131,43 @@ ist_codepoint ist_lexer_get_next_codepoint(ist_lexer* this) {
                 &this->codepage->current_codepoint_decode_length);
 }
 
-void ist_lexer_advance_codepoint(ist_lexer* this) {
+/* return the current codepoint, and advance to the next codepoint */
+ist_codepoint ist_lexer_advance_codepoint(ist_lexer* this) {
+
+    if (this->codepage->current_codepoint == 0)
+        isl_report(rid_advance_codepoint_when_eof, isp_catch_coreloc);
+
+    /* update the location */
+    ++this->codepage->location.column;
+    if (this->codepage->current_codepoint == '\n') {
+        ++this->codepage->location.line;
+        this->codepage->location.column = 1;
+    }
+
+    /* store the current codepoint */
+    ist_codepoint codepoint = this->codepage->current_codepoint;
+
+    /* update the current codepoint */
     this->codepage->current_codepoint = ist_lexer_get_next_codepoint(this);
+    //NOTICE: when we get the next codepoint, the page maybe changed.
+    //        at the time, the next sequence index can't be changed.
     this->codepage->next_sequence_index += this->codepage->current_codepoint_decode_length;
+
+    /* return the stored codepoint */
+    return codepoint;
+
 }
 
-ist_bool ist_lexer_match_next_codepoint(ist_lexer* this, ist_codepoint _codepoint) {
-    ist_usize index = this->codepage->next_sequence_index;
-    if (ist_lexer_get_next_codepoint(this) == _codepoint) {
-        this->codepage->next_sequence_index += this->codepage->current_codepoint_decode_length;
-        return 1;
-    }
-    return 0;
+/*
+    if next codepoint matches arg codepoint, then advance to the next codepoint,
+    and return true, otherwise return false.
+*/
+ist_bool ist_lexer_match_current_codepoint(ist_lexer* this, ist_codepoint _codepoint) {
+    if (this->codepage->current_codepoint != _codepoint) return false;
+    ist_lexer_advance_codepoint(this);
+    return true;
+}
+
+void ist_lexer_correct_next_codepoint_index(ist_lexer* this) {
+    this->codepage->next_sequence_index += this->codepage->current_codepoint_decode_length;
 }

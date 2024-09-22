@@ -96,9 +96,9 @@ ist_codepoint isl_utf8_decode(ist_string* _buffer, ist_usize _index, ist_u8* _de
 
 }
 
-inline ist_bool isl_utf8_legal_varname_codepoint(ist_codepoint _codepoint, ist_bool _as_first) {
+inline ist_bool isl_utf8_legal_identifier_codepoint(ist_codepoint _codepoint, ist_bool _as_first) {
     if (_as_first && (0x0030 <= _codepoint && _codepoint <= 0x0039))
-        return 0;                                           // 0-9
+        return false;                                       // 0-9
     return _codepoint == 0x005F                             // UNDERLINE
         || (0x0041 <= _codepoint && _codepoint <= 0x005A)   // A-Z
         || (0x0061 <= _codepoint && _codepoint <= 0x007A)   // a-z
