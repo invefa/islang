@@ -34,10 +34,11 @@ manifest(inform_allocated, (CORE, INFO, NONE),
 manifest(inform_released, (CORE, INFO, NONE),
 "released <0x%p> {length=%llu}, then allocated-length=%llu.")
 
-
-manifest(zero_capacity_list, (CORE, WARNING, CORELOC),
+manifest(catch_zero_string_length, (CORE, WARNING, CORELOC),
+"there is a zero-length string: <0x%p>, please note its existence.")
+manifest(catch_zero_capacity_list, (CORE, WARNING, CORELOC),
 "there is a zero-capacity list: <0x%p>, please note its existence.")
-manifest(zero_capacity_buffer, (CORE, WARNING, CORELOC),
+manifest(catch_zero_capacity_buffer, (CORE, WARNING, CORELOC),
 "there is a zero-capacity buffer<0x%p>, please note its existence.")
 manifest(inform_buffer_reiszed, (CORE, INFO, NONE),
 "buffer<0x%p> {capacity=%llu, remaining=%llu} ->require(%llu) ->resize(%llu).")

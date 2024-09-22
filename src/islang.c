@@ -65,7 +65,7 @@ void isl_test_report(void) {
     isl_report(rid_utf8_negative_codepoint, isp_catch_coreloc);
     isl_utf8_encode_length(-22);
     isl_report(rid_unknown);
-    // isl_ifnreport(NULL, rid_catch_nullptr, isp_catch_core_location);
+    isl_ifnreport(NULL, rid_catch_nullptr, isp_catch_coreloc);
 
 
     isl_wssert(0);
@@ -97,17 +97,32 @@ void isl_test_string(void) {
 
     for (ist_usize i = 0;i < isl_list_catch_length(*buffer);++i) {
         u8_to_string((*buffer)[i], tmp_buffer, 16);
-        printf("0x%s\t", *tmp_buffer);
-        // print_u8_binary_aline((*buffer)[i]);
+        if (i == 0) {
+            printf("encoded_utf8_sequence = {");
+            continue;
+        }
+        if (i == isl_list_catch_length(*buffer) - 1) {
+            printf("0x%s", *tmp_buffer);
+            break;
+        }
+        printf("0x%s,", *tmp_buffer);
     }
-    printf("\n\n");
+    printf("}\n\n");
 
     index = 0;
-    for (ist_usize i = 0;i < 130;++i) {
+    for (ist_usize i = 0;i < 132;++i) {
         u32_to_string(isl_utf8_decode(buffer, &index), tmp_buffer, 16);
-        printf("0x%s\t", *tmp_buffer);
+        if (i == 0) {
+            printf("decoded_utf8_codepoints = {");
+            continue;
+        }
+        if (i == 131) {
+            printf("0x%s", *tmp_buffer);
+            break;
+        }
+        printf("0x%s,", *tmp_buffer);
     }
-    printf("\n");
+    printf("}\n\n");
 
     ist_string* str4 = ist_string_create("汉", 5);
     printf("str4 context = %s\n", *str4);
@@ -115,13 +130,15 @@ void isl_test_string(void) {
     u32_to_string(isl_utf8_decode(str4, &index), tmp_buffer, 16);
     printf("str4 codepoint = 0x%s\n", *tmp_buffer);
 
+    ist_string* str5 = ist_string_create("", 0);
 
     ist_string_delete(str1);
     ist_string_delete(str2);
-    ist_string_delete(str4);
-    ist_string_delete(tmp_buffer);
-    ist_string_delete(buffer);
     ist_string_clean(&str3);
+    ist_string_delete(str4);
+    ist_string_delete(str5);
+    ist_string_delete(buffer);
+    ist_string_delete(tmp_buffer);
 }
 
 

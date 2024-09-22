@@ -20,7 +20,7 @@
 
 
 /*
-    This enumeration type has no use except to provide code highlighting for isl_repids.
+    This enumeration type has no use except to provide code highlighting for isl_repids.h
     So you can ignore it.
 */
 enum {
@@ -102,16 +102,20 @@ typedef enum isp_repid {
 #   undef manifest
 } isp_repid;
 
+
 /* the only function of the reporting system */
 void isl_report(isp_repid _rid, ...);
 
+
 /* if expr is false, then report */
-#define isl_ifnreport(_expr,_vargs...)  \
+#define isl_ifnreport(_expr,_vargs...) \
     do{if(!(_expr))isl_report(_vargs);}while(0)
 
+
 /* if expr is true, then report */
-#define isl_ifreport(_expr,_vargs...)   \
+#define isl_ifreport(_expr,_vargs...) \
     do{if(_expr)isl_report(_vargs);}while(0)
+
 
 /* catch the core location for attribute:CORELOC of report */
 #define isp_catch_coreloc __FILE__,__func__,(ist_usize)__LINE__

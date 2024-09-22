@@ -14,7 +14,7 @@ inline void* isl_allocate(ist_usize _size, ist_bool _clean) {
 
     isl_allocated_length += _size;
 
-#   ifdef ISL_ENABLE_ALLOCATE_INFORM
+#   ifdef ISL_ENABLE_INFORM_ALLOCATED
     isl_report(rid_inform_allocated, ptr, _size, isl_allocated_length);
 #   endif
 
@@ -26,7 +26,7 @@ inline void isl_release(void* _ptr, ist_usize _size) {
     free(_ptr);
     isl_allocated_length -= _size;
 
-#   ifdef ISL_ENABLE_RELEASE_INFORM
+#   ifdef ISL_ENABLE_INFORM_RELEASED
     isl_report(rid_inform_released, _ptr, _size, isl_allocated_length);
 #   endif
 
