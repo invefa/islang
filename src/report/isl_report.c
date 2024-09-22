@@ -88,7 +88,7 @@ void isl_report(isp_repid _rid, ...) {
                 "%s%s %s:\n"
                 "\tin file '%s':\n"
                 "\tat fn %s(...) <line:%llu>:\n"
-                "\t%s\n"ANSI_RST,
+                "%s\n"ANSI_RST,
                 level_colors[reploc.level],
                 domain_fmts[reploc.domain],
                 level_fmts[reploc.level],

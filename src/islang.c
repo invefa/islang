@@ -45,11 +45,11 @@ int main(void) {
     return 0;
 }
 
-#define pal() printf("allocated length = %u\n", isl_allocated_length)
+// #define pal() printf("allocated length = %u\n", isl_allocated_length)
 
 void isl_test_report(void) {
 
-    /*     fprintf(stderr, ANSI_GRE_SET("this is a info    message: %d\n"), 123456);
+    /*  fprintf(stderr, ANSI_GRE_SET("this is a info    message: %d\n"), 123456);
         fprintf(stderr, ANSI_YEL_SET("this is a warning message: %d\n"), 123456);
         fprintf(stderr, ANSI_HIR_SET("this is a error   message: %d\n"), 123456);
         fprintf(stderr, ANSI_HIM_SET("this is a panic   message: %d\n"), 123456);
@@ -81,9 +81,8 @@ void isl_test_string(void) {
     printf("str1 = %s\n", *str1);
     printf("str2 = %s\n", *str2);
     printf("str3 = %s\n", str3);
-    pal();
 
-    ist_string* buffer = ist_string_create_buffer(8);
+    ist_string* buffer = ist_string_create_buffer(0);
     ist_usize index = 0;
     for (ist_usize i = 0; i < 128; ++i) {
         index += isl_utf8_encode(0x6C49, buffer, index);
@@ -117,14 +116,12 @@ void isl_test_string(void) {
     printf("str4 codepoint = 0x%s\n", *tmp_buffer);
 
 
-    pal();
     ist_string_delete(str1);
     ist_string_delete(str2);
     ist_string_delete(str4);
     ist_string_delete(tmp_buffer);
     ist_string_delete(buffer);
     ist_string_clean(&str3);
-    pal();
 }
 
 
@@ -145,42 +142,26 @@ ist_i32* isl_emit_i32_list() {
 
 void isl_test_memgr(void) {
     printf("test for memgr\n");
-    pal();
     ist_i32* list = isl_calloc_list(ist_i32, 10);
     list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5;
     list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
-    pal();
     ist_i32_list* list2 = isl_calloc(ist_i32_list);
-    pal();
     list2->data = isl_calloc_list(ist_i32, 10);
     list2->data[0] = 1, list2->data[1] = 2, list2->data[2] = 3, list2->data[3] = 4, list2->data[4] = 5;
     list2->data[5] = 6, list2->data[6] = 7, list2->data[7] = 8, list2->data[8] = 9, list2->data[9] = 10;
     list2->size = 10;
-    pal();
     isl_freev_list(list);
-    pal();
     isl_freev_list(list2->data);
-    pal();
     isl_free(list2);
-    pal();
     list = isl_emit_i32_list();
-    pal();
     list2 = isl_calloc(ist_i32_list);
-    pal();
     isl_list_resizec(isl_emit_i32_list(), 20, list2->data);
-    pal();
     isl_list_resizec(list, 20);
-    pal();
     isl_free_list(list);
-    pal();
     isl_free_list(list2->data);
-    pal();
     isl_free(list2);
-    pal();
     isl_list_resizec(isl_emit_i32_list(), 100, list);
-    pal();
     isl_free_list(list);
-    pal();
 }
 
 
@@ -191,22 +172,15 @@ void isl_test_list(void) {
     printf("list = %p\n", list);
     printf("length of list = %u\n", isl_list_catch_length(list));
     printf("capacity of list = %u\n", isl_list_ptr_get_capacity(list));
-    pal();
     list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5;
     list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
 
     isl_list_resizec(list, 20);
-    pal();
     isl_list_resizec(list, 30);
-    pal();
     isl_list_resizem(list, 6);
-    pal();
     isl_freev_list(list);
-    pal();
     isl_list_resizem(isl_emit_i32_list(), 5, list);
-    pal();
     isl_freev_list(list);
-    pal();
 
 }
 

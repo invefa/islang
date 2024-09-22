@@ -35,5 +35,8 @@
 
 #endif
 
+#define ISL_ENABLE_ALLOCATE_INFORM
+#define ISL_ENABLE_RELEASE_INFORM
+
 
 #endif
