@@ -24,6 +24,8 @@ typedef ist_u8      ist_byte;
 
 typedef ist_i8      ist_bool;
 
+/* unicode codepoint */
+typedef ist_i32     ist_codepoint;
 
 
 #endif

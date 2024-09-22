@@ -21,7 +21,8 @@ typedef struct ist_codepage {
     ist_usize next_sequence_index;
 
     /* when codepage is created, decode the first utf8 sequence, and store the codepoint there */
-    ist_i32 current_codepoint;
+    ist_codepoint current_codepoint;
+    ist_u8        current_codepoint_decode_length;
 
     /* the current location in the source code file */
     ist_location location;
@@ -42,7 +43,8 @@ ist_codepage* ist_codepage_createby_source(ist_string _source);
 // ist_codepage* ist_codepage_createby_file(ist_string _file_path);
 // ist_codepage* ist_codepage_createby_string(ist_string _string, ist_usize _length);
 
-void ist_codepage_delete(ist_codepage* _codepage);
+void ist_codepage_delete(ist_codepage* this);
+
 
 typedef struct ist_lexer {
 
@@ -60,10 +62,18 @@ typedef struct ist_lexer {
 } ist_lexer;
 
 ist_lexer* ist_lexer_create(ist_codepage* _codepage);
-void ist_lexer_delete(ist_lexer* _lexer);
+// void ist_lexer_delete(ist_lexer* _lexer);
 
-void ist_lexer_init(ist_lexer* _lexer, ist_codepage* _codepage);
-void ist_lexer_clean(ist_lexer* _lexer);
+void ist_lexer_init(ist_lexer* this, ist_codepage* _codepage);
+// void ist_lexer_clean(ist_lexer* _lexer);
+
+ist_token* ist_lexer_advance(ist_lexer* this);
+
+void ist_lexer_skip_blanks(ist_lexer* this);
+
+void            ist_lexer_advance_codepoint(ist_lexer* this);
+ist_codepoint   ist_lexer_get_next_codepoint(ist_lexer* this);
+ist_bool        ist_lexer_match_next_codepoint(ist_lexer* this, ist_codepoint _codepoint);
 
 
 #endif

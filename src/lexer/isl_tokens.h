@@ -36,9 +36,9 @@ manifest(DIV_ASSIGN, "/=")
 manifest(MOD_ASSIGN, "%%=")
 
 
-manifest(NOT, "!")
-manifest(AND, "&&")
-manifest(OR, "||")
+manifest(LNOT, "!")
+manifest(LAND, "&&")
+manifest(LOR, "||")
 
 manifest(EQUAL, "==")
 manifest(NOTEQUAL, "!=")
