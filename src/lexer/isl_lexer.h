@@ -78,5 +78,6 @@ void            ist_lexer_correct_next_codepoint_index(ist_lexer* this);
 void            ist_lexer_parse_identifier(ist_lexer* this);
 void            ist_lexer_parse_number(ist_lexer* this);
 void            ist_lexer_parse_string(ist_lexer* this);
+void            ist_lexer_skip_comment(ist_lexer* this, ist_bool _is_block);
 
 #endif

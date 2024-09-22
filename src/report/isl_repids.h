@@ -46,4 +46,7 @@ manifest(catch_zero_capacity_buffer, (CORE, WARNING, CORELOC),
 
 manifest(advance_codepoint_when_eof, (LEXER, ERROR, CORELOC),
 "advance codepoint when EOF.")
-
+manifest(unterminated_comment_block, (LEXER, WARNING, NONE),
+"the comment block is not terminated with '*/' but catch the EOF.")
+manifest(unrecongnized_codepoint, (LEXER, ERROR, NONE),
+"unrecongnized codepoint: <0x%x>, the lexer will skip it.")

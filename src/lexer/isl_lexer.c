@@ -6,6 +6,8 @@
 #include "isl_utf8.h"
 #include "isl_report.h"
 
+#define analysis_token (this->sec_token)
+
 ist_codepage* ist_codepage_createby_source(ist_string _source) {
 
     ist_codepage* codepage = isl_malloc(ist_codepage);
@@ -51,55 +53,99 @@ ist_lexer* ist_lexer_create(ist_codepage* _codepage) {
 
 ist_token* ist_lexer_advance(ist_lexer* this) {
 
-#   define analysis_token (this->sec_token)
 
     this->pre_token = this->cur_token;
     this->cur_token = this->nex_token;
     this->nex_token = this->sec_token;
 
-    ist_token_init_full(
-        &analysis_token,
-        ISL_TOKENT_EOF,
-        this->codepage->location,
-        this->codepage->source
-            + this->codepage->next_sequence_index
-            - isl_utf8_encode_length(this->codepage->current_codepoint),
-        0, (ist_value) { 0 });
-
-    ist_lexer_skip_blanks(this);
 
     while (this->codepage->current_codepoint != 0) {
-        //TODO: remove this break statement.
-        break;
+
+        ist_token_init_full(
+            &analysis_token,
+            ISL_TOKENT_EOF,
+            this->codepage->location,
+            this->codepage->source
+                + this->codepage->next_sequence_index
+                - isl_utf8_encode_length(this->codepage->current_codepoint),
+            0, (ist_value) { 0 });
+
+        ist_lexer_skip_blanks(this);
+
         switch (this->codepage->current_codepoint) {
-        case '+': analysis_token.type = ISL_TOKENT_ADD; break;
-        case '-': analysis_token.type = ISL_TOKENT_SUB; break;
-        case '*': analysis_token.type = ISL_TOKENT_MUL; break;
-        case '/': analysis_token.type = ISL_TOKENT_DIV; break;
-        case '%': analysis_token.type = ISL_TOKENT_MOD; break;
-        case '=': analysis_token.type = ISL_TOKENT_ASSIGN; break;
-        case '!': analysis_token.type = ISL_TOKENT_LNOT; break;
-        case '(': analysis_token.type = ISL_TOKENT_LPARE; break;
-        case ')': analysis_token.type = ISL_TOKENT_RPARE; break;
-        case '{': analysis_token.type = ISL_TOKENT_LBRACE; break;
-        case '}': analysis_token.type = ISL_TOKENT_RBRACE; break;
-        case '[': analysis_token.type = ISL_TOKENT_LBRACKET; break;
-        case ']': analysis_token.type = ISL_TOKENT_RBRACKET; break;
-        case ',': analysis_token.type = ISL_TOKENT_COMMA; break;
-        case ';': analysis_token.type = ISL_TOKENT_EOS; break;
-        case ':': analysis_token.type = ISL_TOKENT_COLON; break;
-        case '.': analysis_token.type = ISL_TOKENT_DOT; break;
-        case '?': analysis_token.type = ISL_TOKENT_QUESTION; break;
-        case '<': analysis_token.type = ISL_TOKENT_LESSTHAN; break;
-        case '>': analysis_token.type = ISL_TOKENT_GREATERTHAN; break;
+        case '(': analysis_token.type = ISL_TOKENT_LPARE;       break;
+        case ')': analysis_token.type = ISL_TOKENT_RPARE;       break;
+        case '{': analysis_token.type = ISL_TOKENT_LBRACE;      break;
+        case '}': analysis_token.type = ISL_TOKENT_RBRACE;      break;
+        case '[': analysis_token.type = ISL_TOKENT_LBRACKET;    break;
+        case ']': analysis_token.type = ISL_TOKENT_RBRACKET;    break;
+        case ',': analysis_token.type = ISL_TOKENT_COMMA;       break;
+        case ';': analysis_token.type = ISL_TOKENT_EOS;         break;
+        case ':': analysis_token.type = ISL_TOKENT_COLON;       break;
+        case '.': analysis_token.type = ISL_TOKENT_DOT;         break;
+        case '?': analysis_token.type = ISL_TOKENT_QUESTION;    break;
+        case '!': analysis_token.type = ISL_TOKENT_LNOT;        break;
+        case '+':
+            if (ist_lexer_get_next_codepoint(this) == '=') {
+                ist_lexer_advance_codepoint(this);
+                analysis_token.type = ISL_TOKENT_ADD_ASSIGN;    break;
+            }   analysis_token.type = ISL_TOKENT_ADD;           break;
+        case '-':
+            if (ist_lexer_get_next_codepoint(this) == '=') {
+                ist_lexer_advance_codepoint(this);
+                analysis_token.type = ISL_TOKENT_SUB_ASSIGN;    break;
+            }   analysis_token.type = ISL_TOKENT_SUB;           break;
+        case '*':
+            if (ist_lexer_get_next_codepoint(this) == '=') {
+                ist_lexer_advance_codepoint(this);
+                analysis_token.type = ISL_TOKENT_MUL_ASSIGN;    break;
+            }   analysis_token.type = ISL_TOKENT_MUL;           break;
+        case '%':
+            if (ist_lexer_get_next_codepoint(this) == '=') {
+                ist_lexer_advance_codepoint(this);
+                analysis_token.type = ISL_TOKENT_MOD_ASSIGN;    break;
+            }   analysis_token.type = ISL_TOKENT_MOD;           break;
+        case '=':
+            if (ist_lexer_get_next_codepoint(this) == '=') {
+                ist_lexer_advance_codepoint(this);
+                analysis_token.type = ISL_TOKENT_EQUAL;         break;
+            }   analysis_token.type = ISL_TOKENT_ASSIGN;        break;
+        case '<':
+            if (ist_lexer_get_next_codepoint(this) == '=') {
+                ist_lexer_advance_codepoint(this);
+                analysis_token.type = ISL_TOKENT_LESSEQUAL;     break;
+            }   analysis_token.type = ISL_TOKENT_LESSTHAN;      break;
+        case '>':
+            if (ist_lexer_get_next_codepoint(this) == '=') {
+                ist_lexer_advance_codepoint(this);
+                analysis_token.type = ISL_TOKENT_GREATEQUAL;    break;
+            }   analysis_token.type = ISL_TOKENT_GREATERTHAN;   break;
+        case '/': {
+            ist_codepoint next_codepoint = ist_lexer_get_next_codepoint(this);
+            if (ist_lexer_get_next_codepoint(this) == '=') {
+                ist_lexer_advance_codepoint(this);
+                analysis_token.type = ISL_TOKENT_DIV_ASSIGN; break;
+            }
+            else if (next_codepoint == '/' || next_codepoint == '*') {
+                ist_lexer_advance_codepoint(this);
+                ist_lexer_advance_codepoint(this);
+                ist_lexer_skip_comment(this, next_codepoint == '*');
+                continue;
+            }   analysis_token.type = ISL_TOKENT_DIV; break;
+        }
+        case '"': ist_lexer_parse_string(this); return;
         default:
             if (isdigit(this->codepage->current_codepoint)) {
+                ist_lexer_parse_number(this);
                 break;
             }
             else if (isl_utf8_legal_identifier_codepoint(this->codepage->current_codepoint, true)) {
-                analysis_token.type = ISL_TOKENT_ID;
+                ist_lexer_parse_identifier(this);
+                break;
             }
-            break;
+            isl_report(rid_unrecongnized_codepoint, this->codepage->current_codepoint);
+            ist_lexer_advance_codepoint(this);
+            continue;
         }
 
         analysis_token.extract_length =
@@ -108,19 +154,64 @@ ist_token* ist_lexer_advance(ist_lexer* this) {
             - analysis_token.extract;
 
         ist_lexer_advance_codepoint(this);
+
         return &this->pre_token;
     }
-
-    return &this->pre_token;
-
-#   undef analysis_token
 }
+
 
 void ist_lexer_skip_blanks(ist_lexer* this) {
     while (isspace(this->codepage->current_codepoint)) {
         ist_lexer_advance_codepoint(this);
     }
 }
+
+void ist_lexer_parse_identifier(ist_lexer* this) {
+    analysis_token.type = ISL_TOKENT_ID;
+
+    /* skip identifier context */
+    while (
+         isl_utf8_legal_identifier_codepoint(
+             ist_lexer_advance_codepoint(this), false)
+     ) NULL;
+
+    analysis_token.extract_length =
+        (this->codepage->source
+            + this->codepage->next_sequence_index)
+        - analysis_token.extract - 1;
+
+}
+
+void ist_lexer_parse_number(ist_lexer* this) {
+
+}
+
+void ist_lexer_parse_string(ist_lexer* this) {
+
+}
+
+void ist_lexer_skip_comment(ist_lexer* this, ist_bool _is_block) {
+    while (this->codepage->current_codepoint != 0) {
+        if (_is_block) {
+            if (this->codepage->current_codepoint == '*'
+                && ist_lexer_get_next_codepoint(this) == '/') {
+                /* skip comment block ending symbols */
+                ist_lexer_advance_codepoint(this);
+                ist_lexer_advance_codepoint(this);
+                return;
+            }
+            else if (this->codepage->current_codepoint == 0) {
+                isl_report(rid_unterminated_comment_block);
+            }
+        }
+        else if (ist_lexer_match_current_codepoint(this, '\n')) {
+            return;
+        }
+        /* skip comment context */
+        ist_lexer_advance_codepoint(this);
+    }
+}
+
 
 //TODO: codepage switching will also only happen here when we read the file further.
 //      the another switching place was in the end of lookahead.
@@ -134,8 +225,10 @@ ist_codepoint ist_lexer_get_next_codepoint(ist_lexer* this) {
 /* return the current codepoint, and advance to the next codepoint */
 ist_codepoint ist_lexer_advance_codepoint(ist_lexer* this) {
 
-    if (this->codepage->current_codepoint == 0)
+    if (this->codepage->current_codepoint == 0) {
         isl_report(rid_advance_codepoint_when_eof, isp_catch_coreloc);
+        return 0;
+    }
 
     /* update the location */
     ++this->codepage->location.column;
