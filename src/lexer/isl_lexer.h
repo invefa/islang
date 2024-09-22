@@ -14,10 +14,13 @@ typedef struct ist_codepage {
     /* the source code read from the source code file */
     ist_string source;
 
-    /* the next character to be read in the source code file */
-    ist_string current;
+    /*
+        when codepage is created, it will decode the first utf8 sequence,
+        and the index of next utf8 sequence will be stored here.
+    */
+    ist_usize next_sequence_index;
 
-    /* decode the utf8 sequence, and store the codepoint there */
+    /* when codepage is created, decode the first utf8 sequence, and store the codepoint there */
     ist_i32 current_codepoint;
 
     /* the current location in the source code file */
@@ -28,13 +31,18 @@ typedef struct ist_codepage {
         for macro expansion, then let the current codepage store to this variable. and when the macro
         expansion is done, the new codepage will be released after the current codepage restored.
     */
-    struct ist_codepage* next;
+    struct ist_codepage* next_page;
 
     /* the previous codepage in the codepage linked-list, use this variable to restore the lookahead */
-    struct ist_codepage* prev;
+    struct ist_codepage* prev_page;
 
 } ist_codepage;
 
+ist_codepage* ist_codepage_createby_source(ist_string _source);
+// ist_codepage* ist_codepage_createby_file(ist_string _file_path);
+// ist_codepage* ist_codepage_createby_string(ist_string _string, ist_usize _length);
+
+void ist_codepage_delete(ist_codepage* _codepage);
 
 typedef struct ist_lexer {
 
@@ -50,5 +58,12 @@ typedef struct ist_lexer {
     ist_codepage* codepage;
 
 } ist_lexer;
+
+ist_lexer* ist_lexer_create(ist_codepage* _codepage);
+void ist_lexer_delete(ist_lexer* _lexer);
+
+void ist_lexer_init(ist_lexer* _lexer, ist_codepage* _codepage);
+void ist_lexer_clean(ist_lexer* _lexer);
+
 
 #endif

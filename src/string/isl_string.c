@@ -46,7 +46,7 @@ void ist_string_buffer_ensure(ist_string* _buffer, ist_usize _buffer_size, ist_u
     }
 
     isl_report(
-                rid_inform_buffer_reiszed,
+                rid_inform_buffer_reisze,
                 _buffer,
                 isl_list_catch_length(*_buffer),
                 isl_list_catch_length(*_buffer) - _buffer_size,
