@@ -28,3 +28,5 @@ manifest(illegal_utf8_codepoint, (CORE, ERROR, CORELOC),
 manifest(catch_nullptr, (CORE, FATAL, CORELOC),
 "catched a nullptr, the address should not be null.")
 
+manifest(inform_buffer_reiszed, (CORE, INFO, NONE),
+"buffer<0x%p> {capacity=%llu, remaining=%llu} ->require(%llu) ->resize(%llu).")
