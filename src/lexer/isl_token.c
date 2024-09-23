@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
+#include "isl_memgr.h"
+
 const ist_string ist_token_reflects[] = {
 #   define manifest(_name, _reflect) _reflect,
 #   include "isl_tokens.h"
@@ -71,3 +73,21 @@ void ist_token_print(ist_token* this) {
     ist_string_clean(&extract);
 }
 
+ist_string* ist_token_dump(ist_token* this) {
+    ist_string* result = ist_string_create_buffer(256);
+    ist_string extract;
+    ist_string_init(&extract, this->extract, this->length);
+    sprintf(*result,
+        "token<0x%p> {module=<%s>,location=<%llu:%llu>,type=%s,extract=\"%s\",length=%llu,value={int=%lld,real=%llf}}",
+        this,
+        this->location.module,
+        this->location.line,
+        this->location.column,
+        ist_token_names[this->type],
+        extract,
+        this->length,
+        this->value.int_value,
+        this->value.real_value);
+    ist_string_clean(&extract);
+    return result;
+}

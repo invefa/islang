@@ -26,9 +26,6 @@ typedef struct ist_codepage {
     ist_codepoint current_codepoint;
     ist_u8        decode_codepoint_length;
 
-    /* where did it be used? it's a problem */
-    ist_usize     decoded_codepoint_count;
-
     /* the current location in the source code file */
     ist_location location;
 

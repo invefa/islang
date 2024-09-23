@@ -56,11 +56,17 @@ void isl_test_lexer(void) {
 
     ist_lexer* lexer = ist_lexer_create(codepage);
 
+    ist_string* token_dump;
     while (lexer->cur_token.type != ISL_TOKENT_EOF) {
-        ist_token_print(&lexer->cur_token);
+        // ist_token_print(&lexer->cur_token);
+        token_dump = ist_token_dump(&lexer->cur_token);
+        printf("%s\n", *token_dump);
         ist_lexer_advance(lexer);
+        ist_string_delete(token_dump);
     }
-    ist_token_print(&lexer->cur_token);
+    token_dump = ist_token_dump(&lexer->cur_token);
+    printf("%s\n", *token_dump);
+    ist_string_delete(token_dump);
 
 }
 

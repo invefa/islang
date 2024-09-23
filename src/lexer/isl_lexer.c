@@ -43,7 +43,6 @@ ist_codepage* ist_codepage_createby_source(ist_string _source) {
     codepage->source = _source;
     codepage->next_sequence_index = 0;
     codepage->decode_codepoint_length = 0;
-    codepage->decoded_codepoint_count = 0;
 
     /* decode the first utf8 sequence */
     codepage->current_codepoint =
@@ -299,7 +298,6 @@ ist_codepoint ist_lexer_advance_codepoint(ist_lexer* this) {
 
     /* update the current codepoint */
     this->codepage->current_codepoint = ist_lexer_get_next_codepoint(this);
-    ++this->codepage->decoded_codepoint_count;
 
     //NOTICE: when we get the next codepoint, the page maybe changed.
     //        at the time, the next sequence index can't be changed.

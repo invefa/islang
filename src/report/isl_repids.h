@@ -45,7 +45,7 @@ manifest(catch_zero_capacity_buffer, (CORE, WARNING, CORELOC),
 "there is a zero-capacity buffer<0x%p>, please note its existence.")
 
 manifest(advance_codepoint_when_eof, (LEXER, ERROR, CORELOC),
-"advance codepoint when EOF.")
+"advance codepoint when we reach the end of source.")
 manifest(unterminated_comment_block, (LEXER, WARNING, USERLOC),
 "block comments do not end with '*/', but with the end of file.")
 manifest(unrecongnized_codepoint, (LEXER, ERROR, USERLOC),
