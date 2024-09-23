@@ -75,53 +75,74 @@ ist_token* ist_lexer_advance(ist_lexer* this) {
         ist_lexer_skip_blanks(this);
 
         switch (this->codepage->current_codepoint) {
-        case '(': analysis_token.type = ISL_TOKENT_LPARE;       break;
-        case ')': analysis_token.type = ISL_TOKENT_RPARE;       break;
-        case '{': analysis_token.type = ISL_TOKENT_LBRACE;      break;
-        case '}': analysis_token.type = ISL_TOKENT_RBRACE;      break;
-        case '[': analysis_token.type = ISL_TOKENT_LBRACKET;    break;
-        case ']': analysis_token.type = ISL_TOKENT_RBRACKET;    break;
-        case ',': analysis_token.type = ISL_TOKENT_COMMA;       break;
-        case ';': analysis_token.type = ISL_TOKENT_EOS;         break;
-        case ':': analysis_token.type = ISL_TOKENT_COLON;       break;
-        case '.': analysis_token.type = ISL_TOKENT_DOT;         break;
-        case '?': analysis_token.type = ISL_TOKENT_QUESTION;    break;
-        case '!': analysis_token.type = ISL_TOKENT_LNOT;        break;
-        case '+':
-            if (ist_lexer_get_next_codepoint(this) == '=') {
-                ist_lexer_advance_codepoint(this);
-                analysis_token.type = ISL_TOKENT_ADD_ASSIGN;    break;
-            }   analysis_token.type = ISL_TOKENT_ADD;           break;
-        case '-':
-            if (ist_lexer_get_next_codepoint(this) == '=') {
-                ist_lexer_advance_codepoint(this);
-                analysis_token.type = ISL_TOKENT_SUB_ASSIGN;    break;
-            }   analysis_token.type = ISL_TOKENT_SUB;           break;
-        case '*':
-            if (ist_lexer_get_next_codepoint(this) == '=') {
-                ist_lexer_advance_codepoint(this);
-                analysis_token.type = ISL_TOKENT_MUL_ASSIGN;    break;
-            }   analysis_token.type = ISL_TOKENT_MUL;           break;
-        case '%':
-            if (ist_lexer_get_next_codepoint(this) == '=') {
-                ist_lexer_advance_codepoint(this);
-                analysis_token.type = ISL_TOKENT_MOD_ASSIGN;    break;
-            }   analysis_token.type = ISL_TOKENT_MOD;           break;
-        case '=':
-            if (ist_lexer_get_next_codepoint(this) == '=') {
-                ist_lexer_advance_codepoint(this);
-                analysis_token.type = ISL_TOKENT_EQUAL;         break;
-            }   analysis_token.type = ISL_TOKENT_ASSIGN;        break;
-        case '<':
-            if (ist_lexer_get_next_codepoint(this) == '=') {
-                ist_lexer_advance_codepoint(this);
-                analysis_token.type = ISL_TOKENT_LESSEQUAL;     break;
-            }   analysis_token.type = ISL_TOKENT_LESSTHAN;      break;
-        case '>':
-            if (ist_lexer_get_next_codepoint(this) == '=') {
-                ist_lexer_advance_codepoint(this);
-                analysis_token.type = ISL_TOKENT_GREATEQUAL;    break;
-            }   analysis_token.type = ISL_TOKENT_GREATERTHAN;   break;
+
+#define _ISL_LEXER_GEN_SYMBOL_CASE(_symbol, _token_type) \
+    case _symbol:analysis_token.type=_token_type;break
+
+#define _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN(_symbol, _symbol_suffix, _token_type_unary, _token_type_binary) \
+case _symbol:                                                   \
+    if (ist_lexer_get_next_codepoint(this)==_symbol_suffix){    \
+        ist_lexer_advance_codepoint(this);                      \
+        analysis_token.type=_token_type_binary;break;           \
+    }   analysis_token.type=_token_type_unary;break;
+
+#define _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN_HEAD(_symbol, _symbol_suffix, _token_type_binary) \
+case _symbol:                                                   \
+    if (ist_lexer_get_next_codepoint(this)==_symbol_suffix){    \
+        ist_lexer_advance_codepoint(this);                      \
+        analysis_token.type=_token_type_binary;break;           \
+    }
+
+#define _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN_BODY(_symbol_suffix, _token_type_binary) \
+    else if (ist_lexer_get_next_codepoint(this)==_symbol_suffix){   \
+        ist_lexer_advance_codepoint(this);                          \
+        analysis_token.type=_token_type_binary;break;               \
+    }
+
+#define _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN_TAIL(_token_type_unary) \
+        analysis_token.type=_token_type_unary;break
+
+            _ISL_LEXER_GEN_SYMBOL_CASE('(', ISL_TOKENT_LPARE);
+            _ISL_LEXER_GEN_SYMBOL_CASE(')', ISL_TOKENT_RPARE);
+
+            _ISL_LEXER_GEN_SYMBOL_CASE('{', ISL_TOKENT_LBRACE);
+            _ISL_LEXER_GEN_SYMBOL_CASE('}', ISL_TOKENT_RBRACE);
+
+            _ISL_LEXER_GEN_SYMBOL_CASE('[', ISL_TOKENT_LBRACKET);
+            _ISL_LEXER_GEN_SYMBOL_CASE(']', ISL_TOKENT_RBRACKET);
+
+            _ISL_LEXER_GEN_SYMBOL_CASE(',', ISL_TOKENT_COMMA);
+            _ISL_LEXER_GEN_SYMBOL_CASE(';', ISL_TOKENT_EOS);
+            _ISL_LEXER_GEN_SYMBOL_CASE(':', ISL_TOKENT_COLON);
+            _ISL_LEXER_GEN_SYMBOL_CASE('.', ISL_TOKENT_DOT);
+            _ISL_LEXER_GEN_SYMBOL_CASE('?', ISL_TOKENT_QUESTION);
+
+            _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN('=', '=', ISL_TOKENT_ASSIGN, ISL_TOKENT_EQUAL);
+            _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN('!', '=', ISL_TOKENT_LNOT, ISL_TOKENT_NOTEQUAL);
+
+            _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN('&', '&', ISL_TOKENT_AND, ISL_TOKENT_LAND);
+            _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN('|', '|', ISL_TOKENT_OR, ISL_TOKENT_LOR);
+
+            _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN('*', '=', ISL_TOKENT_MUL, ISL_TOKENT_MUL_ASSIGN);
+            _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN('%', '=', ISL_TOKENT_MOD, ISL_TOKENT_MOD_ASSIGN);
+
+            _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN_HEAD('<', '=', ISL_TOKENT_LESSEQUAL)
+                _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN_BODY('<', ISL_TOKENT_LSHIFT)
+                _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN_TAIL(ISL_TOKENT_LESSTHAN);
+
+            _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN_HEAD('>', '=', ISL_TOKENT_GREATEQUAL)
+                _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN_BODY('>', ISL_TOKENT_RSHIFT)
+                _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN_TAIL(ISL_TOKENT_GREATERTHAN);
+
+            _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN_HEAD('+', '=', ISL_TOKENT_ADD_ASSIGN)
+                _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN_BODY('+', ISL_TOKENT_SELFADD)
+                _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN_TAIL(ISL_TOKENT_ADD);
+
+            _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN_HEAD('-', '=', ISL_TOKENT_SUB_ASSIGN)
+                _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN_BODY('-', ISL_TOKENT_SELFSUB)
+                _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN_BODY('>', ISL_TOKENT_WRAPPER)
+                _ISL_LEXER_GEN_SYMBOL_CASE_MAYBE_BIN_TAIL(ISL_TOKENT_SUB);
+
         case '/': {
             ist_codepoint next_codepoint = ist_lexer_get_next_codepoint(this);
             if (ist_lexer_get_next_codepoint(this) == '=') {
@@ -133,11 +154,14 @@ ist_token* ist_lexer_advance(ist_lexer* this) {
                 ist_lexer_advance_codepoint(this);
                 ist_lexer_skip_comment(this, next_codepoint == '*');
                 continue;
-            }   analysis_token.type = ISL_TOKENT_DIV; break;
+            }
+            analysis_token.type = ISL_TOKENT_DIV; break;
         }
+
         case '"':
             ist_lexer_parse_string(this);
             return &this->pre_token;
+
         default:
             if (isdigit(this->codepage->current_codepoint)) {
                 ist_lexer_parse_number(this);

@@ -21,6 +21,10 @@ manifest(DOT, ".")
 manifest(COMMA, ",")
 manifest(COLON, ":")
 manifest(QUESTION, "?")
+manifest(WRAPPER, "->")
+
+manifest(SELFADD, "++")
+manifest(SELFSUB, "--")
 
 manifest(ADD, "+")
 manifest(SUB, "-")
@@ -39,6 +43,17 @@ manifest(MOD_ASSIGN, "%%=")
 manifest(LNOT, "!")
 manifest(LAND, "&&")
 manifest(LOR, "||")
+
+manifest(NOT, "~")
+manifest(AND, "&")
+manifest(OR, "|")
+manifest(XOR, "^")
+
+manifest(LSHIFT, "<<")
+manifest(RSHIFT, ">>")
+// manifest(BRSHIFT_ASSIGN, ">>=")
+// manifest(BLSHIFT_ASSIGN, "<<=")
+
 
 manifest(EQUAL, "==")
 manifest(NOTEQUAL, "!=")
