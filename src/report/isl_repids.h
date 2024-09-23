@@ -51,4 +51,4 @@ manifest(unterminated_comment_block, (LEXER, WARNING, USERLOC),
 manifest(unrecongnized_codepoint, (LEXER, ERROR, USERLOC),
 "unrecongnized codepoint: <0x%x>, the lexer will skip it.")
 manifest(is_it_the_version_code, (LEXER, ERROR, USERLOC),
-"are you sure? is it the version code? cannot occur here.")
+"are you sure? is it the version code? it cannot occur here.")
