@@ -46,7 +46,9 @@ manifest(catch_zero_capacity_buffer, (CORE, WARNING, CORELOC),
 
 manifest(advance_codepoint_when_eof, (LEXER, ERROR, CORELOC),
 "advance codepoint when EOF.")
-manifest(unterminated_comment_block, (LEXER, WARNING, NONE),
-"the comment block is not terminated with '*/' but catch the EOF.")
-manifest(unrecongnized_codepoint, (LEXER, ERROR, NONE),
+manifest(unterminated_comment_block, (LEXER, WARNING, USERLOC),
+"block comments do not end with '*/', but with the end of file.")
+manifest(unrecongnized_codepoint, (LEXER, ERROR, USERLOC),
 "unrecongnized codepoint: <0x%x>, the lexer will skip it.")
+manifest(is_it_the_version_code, (LEXER, ERROR, USERLOC),
+"are you sure? is it the version code? cannot occur here.")

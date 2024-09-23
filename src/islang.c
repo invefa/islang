@@ -51,13 +51,15 @@ int main(void) {
 
 void isl_test_lexer(void) {
 
-    ist_codepage* codepage = ist_codepage_createby_source("abc.123");
+    ist_codepage* codepage = ist_codepage_createby_source("abc@..qwen2,qwq..//123123\naabc/*qqweq123");
 
     ist_lexer* lexer = ist_lexer_create(codepage);
 
+    while (lexer->cur_token.type != ISL_TOKENT_EOF) {
+        ist_token_print(&lexer->cur_token);
+        ist_lexer_advance(lexer);
+    }
     ist_token_print(&lexer->cur_token);
-    ist_token_print(&lexer->nex_token);
-    ist_token_print(&lexer->sec_token);
 
 }
 

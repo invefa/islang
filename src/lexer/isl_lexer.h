@@ -24,7 +24,9 @@ typedef struct ist_codepage {
 
     /* when codepage is created, decode the first utf8 sequence, and store the codepoint there */
     ist_codepoint current_codepoint;
-    ist_u8        current_codepoint_decode_length;
+    ist_u8        decode_codepoint_length;
+
+    /* where did it be used? it's a problem */
     ist_usize     decoded_codepoint_count;
 
     /* the current location in the source code file */
@@ -76,7 +78,6 @@ void            ist_lexer_skip_blanks(ist_lexer* this);
 ist_codepoint   ist_lexer_advance_codepoint(ist_lexer* this);
 ist_codepoint   ist_lexer_get_next_codepoint(ist_lexer* this);
 ist_bool        ist_lexer_match_current_codepoint(ist_lexer* this, ist_codepoint _codepoint);
-void            ist_lexer_correct_next_codepoint_index(ist_lexer* this);
 void            ist_lexer_parse_identifier(ist_lexer* this);
 void            ist_lexer_parse_number(ist_lexer* this);
 void            ist_lexer_parse_string(ist_lexer* this);

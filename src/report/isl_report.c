@@ -4,6 +4,7 @@
 
 #include "isl_ansictrl.h"
 #include "isl_string.h"
+#include "isl_token.h"
 
 const ist_string isp_fmts[] = {
 #   define manifest(_name, _reploc, _fmt) _fmt,
@@ -75,11 +76,10 @@ void isl_report(isp_repid _rid, ...) {
                 level_fmts[reploc.level],
                 custom_fmt);
 
-        goto isl_report_label_ending;
     }
 
     /* if reploc.attribute == ISP_ATTR_CORELOC, then we will obtain the core location to report */
-    if (reploc.attribute == ISP_ATTR_CORELOC) {
+    else if (reploc.attribute == ISP_ATTR_CORELOC) {
         ist_string file_name = va_arg(vargs, ist_string);
         ist_string func_name = va_arg(vargs, ist_string);
         ist_usize line = va_arg(vargs, ist_usize);
@@ -97,17 +97,34 @@ void isl_report(isp_repid _rid, ...) {
                 line,
                 isp_fmts[_rid]);
 
-        goto isl_report_label_ending;
+    }
+
+    /* if reploc.attribute == ISP_ATTR_USERLOC, then we will obtain the userfile location to report */
+    else if (reploc.attribute == ISP_ATTR_USERLOC) {
+        ist_location location = va_arg(vargs, ist_location);
+
+        sprintf(buffer,
+                "%s%s %s:\n"
+                "\tin module <%s>:<%llu:%llu>\n"
+                "%s\n"ANSI_RST,
+                level_colors[reploc.level],
+                domain_fmts[reploc.domain],
+                level_fmts[reploc.level],
+                location.module,
+                location.line,
+                location.column,
+                isp_fmts[_rid]);
+
     }
 
     /* default method for fmts concatenation */
-    sprintf(buffer, "%s%s %s: %s\n"ANSI_RST,
-            level_colors[reploc.level],
-            domain_fmts[reploc.domain],
-            level_fmts[reploc.level],
-            isp_fmts[_rid]);
-
-isl_report_label_ending:
+    else {
+        sprintf(buffer, "%s%s %s: %s\n"ANSI_RST,
+                level_colors[reploc.level],
+                domain_fmts[reploc.domain],
+                level_fmts[reploc.level],
+                isp_fmts[_rid]);
+    }
 
     /* write to output stream, this is the core of the report */
     vfprintf(ostream, buffer, vargs);
