@@ -51,7 +51,8 @@ int main(void) {
 
 void isl_test_lexer(void) {
 
-    ist_codepage* codepage = ist_codepage_createby_source("abc@..qwen2,qwq..//123123\naabc/*qqweq123");
+    ist_codepage* codepage = ist_codepage_createby_source(
+        u8"abc@..qwen2啊啊啊,qwq. 啊 .//123123\naabc 123/*qqweq123");
 
     ist_lexer* lexer = ist_lexer_create(codepage);
 

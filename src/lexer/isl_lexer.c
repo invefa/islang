@@ -95,6 +95,7 @@ ist_token* ist_lexer_advance(ist_lexer* this) {
             0, (ist_value) { 0 });
 
     while (this->codepage->current_codepoint != 0) {
+        ist_lexer_skip_blanks(this);
 
         ist_token_init_full(
             &analysis_token,
@@ -104,8 +105,6 @@ ist_token* ist_lexer_advance(ist_lexer* this) {
                 + this->codepage->next_sequence_index
                 - this->codepage->decode_codepoint_length,
             0, (ist_value) { 0 });
-
-        ist_lexer_skip_blanks(this);
 
         switch (this->codepage->current_codepoint) {
 
@@ -213,6 +212,7 @@ void ist_lexer_parse_identifier(ist_lexer* this) {
              this->codepage->current_codepoint, false)
      ) ist_lexer_advance_codepoint(this);
 
+    /* because the next codepoint is not belong this identifier, we should -1 */
     analysis_token.length =
         (this->codepage->source
             + this->codepage->next_sequence_index)
@@ -222,13 +222,26 @@ void ist_lexer_parse_identifier(ist_lexer* this) {
 
 void ist_lexer_parse_number(ist_lexer* this) {
     ist_usize dot_count = 0;
-    while (isdigit(this->codepage->current_codepoint)
-            || this->codepage->current_codepoint == '.') {
-        if (this->codepage->current_codepoint == '.') {
+    while (isdigit(this->codepage->current_codepoint) || this->codepage->current_codepoint == '.') {
+        if (this->codepage->current_codepoint == '.')
             ++dot_count;
-        }
+        ist_lexer_advance_codepoint(this);
     }
     isl_ifreport(dot_count > 1, rid_is_it_the_version_code, this->codepage->location);
+
+    /* is it a integer number or a real number? */
+    analysis_token.type = dot_count ? ISL_TOKENT_REAL : ISL_TOKENT_INT;
+
+    /* because the next codepoint is not belong this number, we should -1 */
+    analysis_token.length =
+        (this->codepage->source
+            + this->codepage->next_sequence_index)
+        - analysis_token.extract - 1;
+
+    /* convert the extract to number */
+    if (dot_count)  analysis_token.value.real_value = atof(analysis_token.extract);
+    else            analysis_token.value.int_value = atol(analysis_token.extract);
+
 }
 
 void ist_lexer_parse_string(ist_lexer* this) {

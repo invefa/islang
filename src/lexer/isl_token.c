@@ -64,7 +64,10 @@ void ist_token_print(ist_token* this) {
     printf("type:     %s\n", ist_token_names[this->type]);
     printf("extract:  \"%s\"\n", extract);
     printf("length:   %llu\n", this->length);
-    printf("value:    %d\n", this->value.int_value);
+    if (this->type == ISL_TOKENT_INT)
+        printf("value:    %lld\n", this->value.int_value);
+    if (this->type == ISL_TOKENT_REAL)
+        printf("value:    %llf\n", this->value.int_value);
     ist_string_clean(&extract);
 }
 
