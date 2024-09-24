@@ -81,7 +81,7 @@ inline ist_codepage* ist_codepage_createby_file(ist_string _file_path) {
     return codepage;
 }
 
-void ist_codepage_delete(ist_codepage* this) {
+inline void ist_codepage_delete(ist_codepage* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
     isl_free(this);
 }
@@ -113,6 +113,18 @@ inline ist_lexer* ist_lexer_createby_source(ist_string* _source) {
 
 inline ist_lexer* ist_lexer_createby_file(ist_string _file_path) {
     return ist_lexer_create(ist_codepage_createby_file(_file_path));
+}
+
+void ist_lexer_delete(ist_lexer* this) {
+    isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
+
+    for (ist_usize i = 0; i < this->source_count; i++) {
+        if (this->source_list[i]) isl_free_list(this->source_list[i]);
+        else isl_report(rid_catch_nullptr, isp_catch_coreloc);
+    }
+    isl_free_list(this->source_list);
+    ist_codepage_delete(this->codepage);
+    isl_free(this);
 }
 
 

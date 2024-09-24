@@ -72,6 +72,7 @@ void isl_test_lexer(void) {
     printf("%s\n", *token_dump_buffer);
     ist_string_delete(token_dump_buffer);
 
+    ist_lexer_delete(lexer);
     // ist_string_delete(source);
 
 }
