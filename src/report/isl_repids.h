@@ -15,7 +15,7 @@ manifest(custom_core_panic, (CORE, PANIC, CUSTOM), NULL)
 manifest(custom_core_fatal, (CORE, FATAL, CUSTOM), NULL)
 
 
-manifest(unreachable_brench, (CORE, FATAL, NONE),
+manifest(unreachable_brench, (CORE, FATAL, CORELOC),
 "the program entered an unreachable branch...")
 manifest(catch_nullptr, (CORE, FATAL, CORELOC),
 "catched a nullptr, the address should not be null.")

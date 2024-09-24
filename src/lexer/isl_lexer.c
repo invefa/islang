@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "isl_memgr.h"
+#include "isl_list.h"
 #include "isl_utf8.h"
 #include "isl_report.h"
 
@@ -36,7 +37,21 @@ case _char:                                                        \
         analysis_token.type=_unary_tokent;break
 
 
-ist_codepage* ist_codepage_createby_source(ist_string _source) {
+inline ist_string isl_read_file(ist_string _file_path) {
+    FILE* file = fopen(_file_path, "rb");
+    isl_ifnreport(file, rid_open_file_failed, _file_path, isp_catch_coreloc);
+    fseek(file, 0, SEEK_END);
+    ist_usize length = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    ist_string source = isl_malloc_list(ist_byte, length + 1);
+    fread(source, 1, length, file);
+    source[length] = '\0';
+    fclose(file);
+    return source;
+}
+
+
+inline ist_codepage* ist_codepage_createby_source(ist_string _source) {
 
     ist_codepage* codepage = isl_malloc(ist_codepage);
 
@@ -52,7 +67,7 @@ ist_codepage* ist_codepage_createby_source(ist_string _source) {
     codepage->next_sequence_index += codepage->decode_codepoint_length;
 
     /* initialize the location, module name is <buildin-source> */
-    ist_location_init(&codepage->location, "<buildin-source>");
+    ist_location_init(&codepage->location, "buildin");
 
     codepage->prev_page = codepage->next_page = NULL;
 
@@ -60,17 +75,23 @@ ist_codepage* ist_codepage_createby_source(ist_string _source) {
 
 }
 
-ist_codepage* ist_codepage_createby_file(ist_string _file_path) {
-    FILE* file = fopen(_file_path, "r");
-    isl_ifnreport(file, rid_open_file_failed, _file_path, isp_catch_coreloc);
-
-    ist_codepage* codepage = ist_codepage_createby_source("ist_string_create(file)");
-    fclose(file);
+inline ist_codepage* ist_codepage_createby_file(ist_string _file_path) {
+    ist_codepage* codepage = ist_codepage_createby_source(isl_read_file(_file_path));
+    codepage->location.module = _file_path;
     return codepage;
 }
 
-void ist_lexer_init(ist_lexer* this, ist_codepage* _codepage) {
+void ist_codepage_delete(ist_codepage* this) {
+    isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
+    isl_free(this);
+}
+
+
+inline void ist_lexer_init(ist_lexer* this, ist_codepage* _codepage) {
     this->codepage = _codepage;
+    this->source_list = isl_calloc_list(ist_string, 2);
+    this->source_list[0] = _codepage->source;
+    this->source_count = 1;
     ist_token_init_with_location(&this->pre_token, _codepage->location);
     ist_token_init_with_location(&this->cur_token, _codepage->location);
     ist_token_init_with_location(&this->nex_token, _codepage->location);
@@ -80,18 +101,18 @@ void ist_lexer_init(ist_lexer* this, ist_codepage* _codepage) {
     ist_lexer_advance(this);
 }
 
-ist_lexer* ist_lexer_create(ist_codepage* _codepage) {
+inline ist_lexer* ist_lexer_create(ist_codepage* _codepage) {
     ist_lexer* lexer = isl_malloc(ist_lexer);
     ist_lexer_init(lexer, _codepage);
     return lexer;
 }
 
-ist_lexer* ist_lexer_createby_source(ist_string* _source) {
+inline ist_lexer* ist_lexer_createby_source(ist_string* _source) {
     return ist_lexer_create(ist_codepage_createby_source(*_source));
 }
 
-ist_lexer* ist_lexer_createby_file(ist_string* _file_path) {
-    return ist_lexer_create(ist_codepage_createby_file(*_file_path));
+inline ist_lexer* ist_lexer_createby_file(ist_string _file_path) {
+    return ist_lexer_create(ist_codepage_createby_file(_file_path));
 }
 
 

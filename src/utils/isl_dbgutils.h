@@ -12,7 +12,7 @@
 
 char digit_table[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-inline void u64_to_string(ist_u64 _val, ist_string* _buffer, ist_u8 _base) {
+void u64_to_string(ist_u64 _val, ist_string* _buffer, ist_u8 _base) {
 
     isl_assert(_buffer);
     isl_assert(_buffer[0]);
@@ -34,7 +34,7 @@ inline void u64_to_string(ist_u64 _val, ist_string* _buffer, ist_u8 _base) {
     _buffer[0][index] = '\0';
 }
 
-inline void u32_to_string(ist_u32 _val, ist_string* _buffer, ist_u8 _base) {
+void u32_to_string(ist_u32 _val, ist_string* _buffer, ist_u8 _base) {
 
     isl_assert(_buffer);
     isl_assert(_buffer[0]);
@@ -56,7 +56,7 @@ inline void u32_to_string(ist_u32 _val, ist_string* _buffer, ist_u8 _base) {
     _buffer[0][index] = '\0';
 }
 
-inline void u16_to_string(ist_u16 _val, ist_string* _buffer, ist_u8 _base) {
+void u16_to_string(ist_u16 _val, ist_string* _buffer, ist_u8 _base) {
 
     isl_assert(_buffer);
     isl_assert(_buffer[0]);
@@ -78,7 +78,7 @@ inline void u16_to_string(ist_u16 _val, ist_string* _buffer, ist_u8 _base) {
     _buffer[0][index] = '\0';
 }
 
-inline void u8_to_string(ist_u8 _val, ist_string* _buffer, ist_u8 _base) {
+void u8_to_string(ist_u8 _val, ist_string* _buffer, ist_u8 _base) {
 
     isl_assert(_buffer);
     isl_assert(_buffer[0]);
@@ -100,7 +100,7 @@ inline void u8_to_string(ist_u8 _val, ist_string* _buffer, ist_u8 _base) {
     _buffer[0][index] = '\0';
 }
 
-inline void print_u8_binary_aline(ist_u8 _val) {
+void print_u8_binary_aline(ist_u8 _val) {
     char buffer[9];
     buffer[8] = '\0';
     for (ist_u8 i = 0; i < 8; ++i) {
@@ -109,7 +109,7 @@ inline void print_u8_binary_aline(ist_u8 _val) {
     printf("%s\n", buffer);
 }
 
-inline void print_u16_binary_aline(ist_u16 _val) {
+void print_u16_binary_aline(ist_u16 _val) {
     char buffer[17];
     buffer[16] = '\0';
     for (ist_u8 i = 0; i < 16; ++i) {
@@ -118,7 +118,7 @@ inline void print_u16_binary_aline(ist_u16 _val) {
     printf("%s\n", buffer);
 }
 
-inline void print_u32_binary_aline(ist_u32 _val) {
+void print_u32_binary_aline(ist_u32 _val) {
     char buffer[33];
     buffer[32] = '\0';
     for (ist_u8 i = 0; i < 32; ++i) {
@@ -127,7 +127,7 @@ inline void print_u32_binary_aline(ist_u32 _val) {
     printf("%s\n", buffer);
 }
 
-inline void print_u64_binary_aline(ist_u32 _val) {
+void print_u64_binary_aline(ist_u32 _val) {
     char buffer[65];
     buffer[64] = '\0';
     for (ist_u8 i = 0; i < 64; ++i) {

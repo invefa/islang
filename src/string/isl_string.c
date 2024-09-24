@@ -21,7 +21,7 @@ inline ist_string* ist_string_create_raw(const char* _cstring) {
 inline ist_string* ist_string_create_buffer(ist_usize _capacity) {
     ist_string* string = isl_malloc(ist_string);
     isl_ifnreport(_capacity, rid_catch_zero_capacity_buffer, isp_catch_coreloc, string);
-    *string = isl_calloc_list(ist_byte, _capacity);
+    ist_string_init_buffer(string, _capacity);
     return string;
 }
 
@@ -30,6 +30,10 @@ inline void ist_string_init(ist_string* this, char* _cstring, ist_usize _length)
     isl_ifnreport(_length, rid_catch_zero_string_length, isp_catch_coreloc, this);
     memcpy(*this, _cstring, _length);
     (*this)[_length] = '\0';
+}
+
+inline void ist_string_init_buffer(ist_string* this, ist_usize _capacity) {
+    *this = isl_calloc_list(ist_byte, _capacity);
 }
 
 inline void ist_string_clean(ist_string* this) {

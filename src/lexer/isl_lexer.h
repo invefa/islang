@@ -4,6 +4,8 @@
 #include "isl_token.h"
 #include "isl_utf8.h"
 
+ist_string isl_read_file(ist_string _file_path);
+
 /*
     Codepage is a tool for maintaining the source code file currently being read.
     It also provides methods for future macro support. It maintains location and source,
@@ -59,14 +61,17 @@ typedef struct ist_lexer {
     */
     ist_token pre_token, cur_token, nex_token, sec_token;
 
+    ist_string* source_list;
+    ist_usize source_count;
+
     ist_codepage* codepage;
 
 } ist_lexer;
 
 ist_lexer* ist_lexer_create(ist_codepage* _codepage);
 ist_lexer* ist_lexer_createby_source(ist_string* _source);
-ist_lexer* ist_lexer_createby_file(ist_string* _file_path);
-// void ist_lexer_delete(ist_lexer* _lexer);
+ist_lexer* ist_lexer_createby_file(ist_string _file_path);
+void ist_lexer_delete(ist_lexer* _lexer);
 
 void ist_lexer_init(ist_lexer* this, ist_codepage* _codepage);
 // void ist_lexer_clean(ist_lexer* _lexer);

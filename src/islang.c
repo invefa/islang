@@ -51,9 +51,15 @@ int main(void) {
 
 void isl_test_lexer(void) {
 
-    ist_string* source = ist_string_create_raw(u8"abc@..qwen2啊啊啊,qwq. 啊 .//123123\naabc 123/*qqweq\n123*/12.31.3 2h哈哈h");
-    ist_codepage* codepage = ist_codepage_createby_source(*source);
-    ist_lexer* lexer = ist_lexer_create(codepage);
+    ist_string file = isl_read_file("./scripts/test.is");
+    printf("file context:\n--->%s<---\n", file);
+    ist_string_clean(&file);
+
+    // ist_string* source = ist_string_create_raw(u8"abc@..qwen2啊啊啊,qwq. 啊 .//123123\naabc 123/*qqweq\n123*/12.31.3 2h哈哈h");
+    // ist_codepage* codepage = ist_codepage_createby_source(*source);
+    // ist_lexer* lexer = ist_lexer_create(codepage);
+
+    ist_lexer* lexer = ist_lexer_createby_file("./scripts/test.is");
 
     ist_string* token_dump_buffer = ist_string_create_buffer(ISL_DEFAULT_BUFFER_LENGTH);
     while (lexer->cur_token.type != ISL_TOKENT_EOF) {
@@ -66,7 +72,7 @@ void isl_test_lexer(void) {
     printf("%s\n", *token_dump_buffer);
     ist_string_delete(token_dump_buffer);
 
-    ist_string_delete(source);
+    // ist_string_delete(source);
 
 }
 
