@@ -74,8 +74,11 @@ void ist_token_print(ist_token* this) {
 }
 
 ist_string* ist_token_dump(ist_token* this, ist_string* _buffer) {
-    ist_string extract;
-    ist_string_init(&extract, this->extract, this->length);
+    ist_byte storager;
+    if (this->extract) {
+        storager = this->extract[this->length];
+        this->extract[this->length] = '\0';
+    }
     snprintf(*_buffer, ISL_DEFAULT_BUFFER_LENGTH,
         "token<0x%p> {module=<%s>,location=<%llu:%llu>,type=%s,"
         "extract=\"%s\",length=%llu,value={int=%lld,real=%llf}}",
@@ -84,10 +87,13 @@ ist_string* ist_token_dump(ist_token* this, ist_string* _buffer) {
         this->location.line,
         this->location.column,
         ist_token_names[this->type],
-        extract,
+        this->extract,
         this->length,
         this->value.int_value,
         this->value.real_value);
-    ist_string_clean(&extract);
+
+    if (this->extract)
+        this->extract[this->length] = storager;
+
     return _buffer;
 }

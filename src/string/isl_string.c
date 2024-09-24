@@ -12,6 +12,12 @@ ist_string* ist_string_create(char* _cstring, ist_usize _length) {
     return string;
 }
 
+ist_string* ist_string_create_raw(const char* _cstring) {
+    ist_string* string = isl_malloc(ist_string);
+    ist_string_init(string, (char*)_cstring, strlen(_cstring));
+    return string;
+}
+
 ist_string* ist_string_create_buffer(ist_usize _capacity) {
     ist_string* string = isl_malloc(ist_string);
     isl_ifnreport(_capacity, rid_catch_zero_capacity_buffer, isp_catch_coreloc, string);

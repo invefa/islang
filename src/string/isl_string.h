@@ -9,6 +9,7 @@ typedef ist_byte* ist_string;
 void        ist_string_init(ist_string* this, char* _cstring, ist_usize _length);
 
 ist_string* ist_string_create(char* _cstring, ist_usize _length);
+ist_string* ist_string_create_raw(const char* _cstring);
 ist_string* ist_string_create_buffer(ist_usize _capacity);
 
 void        ist_string_clean(ist_string* this);
