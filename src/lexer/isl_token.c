@@ -73,11 +73,10 @@ void ist_token_print(ist_token* this) {
     ist_string_clean(&extract);
 }
 
-ist_string* ist_token_dump(ist_token* this) {
-    ist_string* result = ist_string_create_buffer(ISL_DEFAULT_BUFFER_LENGTH);
+ist_string* ist_token_dump(ist_token* this, ist_string* _buffer) {
     ist_string extract;
     ist_string_init(&extract, this->extract, this->length);
-    snprintf(*result, ISL_DEFAULT_BUFFER_LENGTH,
+    snprintf(*_buffer, ISL_DEFAULT_BUFFER_LENGTH,
         "token<0x%p> {module=<%s>,location=<%llu:%llu>,type=%s,"
         "extract=\"%s\",length=%llu,value={int=%lld,real=%llf}}",
         this,
@@ -90,5 +89,5 @@ ist_string* ist_token_dump(ist_token* this) {
         this->value.int_value,
         this->value.real_value);
     ist_string_clean(&extract);
-    return result;
+    return _buffer;
 }
