@@ -32,9 +32,10 @@ typedef struct ist_codepage {
     ist_location location;
 
     /*
-        if we need to expand macro, we will suspend the current codepage, and create a new codepage
-        for macro expansion, then let the current codepage store to this member. and when the macro
-        expansion is done, the new codepage will be released after the current codepage restored.
+        if we need to expand macro, we will create a new codepage for macro expansion,
+        then store the current codepage to this member. and when the macro expansion is done,
+        the new codepage will be set to the lexer for token generation. And when the new codepage is read,
+        it will be released after the current codepage restored.
     */
     struct ist_codepage* prev_page;
 
