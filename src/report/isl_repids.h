@@ -19,6 +19,8 @@ manifest(unreachable_brench, (CORE, FATAL, CORELOC),
 "the program entered an unreachable branch...")
 manifest(catch_nullptr, (CORE, FATAL, CORELOC),
 "catched a nullptr, the address should not be null.")
+manifest(catch_size_overflow, (CORE, FATAL, CORELOC),
+"catched an overflow size.")
 
 manifest(open_file_failed, (CORE, FATAL, CORELOC),
 "failed to open file '%s', does it exist?")

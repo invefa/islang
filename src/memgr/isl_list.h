@@ -5,6 +5,7 @@
 #include "isl_xssert.h"
 #include "isl_memgr.h"
 #include "isl_types.h"
+#include "isl_report.h"
 
 /*
     Before read the comments below, you must to digest some basic concepts about the list:
@@ -88,6 +89,20 @@ do{                                                                             
 
 #define isl_list_resizec(_ptr, _new_capcaity, _stv...) __ISL_LIST_RESIZEX(c,_ptr,_new_capcaity,##_stv)
 #define isl_list_resizem(_ptr, _new_capcaity, _stv...) __ISL_LIST_RESIZEX(m,_ptr,_new_capcaity,##_stv)
+
+#define __ISL_LIST_ENSUREX(_x, _ptr, _size, _require, _stv...)                          \
+do {                                                                                    \
+    ist_usize _size_=_size;                                                             \
+    ist_usize _require_=_require;                                                       \
+    ist_usize _capacity_=isl_list_ptr_get_capacity(_ptr)                                \
+    isl_ifreport(_capacity_<_size_,rid_catch_size_overflow, isp_catch_coreloc);         \
+    if(_capacity_-_size_<_require_)                                                     \
+        __ISL_LIST_RESIZEX(_x,_ptr,ceil_upon_powertwo(_capacity_+_require_),##_stv);    \
+}while (0)
+
+//TODO: test ensurex.
+#define isl_list_ensurec(_ptr, _size, _require, _stv...) __ISL_LIST_ENSUREX(c,_ptr,_size,_require,##_stv)
+#define isl_list_ensurem(_ptr, _size, _require, _stv...) __ISL_LIST_ENSUREX(m,_ptr,_size,_require,##_stv)
 
 // freev list means free the list and set the ptr variable to NULL.
 #define isl_freev_list(_list_ptrv)                              \
