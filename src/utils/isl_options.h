@@ -39,4 +39,6 @@
 // #define ISL_ENABLE_INFORM_RELEASED
 
 
+#define ISL_DEFAULT_BUFFER_LENGTH 256
+
 #endif
