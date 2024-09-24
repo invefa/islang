@@ -33,13 +33,11 @@ typedef struct ist_codepage {
 
     /*
         if we need to expand macro, we will suspend the current codepage, and create a new codepage
-        for macro expansion, then let the current codepage store to this variable. and when the macro
+        for macro expansion, then let the current codepage store to this member. and when the macro
         expansion is done, the new codepage will be released after the current codepage restored.
     */
-    struct ist_codepage* next_page;
-
-    /* the previous codepage in the codepage linked-list, use this variable to restore the lookahead */
     struct ist_codepage* prev_page;
+
 
 } ist_codepage;
 

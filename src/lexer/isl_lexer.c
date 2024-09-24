@@ -69,7 +69,7 @@ inline ist_codepage* ist_codepage_createby_source(ist_string _source) {
     /* initialize the location, module name is <buildin-source> */
     ist_location_init(&codepage->location, "buildin");
 
-    codepage->prev_page = codepage->next_page = NULL;
+    codepage->prev_page = NULL;
 
     return codepage;
 
@@ -347,10 +347,12 @@ void ist_lexer_skip_comment(ist_lexer* this, ist_bool _is_block) {
         if (_is_block) {
             if (ist_lexer_get_current_codepoint(this) == '*'
                 && ist_lexer_get_next_codepoint(this) == '/') {
+
                 /* skip comment block ending symbols */
                 ist_lexer_advance_codepoint(this);
                 ist_lexer_advance_codepoint(this);
                 return;
+
             } else if (ist_lexer_get_current_codepoint(this) == '\0') {
                 isl_report(rid_unterminated_comment_block, this->codepage->location);
                 return;
