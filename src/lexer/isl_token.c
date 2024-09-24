@@ -67,7 +67,7 @@ inline void ist_token_print(ist_token* this) {
     printf("extract:  \"%s\"\n", extract);
     printf("length:   %zu\n", this->length);
     if (this->type == ISL_TOKENT_INT)
-        printf("value:    %ld\n", this->value.int_value);
+        printf("value:    %lld\n", this->value.int_value);
     if (this->type == ISL_TOKENT_REAL)
         printf("value:    %lf\n", this->value.real_value);
     ist_string_clean(&extract);
@@ -81,7 +81,7 @@ inline ist_string* ist_token_dump(ist_token* this, ist_string* _buffer) {
     }
     snprintf(*_buffer, ISL_DEFAULT_BUFFER_LENGTH,
         "token<0x%zX> {module=<%s>,location=<%zu:%zu>,type=%s,"
-        "extract=\"%s\",length=%zu,value={int=%ld,real=%g}}",
+        "extract=\"%s\",length=%zu,value={int=%lld,real=%g}}",
         (ist_usize)this,
         this->location.module,
         this->location.line,

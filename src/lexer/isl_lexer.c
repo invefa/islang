@@ -116,6 +116,11 @@ inline ist_lexer* ist_lexer_createby_file(ist_string _file_path) {
 }
 
 void ist_lexer_delete(ist_lexer* this) {
+    ist_lexer_clean(this);
+    isl_free(this);
+}
+
+void ist_lexer_clean(ist_lexer* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
 
     for (ist_usize i = 0; i < this->source_count; i++) {
@@ -123,8 +128,9 @@ void ist_lexer_delete(ist_lexer* this) {
         else isl_report(rid_catch_nullptr, isp_catch_coreloc);
     }
     isl_free_list(this->source_list);
+
+    //TODO: delete all of the codepage on the chain.
     ist_codepage_delete(this->codepage);
-    isl_free(this);
 }
 
 
@@ -231,7 +237,7 @@ ist_token* ist_lexer_advance(ist_lexer* this) {
         ist_lexer_advance_codepoint(this);
         break;
     }
-    
+
     if (!this->codepage->current_codepoint)
         ist_token_init_full(
             &analysis_token,
@@ -241,7 +247,7 @@ ist_token* ist_lexer_advance(ist_lexer* this) {
                 + this->codepage->next_sequence_index
                 - this->codepage->decode_codepoint_length,
             0, (ist_value) { 0 });
-    
+
 ist_lexer_advance_label_ending:
     return &this->pre_token;
 }
@@ -263,11 +269,14 @@ void ist_lexer_parse_identifier(ist_lexer* this) {
              this->codepage->current_codepoint, false)
      ) ist_lexer_advance_codepoint(this);
 
-    /* because the next codepoint is not belong this identifier, we should -1 */
+    /*
+        because the current codepoint is not belong this identifier,
+        so we should sub with the length of the current codepoint.
+    */
     analysis_token.length =
         (this->codepage->source
             + this->codepage->next_sequence_index)
-        - analysis_token.extract - 1;
+        - analysis_token.extract - this->codepage->decode_codepoint_length;
 
 }
 
@@ -281,22 +290,53 @@ void ist_lexer_parse_number(ist_lexer* this) {
     isl_ifreport(dot_count > 1, rid_is_it_the_version_code, analysis_token.location);
 
     /* is it a integer number or a real number? */
-    analysis_token.type = dot_count ? ISL_TOKENT_REAL : ISL_TOKENT_INT;
+    analysis_token.type = dot_count ? ISL_TOKENT_REAL_LITERAL : ISL_TOKENT_INTEGER_LITERAL;
 
-    /* because the next codepoint is not belong this number, we should -1 */
+    /*
+        because the current codepoint is not belong this number,
+        so we should sub with the length of the current codepoint.
+    */
     analysis_token.length =
         (this->codepage->source
             + this->codepage->next_sequence_index)
-        - analysis_token.extract - 1;
+        - analysis_token.extract - this->codepage->decode_codepoint_length;
 
     /* convert the extract to number */
-    if (dot_count)  analysis_token.value.real_value = atof(analysis_token.extract);
-    else            analysis_token.value.int_value = atol(analysis_token.extract);
+    if (dot_count) analysis_token.value.real_value = atof(analysis_token.extract);
+    else analysis_token.value.int_value = atol(analysis_token.extract);
 
 }
 
 void ist_lexer_parse_string(ist_lexer* this) {
+    analysis_token.type = ISL_TOKENT_STRING_LITERAL;
 
+    /* skip the starting double quote. */
+    ist_lexer_advance_codepoint(this);
+
+    while (this->codepage->current_codepoint != '"') {
+        if (this->codepage->current_codepoint == '\0') {
+            isl_report(rid_unterminated_string, analysis_token.location);
+            return;
+        }
+        ist_lexer_advance_codepoint(this);
+    }
+
+    /*
+        skip the starting double quote, trim it from the extract,
+        because it is a ASCII character, so we should +1.
+    */
+    ++analysis_token.extract;
+
+    /*
+        because the current codepoint is not belong this identifier,
+        so we should sub with the length of the current codepoint.
+    */
+    analysis_token.length =
+        (this->codepage->source
+            + this->codepage->next_sequence_index)
+        - analysis_token.extract - this->codepage->decode_codepoint_length;
+
+    ist_lexer_advance_codepoint(this);
 }
 
 void ist_lexer_skip_comment(ist_lexer* this, ist_bool _is_block) {

@@ -50,6 +50,8 @@ manifest(advance_codepoint_when_eof, (LEXER, WARNING, CORELOC),
 "advance codepoint when we reach the end of source.")
 manifest(unterminated_comment_block, (LEXER, WARNING, USERLOC),
 "block comments do not end with '*/', but with the end of file.")
+manifest(unterminated_string, (LEXER, WARNING, USERLOC),
+"the string do not end with '\"', but with the end of file.")
 manifest(unrecongnized_codepoint, (LEXER, WARNING, USERLOC),
 "unrecongnized codepoint: <0x%X>, the lexer will skip it.")
 manifest(is_it_the_version_code, (LEXER, ERROR, USERLOC),

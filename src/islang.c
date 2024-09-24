@@ -55,7 +55,7 @@ void isl_test_lexer(void) {
     printf("file context:\n--->%s<---\n", file);
     ist_string_clean(&file);
 
-    // ist_string* source = ist_string_create_raw(u8"abc@..qwen2啊啊啊,qwq. 啊 .//123123\naabc 123/*qqweq\n123*/12.31.3 2h哈哈h");
+    // ist_string* source = ist_string_createby_raw(u8"abc@..qwen2啊啊啊,qwq. 啊 .//123123\naabc 123/*qqweq\n123*/12.31.3 2h哈哈h");
     // ist_codepage* codepage = ist_codepage_createby_source(*source);
     // ist_lexer* lexer = ist_lexer_create(codepage);
 
@@ -105,8 +105,8 @@ void isl_test_report(void) {
 }
 
 void isl_test_string(void) {
-    ist_string* str1 = ist_string_create(u8"abcdef", 6);
-    ist_string* str2 = ist_string_create(u8"world", 5);
+    ist_string* str1 = ist_string_createby_ref(u8"abcdef", 6);
+    ist_string* str2 = ist_string_createby_ref(u8"world", 5);
 
     ist_string str3;
     ist_string_init(&str3, u8"hello", 5);
@@ -159,14 +159,14 @@ void isl_test_string(void) {
     }
     printf("}\n\n");
 
-    ist_string* str4 = ist_string_create("汉", 5);
+    ist_string* str4 = ist_string_createby_ref("汉", 5);
     printf("str4 context = %s\n", *str4);
     index = 0;
     u32_to_string(isl_utf8_decode(str4, index, &decode_length), tmp_buffer, 16);
     index += decode_length;
     printf("str4 codepoint = 0x%s\n", *tmp_buffer);
 
-    ist_string* str5 = ist_string_create("", 0);
+    ist_string* str5 = ist_string_createby_ref("", 0);
 
     ist_string_delete(str1);
     ist_string_delete(str2);

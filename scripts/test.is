@@ -1,0 +1,9 @@
+import io;
+
+using main = fn:int(void) {
+    println("hell");
+    int a = 10086文本;
+    real b = 100.86文本;
+    println(a->cast!(string)+b->cast!(string));
+    return 0;
+};

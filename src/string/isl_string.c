@@ -6,13 +6,13 @@
 #include "isl_list.h"
 #include "isl_report.h"
 
-inline ist_string* ist_string_create(char* _cstring, ist_usize _length) {
+inline ist_string* ist_string_createby_ref(char* _cstring, ist_usize _length) {
     ist_string* string = isl_malloc(ist_string);
     ist_string_init(string, _cstring, _length);
     return string;
 }
 
-inline ist_string* ist_string_create_raw(const char* _cstring) {
+inline ist_string* ist_string_createby_raw(const char* _cstring) {
     ist_string* string = isl_malloc(ist_string);
     ist_string_init(string, (char*)_cstring, strlen(_cstring));
     return string;
