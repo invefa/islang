@@ -101,26 +101,26 @@ inline void ist_lexer_init(ist_lexer* this, ist_codepage* _codepage) {
     ist_lexer_advance(this);
 }
 
-inline ist_lexer* ist_lexer_create(ist_codepage* _codepage) {
+inline ist_lexer* ist_lexer_createby_codepage(ist_codepage* _codepage) {
     ist_lexer* lexer = isl_malloc(ist_lexer);
     ist_lexer_init(lexer, _codepage);
     return lexer;
 }
 
 inline ist_lexer* ist_lexer_createby_source(ist_string* _source) {
-    return ist_lexer_create(ist_codepage_createby_source(*_source));
+    return ist_lexer_createby_codepage(ist_codepage_createby_source(*_source));
 }
 
 inline ist_lexer* ist_lexer_createby_file(ist_string _file_path) {
-    return ist_lexer_create(ist_codepage_createby_file(_file_path));
+    return ist_lexer_createby_codepage(ist_codepage_createby_file(_file_path));
 }
 
-void ist_lexer_delete(ist_lexer* this) {
+inline void ist_lexer_delete(ist_lexer* this) {
     ist_lexer_clean(this);
     isl_free(this);
 }
 
-void ist_lexer_clean(ist_lexer* this) {
+inline void ist_lexer_clean(ist_lexer* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
 
     for (ist_usize i = 0; i < this->source_count; i++) {
@@ -151,7 +151,7 @@ ist_token* ist_lexer_advance(ist_lexer* this) {
                 - this->codepage->decode_codepoint_length,
             0, (ist_value) { 0 });
 
-        switch (this->codepage->current_codepoint) {
+        switch (ist_lexer_get_current_codepoint(this)) {
 
             CHECK_SINCHAR_TOKENT('(', ISL_TOKENT_LPARE);
             CHECK_SINCHAR_TOKENT(')', ISL_TOKENT_RPARE);
@@ -213,15 +213,17 @@ ist_token* ist_lexer_advance(ist_lexer* this) {
             goto ist_lexer_advance_label_ending;
 
         default:
-            if (isdigit(this->codepage->current_codepoint)) {
+            if (isdigit(ist_lexer_get_current_codepoint(this))) {
                 ist_lexer_parse_number(this);
-            } else if (isl_utf8_legal_identifier_codepoint(this->codepage->current_codepoint, true)) {
+            } else if (
+                    isl_utf8_legal_identifier_codepoint(
+                        ist_lexer_get_current_codepoint(this), true)) {
                 ist_lexer_parse_identifier(this);
             } else {
                 isl_report(
                     rid_unrecongnized_codepoint,
                     this->codepage->location,
-                    this->codepage->current_codepoint
+                    ist_lexer_get_current_codepoint(this)
                 );
                 ist_lexer_advance_codepoint(this);
                 continue;
@@ -238,7 +240,7 @@ ist_token* ist_lexer_advance(ist_lexer* this) {
         break;
     }
 
-    if (!this->codepage->current_codepoint)
+    if (!ist_lexer_get_current_codepoint(this))
         ist_token_init_full(
             &analysis_token,
             ISL_TOKENT_EOF,
@@ -254,10 +256,10 @@ ist_lexer_advance_label_ending:
 
 
 ist_codepoint ist_lexer_skip_blanks(ist_lexer* this) {
-    while (isspace(this->codepage->current_codepoint)) {
+    while (isspace(ist_lexer_get_current_codepoint(this))) {
         ist_lexer_advance_codepoint(this);
     }
-    return this->codepage->current_codepoint;
+    return ist_lexer_get_current_codepoint(this);
 }
 
 void ist_lexer_parse_identifier(ist_lexer* this) {
@@ -266,7 +268,7 @@ void ist_lexer_parse_identifier(ist_lexer* this) {
     /* skip identifier context */
     while (
          isl_utf8_legal_identifier_codepoint(
-             this->codepage->current_codepoint, false)
+             ist_lexer_get_current_codepoint(this), false)
      ) ist_lexer_advance_codepoint(this);
 
     /*
@@ -282,8 +284,9 @@ void ist_lexer_parse_identifier(ist_lexer* this) {
 
 void ist_lexer_parse_number(ist_lexer* this) {
     ist_usize dot_count = 0;
-    while (isdigit(this->codepage->current_codepoint) || this->codepage->current_codepoint == '.') {
-        if (this->codepage->current_codepoint == '.')
+    while (isdigit(ist_lexer_get_current_codepoint(this))
+            || ist_lexer_get_current_codepoint(this) == '.') {
+        if (ist_lexer_get_current_codepoint(this) == '.')
             ++dot_count;
         ist_lexer_advance_codepoint(this);
     }
@@ -313,8 +316,8 @@ void ist_lexer_parse_string(ist_lexer* this) {
     /* skip the starting double quote. */
     ist_lexer_advance_codepoint(this);
 
-    while (this->codepage->current_codepoint != '"') {
-        if (this->codepage->current_codepoint == '\0') {
+    while (ist_lexer_get_current_codepoint(this) != '"') {
+        if (ist_lexer_get_current_codepoint(this) == '\0') {
             isl_report(rid_unterminated_string, analysis_token.location);
             return;
         }
@@ -342,13 +345,13 @@ void ist_lexer_parse_string(ist_lexer* this) {
 void ist_lexer_skip_comment(ist_lexer* this, ist_bool _is_block) {
     while (true) {
         if (_is_block) {
-            if (this->codepage->current_codepoint == '*'
+            if (ist_lexer_get_current_codepoint(this) == '*'
                 && ist_lexer_get_next_codepoint(this) == '/') {
                 /* skip comment block ending symbols */
                 ist_lexer_advance_codepoint(this);
                 ist_lexer_advance_codepoint(this);
                 return;
-            } else if (this->codepage->current_codepoint == '\0') {
+            } else if (ist_lexer_get_current_codepoint(this) == '\0') {
                 isl_report(rid_unterminated_comment_block, this->codepage->location);
                 return;
             }
@@ -373,20 +376,20 @@ ist_codepoint ist_lexer_get_next_codepoint(ist_lexer* this) {
 /* return the current codepoint, and advance to the next codepoint */
 ist_codepoint ist_lexer_advance_codepoint(ist_lexer* this) {
 
-    if (this->codepage->current_codepoint == 0) {
+    if (ist_lexer_get_current_codepoint(this) == 0) {
         isl_report(rid_advance_codepoint_when_eof, isp_catch_coreloc);
         return -1;
     }
 
     /* update the location */
     ++this->codepage->location.column;
-    if (this->codepage->current_codepoint == '\n') {
+    if (ist_lexer_get_current_codepoint(this) == '\n') {
         ++this->codepage->location.line;
         this->codepage->location.column = 1;
     }
 
     /* store the current codepoint */
-    ist_codepoint codepoint = this->codepage->current_codepoint;
+    ist_codepoint codepoint = ist_lexer_get_current_codepoint(this);
 
     /* update the current codepoint */
     this->codepage->current_codepoint = ist_lexer_get_next_codepoint(this);
@@ -400,12 +403,17 @@ ist_codepoint ist_lexer_advance_codepoint(ist_lexer* this) {
 
 }
 
+inline ist_codepoint ist_lexer_get_current_codepoint(ist_lexer* this) {
+    return this->codepage->current_codepoint;
+}
+
+
 /*
     if next codepoint matches arg codepoint, then advance to the next codepoint,
     and return true, otherwise return false.
 */
 ist_bool ist_lexer_match_current_codepoint(ist_lexer* this, ist_codepoint _codepoint) {
-    if (this->codepage->current_codepoint != _codepoint) return false;
+    if (ist_lexer_get_current_codepoint(this) != _codepoint) return false;
     ist_lexer_advance_codepoint(this);
     return true;
 }
