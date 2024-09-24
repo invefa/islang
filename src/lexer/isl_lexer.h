@@ -79,9 +79,9 @@ void ist_lexer_clean(ist_lexer* this);
 
 ist_token* ist_lexer_advance(ist_lexer* this);
 
-ist_codepoint ist_lexer_advance_codepoint(ist_lexer* this);
 ist_codepoint ist_lexer_get_current_codepoint(ist_lexer* this);
 ist_codepoint ist_lexer_get_next_codepoint(ist_lexer* this);
+ist_codepoint ist_lexer_advance_codepoint(ist_lexer* this);
 ist_bool      ist_lexer_match_current_codepoint(ist_lexer* this, ist_codepoint _codepoint);
 
 void          ist_lexer_skip_comment(ist_lexer* this, ist_bool _is_block);

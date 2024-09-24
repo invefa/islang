@@ -369,16 +369,31 @@ void ist_lexer_skip_comment(ist_lexer* this, ist_bool _is_block) {
 //TODO: codepage switching will also only happen here when we read the file further.
 //      the another switching place was in the end of lookahead.
 ist_codepoint ist_lexer_get_next_codepoint(ist_lexer* this) {
-    return isl_utf8_decode(
-                &this->codepage->source,
-                this->codepage->next_sequence_index,
-                &this->codepage->decode_codepoint_length);
+    ist_codepoint
+        codepoint = isl_utf8_decode(
+                    &this->codepage->source,
+                    this->codepage->next_sequence_index,
+                    &this->codepage->decode_codepoint_length);
+
+    if (!codepoint && this->codepage->prev_page) {
+        codepoint = this->codepage->prev_page->current_codepoint;
+        this->codepage->decode_codepoint_length = this->codepage->prev_page->decode_codepoint_length;
+    }
+
+    return codepoint;
 }
 
 /* return the current codepoint, and advance to the next codepoint */
 ist_codepoint ist_lexer_advance_codepoint(ist_lexer* this) {
 
-    if (ist_lexer_get_current_codepoint(this) == 0) {
+    if (!ist_lexer_get_current_codepoint(this)) {
+        if (this->codepage->prev_page) {
+            /* in that case, switch to the previous codepage */
+            ist_codepage* codepage = this->codepage;
+            this->codepage = this->codepage->prev_page;
+            ist_codepage_delete(codepage);
+            return ist_lexer_get_current_codepoint(this);
+        }
         isl_report(rid_advance_codepoint_when_eof, isp_catch_coreloc);
         return -1;
     }
