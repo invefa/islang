@@ -55,7 +55,7 @@ ist_string domain_fmts[] = {
 };
 
 
-void isl_report(isp_repid _rid, ...) {
+inline void isl_report(isp_repid _rid, ...) {
     typedef FILE* isp_ostream;
 
     isp_replocation reploc = isp_replocs[_rid];
@@ -87,7 +87,7 @@ void isl_report(isp_repid _rid, ...) {
         sprintf(buffer,
                 "%s%s %s:\n"
                 "\tin file '%s':\n"
-                "\tat fn %s(...) <line:%llu>:\n"
+                "\tat fn %s(...) <line:%zu>:\n"
                 "%s\n"ANSI_RST,
                 level_colors[reploc.level],
                 domain_fmts[reploc.domain],
@@ -105,7 +105,7 @@ void isl_report(isp_repid _rid, ...) {
 
         sprintf(buffer,
                 "%s%s %s:\n"
-                "\tin module <%s>:<%llu:%llu>\n"
+                "\tin module <%s>:<%zu:%zu>\n"
                 "%s\n"ANSI_RST,
                 level_colors[reploc.level],
                 domain_fmts[reploc.domain],

@@ -60,6 +60,15 @@ ist_codepage* ist_codepage_createby_source(ist_string _source) {
 
 }
 
+ist_codepage* ist_codepage_createby_file(ist_string _file_path) {
+    FILE* file = fopen(_file_path, "r");
+    isl_ifnreport(file, rid_open_file_failed, _file_path, isp_catch_coreloc);
+
+    ist_codepage* codepage = ist_codepage_createby_source("ist_string_create(file)");
+    fclose(file);
+    return codepage;
+}
+
 void ist_lexer_init(ist_lexer* this, ist_codepage* _codepage) {
     this->codepage = _codepage;
     ist_token_init_with_location(&this->pre_token, _codepage->location);
@@ -76,6 +85,15 @@ ist_lexer* ist_lexer_create(ist_codepage* _codepage) {
     ist_lexer_init(lexer, _codepage);
     return lexer;
 }
+
+ist_lexer* ist_lexer_createby_source(ist_string* _source) {
+    return ist_lexer_create(ist_codepage_createby_source(*_source));
+}
+
+ist_lexer* ist_lexer_createby_file(ist_string* _file_path) {
+    return ist_lexer_create(ist_codepage_createby_file(*_file_path));
+}
+
 
 ist_token* ist_lexer_advance(ist_lexer* this) {
 

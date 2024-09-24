@@ -17,13 +17,13 @@ const ist_string ist_token_names[] = {
 };
 
 
-void ist_location_init(ist_location* this, ist_string _module) {
+inline void ist_location_init(ist_location* this, ist_string _module) {
     this->module = _module;
     this->line = 1;
     this->column = 1;
 }
 
-void ist_token_init_null(ist_token* this) {
+inline void ist_token_init_null(ist_token* this) {
     this->type = ISL_TOKENT_EOF;
 
     ist_location_init(&this->location, NULL);
@@ -34,7 +34,7 @@ void ist_token_init_null(ist_token* this) {
 
 }
 
-void ist_token_init_with_location(ist_token* this, ist_location _location) {
+inline void ist_token_init_with_location(ist_token* this, ist_location _location) {
     this->type = ISL_TOKENT_EOF;
     this->location = _location;
     this->extract = NULL;
@@ -57,32 +57,32 @@ inline void ist_token_init_full(
     this->value = _value;
 }
 
-void ist_token_print(ist_token* this) {
+inline void ist_token_print(ist_token* this) {
     ist_string extract;
     ist_string_init(&extract, this->extract, this->length);
-    printf("token<0x%p>:\n", this);
+    printf("token<0x%zX>:\n", (ist_usize)this);
     printf("module:   <%s>\n", this->location.module);
-    printf("location: <%llu:%llu>\n", this->location.line, this->location.column);
+    printf("location: <%zu:%zu>\n", this->location.line, this->location.column);
     printf("type:     %s\n", ist_token_names[this->type]);
     printf("extract:  \"%s\"\n", extract);
-    printf("length:   %llu\n", this->length);
+    printf("length:   %zu\n", this->length);
     if (this->type == ISL_TOKENT_INT)
         printf("value:    %lld\n", this->value.int_value);
     if (this->type == ISL_TOKENT_REAL)
-        printf("value:    %llf\n", this->value.int_value);
+        printf("value:    %lf\n", this->value.real_value);
     ist_string_clean(&extract);
 }
 
-ist_string* ist_token_dump(ist_token* this, ist_string* _buffer) {
+inline ist_string* ist_token_dump(ist_token* this, ist_string* _buffer) {
     ist_byte storager;
     if (this->extract) {
         storager = this->extract[this->length];
         this->extract[this->length] = '\0';
     }
     snprintf(*_buffer, ISL_DEFAULT_BUFFER_LENGTH,
-        "token<0x%p> {module=<%s>,location=<%llu:%llu>,type=%s,"
-        "extract=\"%s\",length=%llu,value={int=%lld,real=%llf}}",
-        this,
+        "token<0x%zX> {module=<%s>,location=<%zu:%zu>,type=%s,"
+        "extract=\"%s\",length=%zu,value={int=%lld,real=%lf}}",
+        (ist_usize)this,
         this->location.module,
         this->location.line,
         this->location.column,

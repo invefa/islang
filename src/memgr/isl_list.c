@@ -1,6 +1,6 @@
 #include "isl_list.h"
 
-ist_usize ceil_upon_powertwo(ist_usize _value) {
+inline ist_usize ceil_upon_powertwo(ist_usize _value) {
     if (!_value) return 1;
     /*
         If you want the result to be the nearest power of two but not more than that,

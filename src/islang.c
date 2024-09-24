@@ -52,9 +52,7 @@ int main(void) {
 void isl_test_lexer(void) {
 
     ist_string* source = ist_string_create_raw(u8"abc@..qwen2啊啊啊,qwq. 啊 .//123123\naabc 123/*qqweq\n123*/12.31.3 2h哈哈h");
-
     ist_codepage* codepage = ist_codepage_createby_source(*source);
-
     ist_lexer* lexer = ist_lexer_create(codepage);
 
     ist_string* token_dump_buffer = ist_string_create_buffer(ISL_DEFAULT_BUFFER_LENGTH);
@@ -216,10 +214,10 @@ void isl_test_memgr(void) {
 void isl_test_list(void) {
 
     ist_i32* list = isl_calloc_list(ist_i32, 10);
-    ist_i32* new_list = NULL;
-    printf("list = %p\n", list);
-    printf("length of list = %u\n", isl_list_catch_length(list));
-    printf("capacity of list = %u\n", isl_list_ptr_get_capacity(list));
+    // ist_i32* new_list = NULL;
+    printf("list = 0x%zX\n", (ist_usize)list);
+    printf("length of list = %zu\n", isl_list_catch_length(list));
+    printf("capacity of list = %zu\n", isl_list_ptr_get_capacity(list));
     list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5;
     list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
 
