@@ -78,7 +78,7 @@ void ist_lexer_init(ist_lexer* this, ist_codepage* _codepage);
 
 ist_token* ist_lexer_advance(ist_lexer* this);
 
-void            ist_lexer_skip_blanks(ist_lexer* this);
+ist_codepoint   ist_lexer_skip_blanks(ist_lexer* this);
 ist_codepoint   ist_lexer_advance_codepoint(ist_lexer* this);
 ist_codepoint   ist_lexer_get_next_codepoint(ist_lexer* this);
 ist_bool        ist_lexer_match_current_codepoint(ist_lexer* this, ist_codepoint _codepoint);

@@ -134,18 +134,7 @@ ist_token* ist_lexer_advance(ist_lexer* this) {
     this->cur_token = this->nex_token;
     this->nex_token = this->sec_token;
 
-    if (!this->codepage->current_codepoint)
-        ist_token_init_full(
-            &analysis_token,
-            ISL_TOKENT_EOF,
-            this->codepage->location,
-            this->codepage->source
-                + this->codepage->next_sequence_index
-                - this->codepage->decode_codepoint_length,
-            0, (ist_value) { 0 });
-
-    while (this->codepage->current_codepoint != 0) {
-        ist_lexer_skip_blanks(this);
+    while (ist_lexer_skip_blanks(this)) {
 
         ist_token_init_full(
             &analysis_token,
@@ -215,7 +204,7 @@ ist_token* ist_lexer_advance(ist_lexer* this) {
 
         case '"':
             ist_lexer_parse_string(this);
-            return &this->pre_token;
+            goto ist_lexer_advance_label_ending;
 
         default:
             if (isdigit(this->codepage->current_codepoint)) {
@@ -242,15 +231,27 @@ ist_token* ist_lexer_advance(ist_lexer* this) {
         ist_lexer_advance_codepoint(this);
         break;
     }
+    
+    if (!this->codepage->current_codepoint)
+        ist_token_init_full(
+            &analysis_token,
+            ISL_TOKENT_EOF,
+            this->codepage->location,
+            this->codepage->source
+                + this->codepage->next_sequence_index
+                - this->codepage->decode_codepoint_length,
+            0, (ist_value) { 0 });
+    
 ist_lexer_advance_label_ending:
     return &this->pre_token;
 }
 
 
-void ist_lexer_skip_blanks(ist_lexer* this) {
+ist_codepoint ist_lexer_skip_blanks(ist_lexer* this) {
     while (isspace(this->codepage->current_codepoint)) {
         ist_lexer_advance_codepoint(this);
     }
+    return this->codepage->current_codepoint;
 }
 
 void ist_lexer_parse_identifier(ist_lexer* this) {
@@ -277,7 +278,7 @@ void ist_lexer_parse_number(ist_lexer* this) {
             ++dot_count;
         ist_lexer_advance_codepoint(this);
     }
-    isl_ifreport(dot_count > 1, rid_is_it_the_version_code, this->codepage->location);
+    isl_ifreport(dot_count > 1, rid_is_it_the_version_code, analysis_token.location);
 
     /* is it a integer number or a real number? */
     analysis_token.type = dot_count ? ISL_TOKENT_REAL : ISL_TOKENT_INT;

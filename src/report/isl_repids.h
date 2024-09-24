@@ -46,11 +46,11 @@ manifest(catch_zero_capacity_list, (CORE, WARNING, CORELOC),
 manifest(catch_zero_capacity_buffer, (CORE, WARNING, CORELOC),
 "there is a zero-capacity buffer<0x%zX>, please note its existence.")
 
-manifest(advance_codepoint_when_eof, (LEXER, ERROR, CORELOC),
+manifest(advance_codepoint_when_eof, (LEXER, WARNING, CORELOC),
 "advance codepoint when we reach the end of source.")
 manifest(unterminated_comment_block, (LEXER, WARNING, USERLOC),
 "block comments do not end with '*/', but with the end of file.")
-manifest(unrecongnized_codepoint, (LEXER, ERROR, USERLOC),
-"unrecongnized codepoint: <0x%zX>, the lexer will skip it.")
+manifest(unrecongnized_codepoint, (LEXER, WARNING, USERLOC),
+"unrecongnized codepoint: <0x%X>, the lexer will skip it.")
 manifest(is_it_the_version_code, (LEXER, ERROR, USERLOC),
 "are you sure? is it the version code? it cannot occur here.")
