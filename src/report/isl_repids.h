@@ -55,6 +55,6 @@ manifest(unterminated_comment_block, (LEXER, WARNING, USERLOC),
 manifest(unterminated_string, (LEXER, WARNING, USERLOC),
 "the string do not end with '\"', but with the end of file.")
 manifest(unrecongnized_codepoint, (LEXER, WARNING, USERLOC),
-"unrecongnized codepoint: <0x%X>, the lexer will skip it.")
+"unrecongnized unicode codepoint: <0x%X>, it will be skipped.")
 manifest(is_it_the_version_code, (LEXER, WARNING, USERLOC),
-"are you sure? is it the version code? it cannot occur here, lexer will ignore the postfix of second dot.")
+"are you sure? is it the version code? the second dot and its suffix numbers will be ignored.")

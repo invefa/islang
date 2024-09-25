@@ -21,6 +21,7 @@ typedef struct ist_location {
 } ist_location;
 
 void ist_location_init(ist_location* this, ist_string _module);
+void ist_location_clean(ist_location* this);
 
 /* length is the length of extracted string */
 typedef struct ist_token {

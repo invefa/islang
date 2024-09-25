@@ -37,12 +37,12 @@ void isl_test_lexer(void);
 
 int main(void) {
 
-    isl_test_overload();
-    isl_test_xssert();
-    isl_test_list();
-    isl_test_memgr();
-    isl_test_string();
-    isl_test_report();
+    // isl_test_overload();
+    // isl_test_xssert();
+    // isl_test_list();
+    // isl_test_memgr();
+    // isl_test_string();
+    // isl_test_report();
     isl_test_lexer();
 
     return 0;
@@ -55,8 +55,8 @@ void isl_test_lexer(void) {
     printf("file context:\n--->%s<---\n", file);
     ist_string_clean(&file);
 
-    ist_string* source = ist_string_createby_raw(u8"abc@..qwen2啊啊啊,qwq. 啊 .//123123\naabc 123/*qqweq\n123*/12.31.3 2h哈哈h\0");
-    ist_codepage* codepage = ist_codepage_createby_source(*source);
+    ist_string* source = ist_string_createby_raw(u8"abc@..qwen2啊啊啊,qwq. 啊 .//123123\naabc 123/*qqweq\n123*/12.31.3 2h哈哈h");
+    ist_codepage* codepage = ist_codepage_createby_source(*source, ist_string_consby_raw("test:wrap"));
     // ist_lexer* lexer = ist_lexer_createby_codepage(codepage);
 
     ist_lexer* lexer = ist_lexer_createby_file("./scripts/test.is");
@@ -80,7 +80,7 @@ void isl_test_lexer(void) {
     ist_string_delete(token_dump_buffer);
 
     ist_lexer_delete(lexer);
-    // ist_string_delete(source);
+    isl_free(source);
 
 }
 
@@ -116,7 +116,7 @@ void isl_test_string(void) {
     ist_string* str2 = ist_string_createby_ref(u8"world", 5);
 
     ist_string str3;
-    ist_string_init(&str3, u8"hello", 5);
+    ist_string_initby_ref(&str3, u8"hello", 5);
 
     printf("str1 = %s\n", *str1);
     printf("str2 = %s\n", *str2);

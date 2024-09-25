@@ -2,6 +2,7 @@
 
 #include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "isl_memgr.h"
 #include "isl_list.h"
@@ -37,9 +38,9 @@ case _char:                                                        \
         analysis_token.type=_unary_tokent;break
 
 
-inline ist_string isl_read_file(ist_string _file_path) {
-    FILE* file = fopen(_file_path, "rb");
-    isl_ifnreport(file, rid_open_file_failed, _file_path, isp_catch_coreloc);
+inline ist_string isl_read_file(ist_string _filepath) {
+    FILE* file = fopen(_filepath, "rb");
+    isl_ifnreport(file, rid_open_file_failed, _filepath, isp_catch_coreloc);
     fseek(file, 0, SEEK_END);
     ist_usize length = ftell(file);
     fseek(file, 0, SEEK_SET);
@@ -51,7 +52,8 @@ inline ist_string isl_read_file(ist_string _file_path) {
 }
 
 
-inline ist_codepage* ist_codepage_createby_source(ist_string _source) {
+/* the source and module must be a string that allocated in the heap */
+inline ist_codepage* ist_codepage_createby_source(ist_string _source, ist_string _module) {
 
     ist_codepage* codepage = isl_malloc(ist_codepage);
 
@@ -66,8 +68,8 @@ inline ist_codepage* ist_codepage_createby_source(ist_string _source) {
                         &codepage->decode_codepoint_length);
     codepage->next_sequence_index += codepage->decode_codepoint_length;
 
-    /* initialize the location, module name is <buildin-source> */
-    ist_location_init(&codepage->location, "buildin");
+    /* initialize the location */
+    ist_location_init(&codepage->location, _module);
 
     codepage->prev_page = NULL;
 
@@ -75,14 +77,29 @@ inline ist_codepage* ist_codepage_createby_source(ist_string _source) {
 
 }
 
-inline ist_codepage* ist_codepage_createby_file(ist_string _file_path) {
-    ist_codepage* codepage = ist_codepage_createby_source(isl_read_file(_file_path));
-    codepage->location.module = _file_path;
-    return codepage;
+ist_string isl_module_name_catchby_filepath(ist_string _filepath) {
+
+    ist_string start = strrchr(_filepath, '/') + 1;
+    ist_string end = strrchr(start, '.');
+
+    if (!start) start = _filepath;
+    if (!end) end = _filepath + strlen(_filepath);
+
+    return ist_string_consby_ref(start, end - start);
+}
+
+
+inline ist_codepage* ist_codepage_createby_file(ist_string _filepath) {
+
+    return ist_codepage_createby_source(
+            isl_read_file(_filepath),
+            isl_module_name_catchby_filepath(_filepath));
+
 }
 
 inline void ist_codepage_delete(ist_codepage* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
+    ist_location_clean(&this->location);
     isl_free(this);
 }
 
@@ -107,12 +124,12 @@ inline ist_lexer* ist_lexer_createby_codepage(ist_codepage* _codepage) {
     return lexer;
 }
 
-inline ist_lexer* ist_lexer_createby_source(ist_string* _source) {
-    return ist_lexer_createby_codepage(ist_codepage_createby_source(*_source));
+inline ist_lexer* ist_lexer_createby_source(ist_string* _source, ist_string _module) {
+    return ist_lexer_createby_codepage(ist_codepage_createby_source(*_source, _module));
 }
 
-inline ist_lexer* ist_lexer_createby_file(ist_string _file_path) {
-    return ist_lexer_createby_codepage(ist_codepage_createby_file(_file_path));
+inline ist_lexer* ist_lexer_createby_file(ist_string _filepath) {
+    return ist_lexer_createby_codepage(ist_codepage_createby_file(_filepath));
 }
 
 inline void ist_lexer_delete(ist_lexer* this) {
@@ -383,37 +400,38 @@ inline void ist_lexer_skip_comment(ist_lexer* this, ist_bool _is_block) {
 
 
 inline ist_codepoint ist_lexer_get_next_codepoint(ist_lexer* this) {
-    ist_codepoint
-        codepoint = isl_utf8_decode(
-                    &this->codepage->source,
-                    this->codepage->next_sequence_index,
-                    &this->codepage->decode_codepoint_length);
-
-    // if ((!codepoint) && this->codepage->prev_page) {
-    //     codepoint = this->codepage->prev_page->current_codepoint;
-    //     this->codepage->decode_codepoint_length = this->codepage->prev_page->decode_codepoint_length;
-    // }
-
-    return codepoint;
+    return isl_utf8_decode(
+            &this->codepage->source,
+            this->codepage->next_sequence_index,
+            &this->codepage->decode_codepoint_length);
 }
 
 /* return the current codepoint, and advance to the next codepoint */
-inline ist_codepoint ist_lexer_advance_codepoint(ist_lexer* this) {
+inline void ist_lexer_advance_codepoint(ist_lexer* this) {
 
     if (!ist_lexer_get_current_codepoint(this)) {
         isl_report(rid_advance_codepoint_when_eof, isp_catch_coreloc);
-        return -1;
+        return;
     }
 
+    /* in that case, switch to the previous codepage */
     if (!ist_lexer_get_next_codepoint(this) && this->codepage->prev_page) {
-        /* in that case, switch to the previous codepage */
+
+        /* switch to the previous codepage, and delete the current codepage */
         ist_codepage* codepage = this->codepage;
         this->codepage = this->codepage->prev_page;
         ist_codepage_delete(codepage);
 
+        /*
+            Set the current codepoint to a space to prevent some parsing processes
+            from sticking across codepages, causing length errors.
+            At the same time, set the parsing environment of prev_page back one
+            codepoint to prevent skipping the current codepoint of prev_page.
+        */
+        this->codepage->current_codepoint = 0x20 /*ascii::space*/;
         this->codepage->next_sequence_index -= this->codepage->decode_codepoint_length;
         --this->codepage->location.column;
-        return this->codepage->current_codepoint = ' ';
+        return;
     }
 
 
@@ -424,17 +442,9 @@ inline ist_codepoint ist_lexer_advance_codepoint(ist_lexer* this) {
         this->codepage->location.column = 1;
     }
 
-    /* store the current codepoint */
-    ist_codepoint codepoint = ist_lexer_get_current_codepoint(this);
-
-    /* update the current codepoint */
+    /* update the current codepoint and the next codepoint index */
     this->codepage->current_codepoint = ist_lexer_get_next_codepoint(this);
-
-    /* update the next codepoint index */
     this->codepage->next_sequence_index += this->codepage->decode_codepoint_length;
-
-    /* return the stored codepoint */
-    return codepoint;
 
 }
 

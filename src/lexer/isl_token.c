@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "isl_memgr.h"
+#include "isl_report.h"
 
 const ist_string ist_token_reflects[] = {
 #   define manifest(_name, _reflect) _reflect,
@@ -21,6 +22,11 @@ inline void ist_location_init(ist_location* this, ist_string _module) {
     this->module = _module;
     this->line = 1;
     this->column = 1;
+}
+
+void ist_location_clean(ist_location* this) {
+    isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
+    if (this->module) ist_string_clean(&this->module);
 }
 
 inline void ist_token_init_null(ist_token* this) {
@@ -59,7 +65,7 @@ inline void ist_token_init_full(
 
 inline void ist_token_print(ist_token* this) {
     ist_string extract;
-    ist_string_init(&extract, this->extract, this->length);
+    ist_string_initby_ref(&extract, this->extract, this->length);
     printf("token<0x%zX>:\n", (ist_usize)this);
     printf("module:   <%s>\n", this->location.module);
     printf("location: <%zu:%zu>\n", this->location.line, this->location.column);

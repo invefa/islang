@@ -4,7 +4,7 @@
 #include "isl_token.h"
 #include "isl_utf8.h"
 
-ist_string isl_read_file(ist_string _file_path);
+ist_string isl_read_file(ist_string _filepath);
 
 /*
     Codepage is a tool for maintaining the source code file currently being read.
@@ -42,8 +42,8 @@ typedef struct ist_codepage {
 
 } ist_codepage;
 
-ist_codepage* ist_codepage_createby_source(ist_string _source);
-ist_codepage* ist_codepage_createby_file(ist_string _file_path);
+ist_codepage* ist_codepage_createby_source(ist_string _source, ist_string _module);
+ist_codepage* ist_codepage_createby_file(ist_string _filepath);
 // ist_codepage* ist_codepage_createby_string(ist_string _string, ist_usize _length);
 
 void ist_codepage_delete(ist_codepage* this);
@@ -70,8 +70,8 @@ typedef struct ist_lexer {
 } ist_lexer;
 
 ist_lexer* ist_lexer_createby_codepage(ist_codepage* _codepage);
-ist_lexer* ist_lexer_createby_source(ist_string* _source);
-ist_lexer* ist_lexer_createby_file(ist_string _file_path);
+ist_lexer* ist_lexer_createby_source(ist_string* _source, ist_string _module);
+ist_lexer* ist_lexer_createby_file(ist_string _filepath);
 void       ist_lexer_delete(ist_lexer* this);
 
 void ist_lexer_init(ist_lexer* this, ist_codepage* _codepage);
@@ -81,9 +81,9 @@ ist_token* ist_lexer_advance(ist_lexer* this);
 
 void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage);
 
-ist_codepoint ist_lexer_get_current_codepoint(ist_lexer* this);
+void          ist_lexer_advance_codepoint(ist_lexer* this);
 ist_codepoint ist_lexer_get_next_codepoint(ist_lexer* this);
-ist_codepoint ist_lexer_advance_codepoint(ist_lexer* this);
+ist_codepoint ist_lexer_get_current_codepoint(ist_lexer* this);
 ist_bool      ist_lexer_match_current_codepoint(ist_lexer* this, ist_codepoint _codepoint);
 
 void          ist_lexer_skip_comment(ist_lexer* this, ist_bool _is_block);

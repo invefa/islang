@@ -6,7 +6,11 @@
 /* ist_string was the byte isl_list actually. */
 typedef ist_byte* ist_string;
 
-void        ist_string_init(ist_string* this, char* _cstring, ist_usize _length);
+void        ist_string_initby_ref(ist_string* this, char* _cstring, ist_usize _length);
+void        ist_string_initby_raw(ist_string* this, char* _cstring);
+
+ist_string  ist_string_consby_ref(char* _cstring, ist_usize _length);
+ist_string  ist_string_consby_raw(char* _cstring);
 
 ist_string* ist_string_createby_ref(char* _cstring, ist_usize _length);
 ist_string* ist_string_createby_raw(const char* _cstring);
