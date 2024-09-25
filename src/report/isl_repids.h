@@ -27,9 +27,9 @@ manifest(open_file_failed, (CORE, FATAL, CORELOC),
 
 manifest(utf8_negative_codepoint, (CORE, ERROR, CORELOC),
 "cannot encode negative codepoint.")
-manifest(illegal_utf8_codepoint, (CORE, ERROR, CORELOC),
+manifest(illegal_utf8_codepoint, (CORE, FATAL, CORELOC),
 "cannot encode illegal utf8 codepoint.")
-manifest(illegal_utf8_sequence, (CORE, ERROR, CORELOC),
+manifest(illegal_utf8_sequence, (CORE, FATAL, CORELOC),
 "cannot decode illegal utf8 sequence, did you get the index wrong?")
 
 

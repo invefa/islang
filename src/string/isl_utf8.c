@@ -97,6 +97,7 @@ inline ist_codepoint isl_utf8_decode(ist_string* _buffer, ist_usize _index, ist_
 }
 
 inline ist_bool isl_utf8_legal_identifier_codepoint(ist_codepoint _codepoint, ist_bool _as_first) {
+    if (_codepoint == -1) return false;
     if (_as_first && (0x0030 <= _codepoint && _codepoint <= 0x0039))
         return false;                                       // 0-9
     return _codepoint == 0x005F                             // UNDERLINE

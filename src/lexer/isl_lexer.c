@@ -389,10 +389,10 @@ inline ist_codepoint ist_lexer_get_next_codepoint(ist_lexer* this) {
                     this->codepage->next_sequence_index,
                     &this->codepage->decode_codepoint_length);
 
-    if (!codepoint && this->codepage->prev_page) {
-        codepoint = this->codepage->prev_page->current_codepoint;
-        this->codepage->decode_codepoint_length = this->codepage->prev_page->decode_codepoint_length;
-    }
+    // if ((!codepoint) && this->codepage->prev_page) {
+    //     codepoint = this->codepage->prev_page->current_codepoint;
+    //     this->codepage->decode_codepoint_length = this->codepage->prev_page->decode_codepoint_length;
+    // }
 
     return codepoint;
 }
@@ -401,16 +401,19 @@ inline ist_codepoint ist_lexer_get_next_codepoint(ist_lexer* this) {
 inline ist_codepoint ist_lexer_advance_codepoint(ist_lexer* this) {
 
     if (!ist_lexer_get_current_codepoint(this)) {
-        if (this->codepage->prev_page) {
-            /* in that case, switch to the previous codepage */
-            ist_codepage* codepage = this->codepage;
-            this->codepage = this->codepage->prev_page;
-            ist_codepage_delete(codepage);
-            return ist_lexer_get_current_codepoint(this);
-        }
         isl_report(rid_advance_codepoint_when_eof, isp_catch_coreloc);
         return -1;
     }
+
+    if (!ist_lexer_get_next_codepoint(this) && this->codepage->prev_page) {
+        /* in that case, switch to the previous codepage */
+        ist_codepage* codepage = this->codepage;
+        this->codepage = this->codepage->prev_page;
+        ist_codepage_delete(codepage);
+        this->codepage->next_sequence_index -= this->codepage->decode_codepoint_length;
+        return this->codepage->current_codepoint = ' ';
+    }
+
 
     /* update the location */
     ++this->codepage->location.column;

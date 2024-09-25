@@ -4,6 +4,6 @@ using main = fn:int(void) {
     println("hell");
     int a = 10086文本;
     real b = 100.86文本;
-    println(a->cast!(string)+b->cast!(string));
+    println(a->cast!(string)+cast!(b,string));
     return 0;
 };
