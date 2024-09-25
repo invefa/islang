@@ -24,6 +24,7 @@ inline void ist_location_init(ist_location* this, ist_string _module) {
     this->column = 1;
 }
 
+/* nothing to clean now */
 void ist_location_clean(ist_location* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
     // if (this->module) ist_string_clean(&this->module);
