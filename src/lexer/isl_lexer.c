@@ -90,11 +90,9 @@ ist_string isl_module_name_catchby_filepath(ist_string _filepath) {
 
 
 inline ist_codepage* ist_codepage_createby_file(ist_string _filepath) {
-
     return ist_codepage_createby_source(
             isl_read_file(_filepath),
             isl_module_name_catchby_filepath(_filepath));
-
 }
 
 inline void ist_codepage_delete(ist_codepage* this) {
@@ -104,7 +102,21 @@ inline void ist_codepage_delete(ist_codepage* this) {
 }
 
 
-inline void ist_lexer_init(ist_lexer* this, ist_codepage* _codepage) {
+inline ist_lexer ist_lexer_consby_file(ist_string _filepath) {
+    return ist_lexer_consby_codepage(ist_codepage_createby_file(_filepath));
+}
+
+inline ist_lexer ist_lexer_consby_source(ist_string _source, ist_string _module) {
+    return ist_lexer_consby_codepage(ist_codepage_createby_source(_source, _module));
+}
+
+inline ist_lexer ist_lexer_consby_codepage(ist_codepage* _codepage) {
+    ist_lexer lexer;
+    ist_lexer_initby_codepage(&lexer, _codepage);
+    return lexer;
+}
+
+inline void ist_lexer_initby_codepage(ist_lexer* this, ist_codepage* _codepage) {
     this->codepage = _codepage;
     this->source_list = isl_calloc_list(ist_string, 2);
     this->source_list[0] = _codepage->source;
@@ -120,12 +132,12 @@ inline void ist_lexer_init(ist_lexer* this, ist_codepage* _codepage) {
 
 inline ist_lexer* ist_lexer_createby_codepage(ist_codepage* _codepage) {
     ist_lexer* lexer = isl_malloc(ist_lexer);
-    ist_lexer_init(lexer, _codepage);
+    ist_lexer_initby_codepage(lexer, _codepage);
     return lexer;
 }
 
-inline ist_lexer* ist_lexer_createby_source(ist_string* _source, ist_string _module) {
-    return ist_lexer_createby_codepage(ist_codepage_createby_source(*_source, _module));
+inline ist_lexer* ist_lexer_createby_source(ist_string _source, ist_string _module) {
+    return ist_lexer_createby_codepage(ist_codepage_createby_source(_source, _module));
 }
 
 inline ist_lexer* ist_lexer_createby_file(ist_string _filepath) {

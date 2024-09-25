@@ -69,13 +69,18 @@ typedef struct ist_lexer {
 
 } ist_lexer;
 
+ist_lexer ist_lexer_consby_file(ist_string _filepath);
+ist_lexer ist_lexer_consby_source(ist_string _source, ist_string _module);
+ist_lexer ist_lexer_consby_codepage(ist_codepage* _codepage);
+
+void      ist_lexer_initby_codepage(ist_lexer* this, ist_codepage* _codepage);
+void      ist_lexer_clean(ist_lexer* this);
+
 ist_lexer* ist_lexer_createby_codepage(ist_codepage* _codepage);
-ist_lexer* ist_lexer_createby_source(ist_string* _source, ist_string _module);
+ist_lexer* ist_lexer_createby_source(ist_string _source, ist_string _module);
 ist_lexer* ist_lexer_createby_file(ist_string _filepath);
 void       ist_lexer_delete(ist_lexer* this);
 
-void ist_lexer_init(ist_lexer* this, ist_codepage* _codepage);
-void ist_lexer_clean(ist_lexer* this);
 
 ist_token* ist_lexer_advance(ist_lexer* this);
 
