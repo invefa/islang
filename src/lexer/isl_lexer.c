@@ -411,6 +411,7 @@ inline ist_codepoint ist_lexer_advance_codepoint(ist_lexer* this) {
         this->codepage = this->codepage->prev_page;
         ist_codepage_delete(codepage);
         this->codepage->next_sequence_index -= this->codepage->decode_codepoint_length;
+        --this->codepage->location.column;
         return this->codepage->current_codepoint = ' ';
     }
 
