@@ -97,7 +97,7 @@ inline ist_codepage* ist_codepage_createby_file(ist_string _filepath) {
 
 inline void ist_codepage_delete(ist_codepage* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
-    ist_location_clean(&this->location);
+    // ist_location_clean(&this->location);
     isl_free(this);
 }
 
@@ -118,13 +118,16 @@ inline ist_lexer ist_lexer_consby_codepage(ist_codepage* _codepage) {
 
 inline void ist_lexer_initby_codepage(ist_lexer* this, ist_codepage* _codepage) {
     this->codepage = _codepage;
-    this->source_list = isl_calloc_list(ist_string, 2);
+    this->source_list = isl_malloc_list(ist_string, 1);
+    this->module_list = isl_malloc_list(ist_string, 1);
     this->source_list[0] = _codepage->source;
+    this->module_list[0] = _codepage->location.module;
     this->source_count = 1;
-    ist_token_init_with_location(&this->pre_token, _codepage->location);
-    ist_token_init_with_location(&this->cur_token, _codepage->location);
-    ist_token_init_with_location(&this->nex_token, _codepage->location);
-    ist_token_init_with_location(&this->sec_token, _codepage->location);
+    this->module_count = 1;
+    ist_token_initby_location(&this->pre_token, _codepage->location);
+    ist_token_initby_location(&this->cur_token, _codepage->location);
+    ist_token_initby_location(&this->nex_token, _codepage->location);
+    ist_token_initby_location(&this->sec_token, _codepage->location);
     ist_lexer_advance(this);
     ist_lexer_advance(this);
     ist_lexer_advance(this);
@@ -157,6 +160,12 @@ inline void ist_lexer_clean(ist_lexer* this) {
         else isl_report(rid_catch_nullptr, isp_catch_coreloc);
     }
     isl_free_list(this->source_list);
+
+    for (ist_usize i = 0; i < this->module_count; i++) {
+        if (this->module_list[i]) ist_string_clean(this->module_list + i);
+        else isl_report(rid_catch_nullptr, isp_catch_coreloc);
+    }
+    isl_free_list(this->module_list);
 
     //TODO: delete all of the codepage on the chain.
     ist_codepage_delete(this->codepage);
@@ -290,13 +299,15 @@ inline void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage) 
     this->codepage = _codepage;
 
     /* ensure enough space in the list */
-    if (isl_list_catch_length(this->source_list) == this->source_count)
+    /* if (isl_list_catch_length(this->source_list) == this->source_count)
         isl_list_resizec(this->source_list, ceil_upon_powertwo(this->source_count + 1));
     else if (isl_list_catch_length(this->source_list) < this->source_count)
-        isl_report(rid_catch_size_overflow, isp_catch_coreloc);
-
-    /* add new source to the end of the list */
+        isl_report(rid_catch_size_overflow, isp_catch_coreloc); */
+    isl_list_ensurec(this->source_list, this->source_count, 1);
     this->source_list[this->source_count++] = _codepage->source;
+
+    isl_list_ensurec(this->module_list, this->module_count, 1);
+    this->module_list[this->module_count++] = _codepage->location.module;
 }
 
 

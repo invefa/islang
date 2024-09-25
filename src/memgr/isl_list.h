@@ -90,14 +90,17 @@ do{                                                                             
 #define isl_list_resizec(_ptr, _new_capcaity, _stv...) __ISL_LIST_RESIZEX(c,_ptr,_new_capcaity,##_stv)
 #define isl_list_resizem(_ptr, _new_capcaity, _stv...) __ISL_LIST_RESIZEX(m,_ptr,_new_capcaity,##_stv)
 
-#define __ISL_LIST_ENSUREX(_x, _ptr, _size, _require, _stv...)                          \
-do {                                                                                    \
-    ist_usize _size_=_size;                                                             \
-    ist_usize _require_=_require;                                                       \
-    ist_usize _capacity_=isl_list_ptr_get_capacity(_ptr)                                \
-    isl_ifreport(_capacity_<_size_,rid_catch_size_overflow, isp_catch_coreloc);         \
-    if(_capacity_-_size_<_require_)                                                     \
-        __ISL_LIST_RESIZEX(_x,_ptr,ceil_upon_powertwo(_capacity_+_require_),##_stv);    \
+#define __ISL_LIST_ENSUREX(_x, _ptr, _size, _require, _stv...)                  \
+do {                                                                            \
+    ist_usize _size_=_size;                                                     \
+    ist_usize _require_=_require;                                               \
+    ist_usize _cap_=isl_list_ptr_get_capacity(_ptr);                            \
+    isl_ifreport(_cap_<_size_,rid_catch_size_overflow, isp_catch_coreloc);      \
+    if(_cap_-_size_<_require_){                                                 \
+        isl_report(rid_inform_list_reisze,_ptr,_cap_,_cap_-_size_,_require_,    \
+                    ceil_upon_powertwo(_cap_+_require_));                       \
+        __ISL_LIST_RESIZEX(_x,_ptr,ceil_upon_powertwo(_cap_+_require_),##_stv); \
+    }                                                                           \
 }while (0)
 
 //TODO: test ensurex.

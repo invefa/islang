@@ -39,7 +39,8 @@ manifest(inform_released, (CORE, INFO, NONE),
 "released <0x%zX> {length=%zu}, then allocated-length=%zu.")
 manifest(inform_buffer_reisze, (CORE, INFO, NONE),
 "buffer<0x%zX> {capacity=%zu, remaining=%zu} ->require(%zu) ->resize(%zu).")
-
+manifest(inform_list_reisze, (CORE, INFO, NONE),
+"list<0x%zX> {capacity=%zu, remaining=%zu} ->require(%zu) ->resize(%zu).")
 
 manifest(catch_zero_string_length, (CORE, WARNING, CORELOC),
 "there is a zero-length string: <0x%zX>, please note its existence.")

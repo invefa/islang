@@ -39,7 +39,7 @@ int main(void) {
 
     // isl_test_overload();
     // isl_test_xssert();
-    // isl_test_list();
+    isl_test_list();
     // isl_test_memgr();
     // isl_test_string();
     // isl_test_report();
@@ -233,7 +233,8 @@ void isl_test_list(void) {
     printf("capacity of list = %zu\n", isl_list_ptr_get_capacity(list));
     list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5;
     list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
-
+    ist_usize size = 10;
+    isl_list_ensurec(list, size, 5);
     isl_list_resizec(list, 20);
     isl_list_resizec(list, 30);
     isl_list_resizem(list, 6);

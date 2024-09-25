@@ -63,6 +63,9 @@ typedef struct ist_lexer {
     ist_string* source_list;
     ist_usize source_count;
 
+    ist_string* module_list;
+    ist_usize module_count;
+
     ist_codepage* codepage;
 
     //TODO: add an error signal.
