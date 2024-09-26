@@ -39,7 +39,7 @@ int main(void) {
 
     // isl_test_overload();
     // isl_test_xssert();
-    isl_test_list();
+    // isl_test_list();
     // isl_test_memgr();
     // isl_test_string();
     // isl_test_report();
