@@ -28,9 +28,11 @@ manifest(open_file_failed, (CORE, FATAL, CORELOC),
 manifest(utf8_negative_codepoint, (CORE, ERROR, CORELOC),
 "cannot encode negative codepoint.")
 manifest(illegal_utf8_codepoint, (CORE, FATAL, CORELOC),
-"cannot encode illegal utf8 codepoint.")
+"cannot encode illegal UTF-8 codepoint.")
 manifest(illegal_utf8_sequence, (CORE, FATAL, CORELOC),
-"cannot decode illegal utf8 sequence, did you get the index wrong?")
+"cannot decode illegal UTF-8 sequence, did you get the index wrong?")
+manifest(incomplete_utf8_sequence, (CORE, FATAL, CORELOC),
+"cannot decode incomplete UTF-8 sequence, the buffer is not long enough.")
 
 
 manifest(inform_allocated, (CORE, INFO, NONE),

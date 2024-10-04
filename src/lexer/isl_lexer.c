@@ -189,8 +189,8 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
             0, (ist_value) { 0 });
 
         switch (ist_lexer_get_current_codepoint(this)) {
-        case -1:
-            goto ist_lexer_advance_label_ending;
+        case ISL_CODEPOINT_EOCP:  ist_lexer_advance_codepoint(this);
+        case ISL_CODEPOINT_ERROR: goto ist_lexer_advance_label_ending;
 
             CHECK_SINCHAR_TOKENT('(', ISL_TOKENT_LPARE);
             CHECK_SINCHAR_TOKENT(')', ISL_TOKENT_RPARE);

@@ -15,8 +15,8 @@ inline ist_u8 isl_utf8_encode_length(ist_codepoint _codepoint) {
 }
 
 inline ist_u8 isl_utf8_encode(ist_codepoint _codepoint, ist_string* _buffer, ist_usize _index) {
-    isl_ifnreport(_buffer, rid_catch_nullptr, isp_catch_coreloc);
-    isl_ifnreport(_buffer[0], rid_catch_nullptr, isp_catch_coreloc);
+    isl_assert(_buffer);
+    isl_assert(_buffer[0]);
 
     ist_u8 codepoint_encode_length = isl_utf8_encode_length(_codepoint);
 
@@ -51,6 +51,9 @@ inline ist_u8 isl_utf8_encode(ist_codepoint _codepoint, ist_string* _buffer, ist
 }
 
 inline ist_u8 isl_utf8_decode_length(ist_string* _buffer, ist_usize _index) {
+    isl_assert(_buffer);
+    isl_assert(_buffer[0]);
+
     if ((_buffer[0][_index] & 0xC0) == 0x80) return 0;
     else if ((_buffer[0][_index] & 0xF8) == 0xF0) return 4;
     else if ((_buffer[0][_index] & 0xF0) == 0xE0) return 3;
@@ -59,12 +62,17 @@ inline ist_u8 isl_utf8_decode_length(ist_string* _buffer, ist_usize _index) {
 }
 
 inline ist_codepoint isl_utf8_decode(ist_string* _buffer, ist_usize _index, ist_u8* _decode_length_stv) {
+    isl_assert(_decode_length_stv, "decode length storage variable must be non-null.");
+
+    ist_codepoint result = ISL_CODEPOINT_ERROR;
     *_decode_length_stv = isl_utf8_decode_length(_buffer, _index);
+
+    isl_ifreport(
+        isl_list_catch_length(*_buffer) - _index < *_decode_length_stv,
+        rid_incomplete_utf8_sequence, isp_catch_coreloc);
+
+    //NOTICE: the following code is not safe, but it is not critical.
     ist_byte* buffer = *_buffer + _index;
-    ist_codepoint result = 0;
-
-    ist_string_buffer_ensure(_buffer, _index, *_decode_length_stv);
-
     switch (*_decode_length_stv) {
     case 4:
         result =
@@ -97,7 +105,7 @@ inline ist_codepoint isl_utf8_decode(ist_string* _buffer, ist_usize _index, ist_
 }
 
 inline ist_bool isl_utf8_legal_identifier_codepoint(ist_codepoint _codepoint, ist_bool _as_first) {
-    if (_codepoint == -1) return false;
+    if (_codepoint == ISL_CODEPOINT_ERROR) return false;
     if (_as_first && (0x0030 <= _codepoint && _codepoint <= 0x0039))
         return false;                                       // 0-9
     return _codepoint == 0x005F                             // UNDERLINE
