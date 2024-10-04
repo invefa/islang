@@ -445,7 +445,10 @@ inline void ist_lexer_advance_codepoint(ist_lexer* this) {
 
     if (!ist_lexer_get_next_codepoint(this) && this->codepage->prev_page) {
         this->codepage->current_codepoint = ISL_CODEPOINT_EOCCP;
-        /* because we must advance next_sequence_index, so we should +1 */
+        /*
+            because we must advance next_sequence_index,
+            and the next codepoint is ASCII::EOF, so we should +1.
+        */
         ++this->codepage->next_sequence_index;
         return;
     }
