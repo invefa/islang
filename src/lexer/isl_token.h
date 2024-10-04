@@ -35,7 +35,7 @@ typedef struct ist_token {
 void ist_token_init_null(ist_token* this);
 void ist_token_initby_location(ist_token* this, ist_location _location);
 
-void ist_token_init_full(
+void ist_token_initby_full(
     ist_token* this,
     ist_token_type  _type,
     ist_location    _location,

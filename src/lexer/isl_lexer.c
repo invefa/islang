@@ -179,7 +179,7 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
 
     while (ist_lexer_skip_blanks(this)) {
 
-        ist_token_init_full(
+        ist_token_initby_full(
             &analysis_token,
             ISL_TOKENT_EOF,
             this->codepage->location,
@@ -189,7 +189,7 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
             0, (ist_value) { 0 });
 
         switch (ist_lexer_get_current_codepoint(this)) {
-        case ISL_CODEPOINT_EOCP:  ist_lexer_advance_codepoint(this);
+        // case ISL_CODEPOINT_EOCCP: ist_lexer_advance_codepoint(this);
         case ISL_CODEPOINT_ERROR: goto ist_lexer_advance_label_ending;
 
             CHECK_SINCHAR_TOKENT('(', ISL_TOKENT_LPARE);
@@ -280,7 +280,7 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
     }
 
     if (!ist_lexer_get_current_codepoint(this))
-        ist_token_init_full(
+        ist_token_initby_full(
             &analysis_token,
             ISL_TOKENT_EOF,
             this->codepage->location,
@@ -317,8 +317,8 @@ inline void ist_lexer_parse_identifier(ist_lexer* this) {
 
     /* skip identifier context */
     while (
-         isl_utf8_legal_identifier_codepoint(
-             ist_lexer_get_current_codepoint(this), false)
+        isl_utf8_legal_identifier_codepoint(
+            ist_lexer_get_current_codepoint(this), false)
      ) ist_lexer_advance_codepoint(this);
 
     /*
@@ -431,25 +431,41 @@ inline void ist_lexer_advance_codepoint(ist_lexer* this) {
         return;
     }
 
-    /* in that case, switch to the previous codepage */
-    if (!ist_lexer_get_next_codepoint(this) && this->codepage->prev_page) {
+    else if (ist_lexer_get_current_codepoint(this) == ISL_CODEPOINT_EOCCP) {
 
         /* switch to the previous codepage, and delete the current codepage */
         ist_codepage* codepage = this->codepage;
         this->codepage = this->codepage->prev_page;
         ist_codepage_delete(codepage);
-
-        /*
-            Set the current codepoint to a space to prevent some parsing processes
-            from sticking across codepages, causing length errors.
-            At the same time, set the parsing environment of prev_page back one
-            codepoint to prevent skipping the current codepoint of prev_page.
-        */
-        this->codepage->current_codepoint = 0x20 /*ascii::space*/;
-        this->codepage->next_sequence_index -= this->codepage->decode_codepoint_length;
-        --this->codepage->location.column;
         return;
     }
+
+    if (!ist_lexer_get_next_codepoint(this) && this->codepage->prev_page) {
+        this->codepage->current_codepoint = ISL_CODEPOINT_EOCCP;
+        /* because we must advance next_sequence_index, so we should +1 */
+        ++this->codepage->next_sequence_index;
+        return;
+    }
+
+    // /* in that case, switch to the previous codepage */
+    // if (!ist_lexer_get_next_codepoint(this) && this->codepage->prev_page) {
+
+    //     /* switch to the previous codepage, and delete the current codepage */
+    //     ist_codepage* codepage = this->codepage;
+    //     this->codepage = this->codepage->prev_page;
+    //     ist_codepage_delete(codepage);
+
+    //     /*
+    //         Set the current codepoint to a space to prevent some parsing processes
+    //         from sticking across codepages, causing length errors.
+    //         At the same time, set the parsing environment of prev_page back one
+    //         codepoint to prevent skipping the current codepoint of prev_page.
+    //     */
+    //     this->codepage->current_codepoint = 0x20 /*ascii::space*/;
+    //     this->codepage->next_sequence_index -= this->codepage->decode_codepoint_length;
+    //     --this->codepage->location.column;
+    //     return;
+    // }
 
 
     /* update the location */

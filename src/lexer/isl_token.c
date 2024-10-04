@@ -49,7 +49,7 @@ inline void ist_token_initby_location(ist_token* this, ist_location _location) {
     this->value.int_value = 0;
 }
 
-inline void ist_token_init_full(
+inline void ist_token_initby_full(
     ist_token* this,
     ist_token_type  _type,
     ist_location    _location,
