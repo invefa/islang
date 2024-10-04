@@ -7,3 +7,4 @@ using main = fn:int(void) {
     println(a->cast!(string)+cast!(b,string));
     return 0;
 };
+文本

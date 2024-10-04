@@ -434,9 +434,8 @@ inline void ist_lexer_advance_codepoint(ist_lexer* this) {
         return;
     }
 
+    /* switch to the previous codepage, and delete the current codepage */
     else if (ist_lexer_get_current_codepoint(this) == ISL_CODEPOINT_EOCCP) {
-
-        /* switch to the previous codepage, and delete the current codepage */
         ist_codepage* codepage = this->codepage;
         this->codepage = this->codepage->prev_page;
         ist_codepage_delete(codepage);
@@ -452,27 +451,6 @@ inline void ist_lexer_advance_codepoint(ist_lexer* this) {
         ++this->codepage->next_sequence_index;
         return;
     }
-
-    // /* in that case, switch to the previous codepage */
-    // if (!ist_lexer_get_next_codepoint(this) && this->codepage->prev_page) {
-
-    //     /* switch to the previous codepage, and delete the current codepage */
-    //     ist_codepage* codepage = this->codepage;
-    //     this->codepage = this->codepage->prev_page;
-    //     ist_codepage_delete(codepage);
-
-    //     /*
-    //         Set the current codepoint to a space to prevent some parsing processes
-    //         from sticking across codepages, causing length errors.
-    //         At the same time, set the parsing environment of prev_page back one
-    //         codepoint to prevent skipping the current codepoint of prev_page.
-    //     */
-    //     this->codepage->current_codepoint = 0x20 /*ascii::space*/;
-    //     this->codepage->next_sequence_index -= this->codepage->decode_codepoint_length;
-    //     --this->codepage->location.column;
-    //     return;
-    // }
-
 
     /* update the location */
     ++this->codepage->location.column;
