@@ -315,6 +315,7 @@ inline ist_codepoint ist_lexer_skip_blanks(ist_lexer* this) {
     return ist_lexer_get_current_codepoint(this);
 }
 
+//TODO: support keyword.
 inline void ist_lexer_parse_identifier(ist_lexer* this) {
     analysis_token.type = ISL_TOKENT_ID;
 

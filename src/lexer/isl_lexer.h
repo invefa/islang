@@ -48,7 +48,8 @@ ist_codepage* ist_codepage_createby_file(ist_string _filepath);
 
 void ist_codepage_delete(ist_codepage* this);
 
-
+//TODO: optimize symbol management.
+//TODO: support lookahead.
 typedef struct ist_lexer {
 
     /*

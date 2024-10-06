@@ -103,7 +103,6 @@ do {                                                                            
     }                                                                           \
 }while (0)
 
-//TODO: test ensurex.
 #define isl_list_ensurec(_ptr, _size, _require, _stv...) __ISL_LIST_ENSUREX(c,_ptr,_size,_require,##_stv)
 #define isl_list_ensurem(_ptr, _size, _require, _stv...) __ISL_LIST_ENSUREX(m,_ptr,_size,_require,##_stv)
 
