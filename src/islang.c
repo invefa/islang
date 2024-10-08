@@ -72,6 +72,7 @@ void isl_test_lexer(void) {
         ist_token_dump(&lexer.sec_token, token_dump_buffer);
         printf("%s\n", *token_dump_buffer);
         
+        //TODO: fix the source_list duplicated ptr
         if (lexer.sec_token.type == ISL_TOKENT_WRAPPER) {
             ist_lexer_switch_codepage(&lexer, codepage);
         }
