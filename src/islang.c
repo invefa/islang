@@ -52,7 +52,7 @@ int main(void) {
 void isl_test_lexer(void) {
 
     ist_string file = isl_read_file("./scripts/test.is");
-    printf("file context:\n--->%s<---\n", file);
+    printf("file context:\n|\nv\n%s<--\n", file);
     ist_string_clean(&file);
 
     ist_string* source = ist_string_createby_raw(u8"起始,*.*awa123,123.456.789,\n//awa\n/*1\n2*/@magic[666u32]结束");
@@ -63,21 +63,26 @@ void isl_test_lexer(void) {
     ist_string* token_dump_buffer = ist_string_create_buffer(ISL_DEFAULT_BUFFER_LENGTH);
     ist_token_dump(&lexer.cur_token, token_dump_buffer);
     printf("%s\n", *token_dump_buffer);
+    
     ist_token_dump(&lexer.nex_token, token_dump_buffer);
     printf("%s\n", *token_dump_buffer);
+    
     while (lexer.sec_token.type != ISL_TOKENT_EOF) {
         // ist_token_print(&lexer.cur_token);
         ist_token_dump(&lexer.sec_token, token_dump_buffer);
         printf("%s\n", *token_dump_buffer);
+        
         if (lexer.sec_token.type == ISL_TOKENT_WRAPPER) {
             ist_lexer_switch_codepage(&lexer, codepage);
         }
+        
         ist_lexer_advance(&lexer);
     }
+    
     token_dump_buffer = ist_token_dump(&lexer.sec_token, token_dump_buffer);
     printf("%s\n", *token_dump_buffer);
+    
     ist_string_delete(token_dump_buffer);
-
     ist_lexer_clean(&lexer);
     isl_free(source);
 
