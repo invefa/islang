@@ -61,29 +61,32 @@ void isl_test_lexer(void) {
     ist_lexer lexer = ist_lexer_consby_file("./scripts/test.is");
 
     ist_string* token_dump_buffer = ist_string_create_buffer(ISL_DEFAULT_BUFFER_LENGTH);
+
+
     ist_token_dump(&lexer.cur_token, token_dump_buffer);
     printf("%s\n", *token_dump_buffer);
-    
+
     ist_token_dump(&lexer.nex_token, token_dump_buffer);
     printf("%s\n", *token_dump_buffer);
-    
+
     while (lexer.sec_token.type != ISL_TOKENT_EOF) {
 
         ist_token_dump(&lexer.sec_token, token_dump_buffer);
         printf("%s\n", *token_dump_buffer);
-        
+
         //TODO: fix the source_list duplicated ptr
         if (lexer.sec_token.type == ISL_TOKENT_WRAPPER) {
             ist_lexer_switch_codepage(&lexer, codepage);
         }
-        
+
         ist_lexer_advance(&lexer);
 
     }
-    
+
     token_dump_buffer = ist_token_dump(&lexer.sec_token, token_dump_buffer);
     printf("%s\n", *token_dump_buffer);
-    
+
+
     ist_string_delete(token_dump_buffer);
     ist_lexer_clean(&lexer);
     isl_free(source);
