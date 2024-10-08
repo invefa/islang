@@ -68,7 +68,7 @@ void isl_test_lexer(void) {
     printf("%s\n", *token_dump_buffer);
     
     while (lexer.sec_token.type != ISL_TOKENT_EOF) {
-        // ist_token_print(&lexer.cur_token);
+
         ist_token_dump(&lexer.sec_token, token_dump_buffer);
         printf("%s\n", *token_dump_buffer);
         
@@ -77,6 +77,7 @@ void isl_test_lexer(void) {
         }
         
         ist_lexer_advance(&lexer);
+
     }
     
     token_dump_buffer = ist_token_dump(&lexer.sec_token, token_dump_buffer);
