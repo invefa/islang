@@ -30,7 +30,7 @@ void ist_location_clean(ist_location* this) {
     // if (this->module) ist_string_clean(&this->module);
 }
 
-inline void ist_token_init_null(ist_token* this) {
+inline void ist_token_inito_null(ist_token* this) {
     this->type = ISL_TOKENT_EOF;
 
     ist_location_init(&this->location, NULL);
@@ -64,7 +64,7 @@ inline void ist_token_initby_full(
     this->value = _value;
 }
 
-inline void ist_token_print(ist_token* this) {
+/* inline void ist_token_print(ist_token* this) {
     ist_string extract;
     ist_string_initby_ref(&extract, this->extract, this->length);
     printf("token<0x%zX>:\n", (ist_usize)this);
@@ -78,7 +78,7 @@ inline void ist_token_print(ist_token* this) {
     if (this->type == ISL_TOKENT_REAL)
         printf("value:    %lf\n", this->value.real_value);
     ist_string_clean(&extract);
-}
+} */
 
 inline ist_string* ist_token_dump(ist_token* this, ist_string* _buffer) {
     ist_byte storager;
@@ -103,4 +103,12 @@ inline ist_string* ist_token_dump(ist_token* this, ist_string* _buffer) {
         this->extract[this->length] = storager;
 
     return _buffer;
+}
+
+ist_token_type ist_string_is_keyword(ist_string this, ist_usize _length) {
+    for (ist_usize i = ISL_TOKENT_START_KEYWORDS; i < ISL_TOKENT_END_KEYWORDS; ++i)
+        if (!ist_token_reflects[i]) continue;
+        else if (!strncmp(this, ist_token_reflects[i], _length))
+            return i;
+    return ISL_TOKENT_ID;
 }

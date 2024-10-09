@@ -1,14 +1,59 @@
 
 manifest(UNKNOWN, NULL)
 
+/* end of file */
 manifest(EOF, "\0")
+
+/* end of statement */
 manifest(EOS, ";")
 
 manifest(ID, NULL)
 
-manifest(INTEGER_LITERAL, NULL)
-manifest(REAL_LITERAL, NULL)
-manifest(STRING_LITERAL, NULL)
+/* value literals */
+manifest(VL_INT, NULL)
+manifest(VL_REAL, NULL)
+manifest(VL_STRING, NULL)
+
+/* keywords */
+manifest(START_KEYWORDS, NULL)
+
+manifest(KW_USING, "using")
+manifest(KW_IMPORT, "import")
+
+manifest(KW_FN, "fn")
+manifest(KW_LET, "let")
+manifest(KW_VAR, "var")
+manifest(KW_ENUM, "enum")
+manifest(KW_STRUCT, "struct")
+
+manifest(KW_IF, "if")
+manifest(KW_FOR, "for")
+manifest(KW_WHILE, "while")
+
+manifest(KW_ELSE, "else")
+manifest(KW_BREAK, "break")
+manifest(KW_CONTINUE, "continue")
+
+manifest(KW_RETURN, "return")
+
+/* value types */
+manifest(START_VALUE_TYPES, NULL)
+
+manifest(VT_VOID, "void")
+manifest(VT_INT, "int")
+manifest(VT_REAL, "real")
+manifest(VT_BYTE, "byte")
+manifest(VT_BOOL, "bool")
+manifest(VT_STRING, "string")
+manifest(VTS_UNSIGNED, "unsigned")
+
+manifest(END_VALUE_TYPES, NULL)
+
+/* bool values */
+manifest(BV_TRUE, "true")
+manifest(BV_FALSE, "false")
+
+manifest(END_KEYWORDS, NULL)
 
 manifest(LPARE, "(")
 manifest(RPARE, ")")
@@ -61,32 +106,3 @@ manifest(LESSTHAN, "<")
 manifest(GREATERTHAN, ">")
 manifest(LESSEQUAL, "<=")
 manifest(GREATEQUAL, ">=")
-
-manifest(KW_START, NULL)
-
-manifest(BOL_TRUE, "true")
-manifest(BOL_FALSE, "false")
-
-manifest(INT, "int")
-manifest(BOOL, "bool")
-manifest(BYTE, "byte")
-manifest(REAL, "real")
-manifest(STRING, "string")
-
-manifest(FN, "fn")
-manifest(LET, "let")
-
-manifest(IF, "if")
-manifest(FOR, "for")
-manifest(WHILE, "while")
-
-manifest(ELSE, "else")
-manifest(BREAK, "break")
-manifest(CONTINUE, "continue")
-
-manifest(RETURN, "return")
-
-manifest(ENUM, "enum")
-manifest(STRUCT, "struct")
-
-manifest(KW_END, NULL)

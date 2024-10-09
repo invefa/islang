@@ -317,7 +317,6 @@ inline ist_codepoint ist_lexer_skip_blanks(ist_lexer* this) {
 
 //TODO: support keyword.
 inline void ist_lexer_parse_identifier(ist_lexer* this) {
-    analysis_token.type = ISL_TOKENT_ID;
 
     /* skip identifier context */
     while (
@@ -334,6 +333,8 @@ inline void ist_lexer_parse_identifier(ist_lexer* this) {
             + this->codepage->next_sequence_index)
         - analysis_token.extract - this->codepage->decode_codepoint_length;
 
+    analysis_token.type = ist_string_is_keyword(analysis_token.extract, analysis_token.length);
+
 }
 
 inline void ist_lexer_parse_number(ist_lexer* this) {
@@ -344,10 +345,12 @@ inline void ist_lexer_parse_number(ist_lexer* this) {
             ++dot_count;
         ist_lexer_advance_codepoint(this);
     }
-    isl_ifreport(dot_count > 1, rid_is_it_the_version_code, analysis_token.location);
+    isl_ifreport(dot_count > 1,
+                rid_is_it_the_version_code,
+                analysis_token.location);
 
     /* is it a integer number or a real number? */
-    analysis_token.type = dot_count ? ISL_TOKENT_REAL_LITERAL : ISL_TOKENT_INTEGER_LITERAL;
+    analysis_token.type = dot_count ? ISL_TOKENT_VL_REAL : ISL_TOKENT_VL_INT;
 
     /*
         because the current codepoint is not belong this number,
@@ -365,7 +368,7 @@ inline void ist_lexer_parse_number(ist_lexer* this) {
 }
 
 inline void ist_lexer_parse_string(ist_lexer* this) {
-    analysis_token.type = ISL_TOKENT_STRING_LITERAL;
+    analysis_token.type = ISL_TOKENT_VL_STRING;
 
     /* skip the starting double quote. */
     ist_lexer_advance_codepoint(this);
