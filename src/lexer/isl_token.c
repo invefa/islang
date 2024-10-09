@@ -4,6 +4,7 @@
 
 #include "isl_memgr.h"
 #include "isl_report.h"
+#include "isl_lexer.h"
 
 const ist_string ist_token_reflects[] = {
 #   define manifest(_name, _reflect) _reflect,
@@ -17,9 +18,8 @@ const ist_string ist_token_names[] = {
 #   undef manifest
 };
 
-
-inline void ist_location_init(ist_location* this, ist_string _module) {
-    this->module = _module;
+inline void ist_location_init(ist_location* this, struct ist_codepage* _codepage) {
+    this->codepage = _codepage;
     this->line = 1;
     this->column = 1;
 }
@@ -81,16 +81,17 @@ inline void ist_token_initby_full(
 } */
 
 inline ist_string* ist_token_dump(ist_token* this, ist_string* _buffer) {
-    ist_byte storager;
+    ist_byte storager = 0;
     if (this->extract) {
         storager = this->extract[this->length];
         this->extract[this->length] = '\0';
     }
     snprintf(*_buffer, ISL_DEFAULT_BUFFER_LENGTH,
-        "token<0x%zX> {module=<%s>,location=<%zu:%zu>,type=%s,"
+        "token<0x%zX> {module:codepage=<%s:%s>,location=<%zu:%zu>,type=%s,"
         "extract=\"%s\",length=%zu,value={int=%lld,real=%g}}",
         (ist_usize)this,
-        this->location.module,
+        this->location.codepage->module,
+        this->location.codepage->name ? this->location.codepage->name : (ist_string)"default",
         this->location.line,
         this->location.column,
         ist_token_names[this->type],

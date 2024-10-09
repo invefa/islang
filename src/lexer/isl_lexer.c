@@ -57,6 +57,8 @@ inline ist_codepage* ist_codepage_createby_source(ist_string _source, ist_string
 
     ist_codepage* codepage = isl_malloc(ist_codepage);
 
+    codepage->name = NULL;
+    codepage->module = _module;
     codepage->source = _source;
     codepage->next_sequence_index = 0;
     codepage->decode_codepoint_length = 0;
@@ -69,7 +71,7 @@ inline ist_codepage* ist_codepage_createby_source(ist_string _source, ist_string
     codepage->next_sequence_index += codepage->decode_codepoint_length;
 
     /* initialize the location */
-    ist_location_init(&codepage->location, _module);
+    ist_location_init(&codepage->location, codepage);
 
     codepage->prev_page = NULL;
 
@@ -120,7 +122,7 @@ inline void ist_lexer_initby_codepage(ist_lexer* this, ist_codepage* _codepage) 
     this->source_list = isl_malloc_list(ist_string, 1);
     this->module_list = isl_malloc_list(ist_string, 1);
     this->source_list[0] = _codepage->source;
-    this->module_list[0] = _codepage->location.module;
+    this->module_list[0] = _codepage->location.codepage->module;
     this->source_count = 1;
     this->module_count = 1;
     ist_token_initby_location(&this->pre_token, _codepage->location);
@@ -304,7 +306,7 @@ inline void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage) 
     this->source_list[this->source_count++] = _codepage->source;
 
     isl_list_ensurec(this->module_list, this->module_count, 1);
-    this->module_list[this->module_count++] = _codepage->location.module;
+    this->module_list[this->module_count++] = _codepage->location.codepage->module;
 }
 
 

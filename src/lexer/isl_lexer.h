@@ -14,6 +14,15 @@ ist_string isl_read_file(ist_string _filepath);
 */
 typedef struct ist_codepage {
 
+    /*
+        The name of this codepage, it will be used in reporting message.
+        And if it was nullptr, indicate that it is the default codepage.
+    */
+    ist_string name;
+
+    /* the module which this codepage belongs to */
+    ist_string module;
+
     /* the source code read from the source code file */
     ist_string source;
 

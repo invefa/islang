@@ -14,13 +14,16 @@ typedef enum ist_token_type {
 extern const ist_string ist_token_reflects[];
 extern const ist_string ist_token_names[];
 
+//pre-declare for location
+struct ist_codepage;
+
 typedef struct ist_location {
-    ist_string  module;
-    ist_usize   line;
-    ist_usize   column;
+    struct ist_codepage* codepage;
+    ist_usize            line;
+    ist_usize            column;
 } ist_location;
 
-void ist_location_init(ist_location* this, ist_string _module);
+void ist_location_init(ist_location* this, struct ist_codepage* _codepage);
 void ist_location_clean(ist_location* this);
 
 /* length is the length of extracted string */

@@ -5,6 +5,7 @@
 #include "isl_ansictrl.h"
 #include "isl_string.h"
 #include "isl_token.h"
+#include "isl_lexer.h"
 
 const ist_string isp_fmts[] = {
 #   define manifest(_name, _reploc, _fmt) _fmt,
@@ -105,12 +106,13 @@ inline void isl_report(isp_repid _rid, ...) {
 
         sprintf(buffer,
                 "%s%s %s:\n"
-                "\tin module <%s>:<%zu:%zu>\n"
+                "\tin module <%s:%s>:<%zu:%zu>\n"
                 "%s\n"ANSI_RST,
                 level_colors[reploc.level],
                 domain_fmts[reploc.domain],
                 level_fmts[reploc.level],
-                location.module,
+                location.codepage->module,
+                location.codepage->name ? location.codepage->name : (ist_string)"default",
                 location.line,
                 location.column,
                 isp_fmts[_rid]);
