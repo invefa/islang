@@ -8,6 +8,7 @@
 #include "isl_list.h"
 #include "isl_utf8.h"
 #include "isl_report.h"
+#include "isl_module.h"
 
 #define analysis_token (this->sec_token)
 
@@ -79,22 +80,11 @@ inline ist_codepage* ist_codepage_createby_source(ist_string _source, ist_string
 
 }
 
-ist_string isl_module_name_catchby_filepath(ist_string _filepath) {
-
-    ist_string start = strrchr(_filepath, '/') + 1;
-    ist_string end = strrchr(start, '.');
-
-    if (!start) start = _filepath;
-    if (!end) end = _filepath + strlen(_filepath);
-
-    return ist_string_consby_ref(start, end - start);
-}
-
 
 inline ist_codepage* ist_codepage_createby_file(ist_string _filepath) {
     return ist_codepage_createby_source(
             isl_read_file(_filepath),
-            isl_module_name_catchby_filepath(_filepath));
+            isl_filename_catchby_filepath(_filepath));
 }
 
 inline void ist_codepage_delete(ist_codepage* this) {

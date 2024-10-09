@@ -64,22 +64,6 @@ inline void ist_token_initby_full(
     this->value = _value;
 }
 
-/* inline void ist_token_print(ist_token* this) {
-    ist_string extract;
-    ist_string_initby_ref(&extract, this->extract, this->length);
-    printf("token<0x%zX>:\n", (ist_usize)this);
-    printf("module:   <%s>\n", this->location.module);
-    printf("location: <%zu:%zu>\n", this->location.line, this->location.column);
-    printf("type:     %s\n", ist_token_names[this->type]);
-    printf("extract:  \"%s\"\n", extract);
-    printf("length:   %zu\n", this->length);
-    if (this->type == ISL_TOKENT_INT)
-        printf("value:    %lld\n", this->value.int_value);
-    if (this->type == ISL_TOKENT_REAL)
-        printf("value:    %lf\n", this->value.real_value);
-    ist_string_clean(&extract);
-} */
-
 inline ist_string* ist_token_dump(ist_token* this, ist_string* _buffer) {
     ist_byte storager = 0;
     if (this->extract) {
