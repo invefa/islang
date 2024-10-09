@@ -106,7 +106,7 @@ inline ist_string* ist_token_dump(ist_token* this, ist_string* _buffer) {
 }
 
 ist_token_type ist_string_is_keyword(ist_string this, ist_usize _length) {
-    for (ist_usize i = ISL_TOKENT_START_KEYWORDS; i < ISL_TOKENT_END_KEYWORDS; ++i)
+    for (ist_usize i = ISL_TOKENT_START_KEYWORDS + 1; i < ISL_TOKENT_END_KEYWORDS; ++i)
         if (!ist_token_reflects[i]) continue;
         else if (!strncmp(this, ist_token_reflects[i], _length))
             return i;
