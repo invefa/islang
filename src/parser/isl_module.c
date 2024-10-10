@@ -21,9 +21,9 @@ inline ist_string isl_filename_catchby_filepath(ist_string _filepath) {
 
 inline void ist_module_initby_name(ist_module* this, ist_string _name) {
     this->name = _name;
-    this->symbol_list = isl_malloc_list(ist_string, 4);
-    this->symbol_count = 0;
-    ist_module_register_symbol(this, _name);
+    this->strbuf_list = isl_malloc_list(ist_string, 4);
+    this->strbuf_count = 0;
+    ist_module_register_strbuf(this, _name);
 }
 
 inline ist_module ist_module_consby_name(ist_string _name) {
@@ -50,26 +50,40 @@ inline ist_module* ist_module_createby_filepath(ist_string _filepath) {
     return ist_module_createby_name(isl_filename_catchby_filepath(_filepath));
 }
 
-inline ist_usize ist_module_register_symbol(ist_module* this, ist_string _symbol) {
+inline ist_usize ist_module_register_strbuf(ist_module* this, ist_string _strbuf) {
 
-    for (ist_usize i = 0; i < this->symbol_count; ++i)
-        if (this->symbol_list[i] == _symbol) return i;
+    for (ist_usize i = 0; i < this->strbuf_count; ++i)
+        if (this->strbuf_list[i] == _strbuf) return i;
 
-    isl_list_ensurem(this->symbol_list, this->symbol_count, 1);
-    this->symbol_list[this->symbol_count++] = _symbol;
-    return this->symbol_count - 1;
+    isl_list_ensurem(this->strbuf_list, this->strbuf_count, 1);
+    this->strbuf_list[this->strbuf_count++] = _strbuf;
+    return this->strbuf_count - 1;
 }
+
+ist_usize ist_module_register_source(ist_module* this, ist_string _source) {
+    for (ist_usize i = 0; i < this->srcidx_count; ++i)
+        if (this->strbuf_list[this->srcidx_list[i]] == _source)
+            return this->srcidx_list[i];
+
+    isl_list_ensurem(this->srcidx_list, this->srcidx_count, 1);
+    this->srcidx_list[this->srcidx_count++] = this->strbuf_count;
+
+    isl_list_ensurem(this->strbuf_list, this->strbuf_count, 1);
+    this->strbuf_list[this->strbuf_count++] = _source;
+    return this->strbuf_count - 1;
+}
+
 
 inline void ist_module_clean(ist_module* this) {
     isl_assert(this);
-    if (this->symbol_list) {
-        for (ist_usize i = 0; i < this->symbol_count; ++i)
-            if (this->symbol_list[i]) {
-                ist_string_clean(this->symbol_list + i);
-            } else isl_report(rid_catch_nullptr, isp_catch_coreloc);
+    if (this->strbuf_list) {
+        for (ist_usize i = 0; i < this->strbuf_count; ++i)
+            if (this->strbuf_list[i]) {
+                ist_string_clean(this->strbuf_list + i);
+            } else continue;
     }
-    isl_free_list(this->symbol_list);
-    isl_free(this);
+    isl_freev_list(this->strbuf_list);
+    isl_freev_list(this->srcidx_list);
 }
 
 inline void ist_module_delete(ist_module* this) {
