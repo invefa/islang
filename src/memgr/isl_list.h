@@ -63,6 +63,25 @@
 #define isl_malloc_list(_type, _count) __ISL_XALLOC_LIST(m,_type,_count)
 #define isl_calloc_list(_type, _count) __ISL_XALLOC_LIST(c,_type,_count)
 
+// freev list means free the list and set the ptr variable to NULL.
+#define isl_freev_list(_list_ptrv)                              \
+do{                                                             \
+    isl_assert(_list_ptrv);                                     \
+    isl_release(                                                \
+        isl_list_head_regress_base(_list_ptrv),                 \
+        sizeof(ist_usize)+isl_list_catch_length(_list_ptrv));   \
+    _list_ptrv = NULL;                                          \
+}while(0)
+
+// just free the list.
+#define isl_free_list(_list_adr)                                \
+do{                                                             \
+    void* _list_adr_ = _list_adr; /*to eliminate side effects*/ \
+    isl_assert(_list_adr_);                                     \
+    isl_release(                                                \
+        isl_list_head_regress_base(_list_adr_),                 \
+        sizeof(ist_usize)+isl_list_catch_length(_list_adr_));   \
+}while(0)
 
 // components for __ISL_LIST_RESIZEX, this provide an alernative option to storage the result of resize.
 #define __ISL_LIST_RESIZE_STORAGE_2(_ptrv, _list)               _ptrv=_list
@@ -110,38 +129,31 @@ do {                                                                            
     ist_usize _size_=_size;                    /*to eliminate side effects*/                \
     ist_usize _require_=_require;              /*to eliminate side effects*/                \
     ist_usize __capacity_=isl_list_ptr_get_capacity(__ptr_);                                \
-    isl_assert(_require_,"no need to ensure, and stv will be nullptr, unreasonable.");      \
     isl_ifreport(__capacity_<_size_,rid_catch_size_overflow, isp_catch_coreloc);            \
     if(__capacity_-_size_<_require_){                                                       \
         isl_report(rid_inform_list_reisze,__ptr_,__capacity_,__capacity_-_size_,_require_,  \
                     ceil_upon_powertwo(__capacity_+_require_));                             \
         __ISL_LIST_RESIZEX(_x,_isl_overload(__ISL_LIST_ENSURE_STORAGE,_ptr,__ptr_,##_stv),  \
                           ceil_upon_powertwo(__capacity_+_require_),##_stv);                \
-    }                                                                                       \
+    }else _isl_overload(__ISL_LIST_RESIZE_STORAGE,_ptr,__ptr_,##_stv);                      \
 }while (0)
 
 #define isl_list_ensurec(_ptr, _size, _require, _stv...) __ISL_LIST_ENSUREX(c,_ptr,_size,_require,##_stv)
 #define isl_list_ensurem(_ptr, _size, _require, _stv...) __ISL_LIST_ENSUREX(m,_ptr,_size,_require,##_stv)
 
-// freev list means free the list and set the ptr variable to NULL.
-#define isl_freev_list(_list_ptrv)                              \
-do{                                                             \
-    isl_assert(_list_ptrv);                                     \
-    isl_release(                                                \
-        isl_list_head_regress_base(_list_ptrv),                 \
-        sizeof(ist_usize)+isl_list_catch_length(_list_ptrv));   \
-    _list_ptrv = NULL;                                          \
+// components for __ISL_LIST_ADDX
+#define __ISL_LIST_ADD_STORAGE_3(_ptr, _sizev, _value)       (_ptr)[_sizev++] = _value
+#define __ISL_LIST_ADD_STORAGE_4(_ptr, _sizev, _value, _stv) (_stv)[_sizev++] = _value
+
+#define __ISL_LIST_ADDX(_x,_ptr, _sizev, _value, _stv...)            \
+do{                                                                  \
+    __ISL_LIST_ENSUREX(_x,_ptr,_sizev,1,##_stv);                     \
+    _isl_overload(__ISL_LIST_ADD_STORAGE,_ptr,_sizev,_value,##_stv); \
 }while(0)
 
-// just free the list.
-#define isl_free_list(_list_adr)                                \
-do{                                                             \
-    void* _list_adr_ = _list_adr; /*to eliminate side effects*/ \
-    isl_assert(_list_adr_);                                     \
-    isl_release(                                                \
-        isl_list_head_regress_base(_list_adr_),                 \
-        sizeof(ist_usize)+isl_list_catch_length(_list_adr_));   \
-}while(0)
+#define isl_list_addc(_ptr, _sizev, _value, _stv...) __ISL_LIST_ADDX(c,_ptr,_sizev,_value,##_stv)
+#define isl_list_addm(_ptr, _sizev, _value, _stv...) __ISL_LIST_ADDX(m,_ptr,_sizev,_value,##_stv)
+
 
 /*
     this function will obtain a value, and return the nearest power of two,
