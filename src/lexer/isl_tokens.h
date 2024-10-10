@@ -75,14 +75,14 @@ manifest(ADD, "+")
 manifest(SUB, "-")
 manifest(MUL, "*")
 manifest(DIV, "/")
-manifest(MOD, "%%")
+manifest(MOD, "%")
 
 manifest(ASSIGN, "=")
 manifest(ADD_ASSIGN, "+=")
 manifest(SUB_ASSIGN, "-=")
 manifest(MUL_ASSIGN, "*=")
 manifest(DIV_ASSIGN, "/=")
-manifest(MOD_ASSIGN, "%%=")
+manifest(MOD_ASSIGN, "%=")
 
 
 manifest(LNOT, "!")
