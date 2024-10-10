@@ -90,17 +90,34 @@ do{                                                                             
 #define isl_list_resizec(_ptr, _new_capcaity, _stv...) __ISL_LIST_RESIZEX(c,_ptr,_new_capcaity,##_stv)
 #define isl_list_resizem(_ptr, _new_capcaity, _stv...) __ISL_LIST_RESIZEX(m,_ptr,_new_capcaity,##_stv)
 
-#define __ISL_LIST_ENSUREX(_x, _ptr, _size, _require, _stv...)                  \
-do {                                                                            \
-    ist_usize _size_=_size;                                                     \
-    ist_usize _require_=_require;                                               \
-    ist_usize _cap_=isl_list_ptr_get_capacity(_ptr);                            \
-    isl_ifreport(_cap_<_size_,rid_catch_size_overflow, isp_catch_coreloc);      \
-    if(_cap_-_size_<_require_){                                                 \
-        isl_report(rid_inform_list_reisze,_ptr,_cap_,_cap_-_size_,_require_,    \
-                    ceil_upon_powertwo(_cap_+_require_));                       \
-        __ISL_LIST_RESIZEX(_x,_ptr,ceil_upon_powertwo(_cap_+_require_),##_stv); \
-    }                                                                           \
+/*
+    components for __ISL_LIST_ENSUREX, used to fix the problem when the ptr is a side effect expression.
+    when there exist the stv, indicate the ptr might not be a variable, and it might has side effects,
+    in this case, we can't provide it to __ISL_LIST_ENSUREX directly,
+    so we use __ISL_LIST_ENSURE_STORAGE to forward it.
+*/
+#define __ISL_LIST_ENSURE_STORAGE_2(_ptr, __ptr)               _ptr
+#define __ISL_LIST_ENSURE_STORAGE_3(_ptr, __ptr, _stv)         __ptr
+#define __ISL_LIST_ENSURE_STORAGE_4(_ptr, __ptr, _stv, _wtf)   isl_assert(0)
+
+/*
+    why there has double underline suffix variable here?
+    because there will occur _ptr_=_ptr_ in macro:resize when it has sigle underline suffix.
+*/
+#define __ISL_LIST_ENSUREX(_x, _ptr, _size, _require, _stv...)                              \
+do {                                                                                        \
+    typeof(_ptr) __ptr_=_ptr;                  /*to eliminate side effects*/                \
+    ist_usize _size_=_size;                    /*to eliminate side effects*/                \
+    ist_usize _require_=_require;              /*to eliminate side effects*/                \
+    ist_usize __capacity_=isl_list_ptr_get_capacity(__ptr_);                                \
+    isl_assert(_require_,"no need to ensure, and stv will be nullptr, unreasonable.");      \
+    isl_ifreport(__capacity_<_size_,rid_catch_size_overflow, isp_catch_coreloc);            \
+    if(__capacity_-_size_<_require_){                                                       \
+        isl_report(rid_inform_list_reisze,__ptr_,__capacity_,__capacity_-_size_,_require_,  \
+                    ceil_upon_powertwo(__capacity_+_require_));                             \
+        __ISL_LIST_RESIZEX(_x,_isl_overload(__ISL_LIST_ENSURE_STORAGE,_ptr,__ptr_,##_stv),  \
+                          ceil_upon_powertwo(__capacity_+_require_),##_stv);                \
+    }                                                                                       \
 }while (0)
 
 #define isl_list_ensurec(_ptr, _size, _require, _stv...) __ISL_LIST_ENSUREX(c,_ptr,_size,_require,##_stv)
