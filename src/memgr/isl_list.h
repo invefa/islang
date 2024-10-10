@@ -145,6 +145,7 @@ do {                                                                            
 #define __ISL_LIST_ADD_STORAGE_3(_ptr, _sizev, _value)       (_ptr)[_sizev++] = _value
 #define __ISL_LIST_ADD_STORAGE_4(_ptr, _sizev, _value, _stv) (_stv)[_sizev++] = _value
 
+// ensure slot and add element value to the last unused slot of the list then advance sizev
 #define __ISL_LIST_ADDX(_x,_ptr, _sizev, _value, _stv...)            \
 do{                                                                  \
     __ISL_LIST_ENSUREX(_x,_ptr,_sizev,1,##_stv);                     \
