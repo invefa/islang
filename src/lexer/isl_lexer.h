@@ -3,6 +3,7 @@
 
 #include "isl_token.h"
 #include "isl_utf8.h"
+#include "isl_module.h"
 
 ist_string isl_read_file(ist_string _filepath);
 
@@ -21,7 +22,7 @@ typedef struct ist_codepage {
     ist_string name;
 
     /* the module which this codepage belongs to */
-    ist_string module;
+    ist_module* module;
 
     /* the source code read from the source code file */
     ist_string source;
@@ -51,6 +52,7 @@ typedef struct ist_codepage {
 
 } ist_codepage;
 
+ist_codepage* ist_codepage_createby_full(ist_string _source, ist_module _module);
 ist_codepage* ist_codepage_createby_source(ist_string _source, ist_string _module);
 ist_codepage* ist_codepage_createby_file(ist_string _filepath);
 // ist_codepage* ist_codepage_createby_string(ist_string _string, ist_usize _length);
@@ -61,6 +63,9 @@ void ist_codepage_delete(ist_codepage* this);
 //TODO: support lookahead.
 typedef struct ist_lexer {
 
+    /* the module which this lexer belongs to */
+    ist_module* module;
+
     /*
         The lexer will provide a table of token.
         pre_token:  the token before the current token.
@@ -69,12 +74,6 @@ typedef struct ist_lexer {
         sec_token:  the token after the nex_token.
     */
     ist_token pre_token, cur_token, nex_token, sec_token;
-
-    ist_string* source_list;
-    ist_usize source_count;
-
-    ist_string* module_list;
-    ist_usize module_count;
 
     ist_codepage* codepage;
 

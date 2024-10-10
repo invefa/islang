@@ -39,7 +39,7 @@ int main(void) {
 
     // isl_test_overload();
     // isl_test_xssert();
-    // isl_test_list();
+    isl_test_list();
     // isl_test_memgr();
     // isl_test_string();
     // isl_test_report();
@@ -54,6 +54,8 @@ void isl_test_lexer(void) {
     ist_string file = isl_read_file("./scripts/test.is");
     printf("file context:\n|\nv\n%s<--\n", file);
     ist_string_clean(&file);
+
+    ist_module module = ist_module_consby_filepath(file);
 
     ist_string* source =
         ist_string_createby_raw(
@@ -245,15 +247,81 @@ void isl_test_list(void) {
     printf("list = 0x%zX\n", (ist_usize)list);
     printf("length of list = %zu\n", isl_list_catch_length(list));
     printf("capacity of list = %zu\n", isl_list_ptr_get_capacity(list));
+
     list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5;
     list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
     ist_usize size = 10;
+
     isl_list_ensurec(list, size, 5);
+
     isl_list_resizec(list, 20);
     isl_list_resizec(list, 30);
-    isl_list_resizem(list, 6);
+    isl_list_resizec(list, 6);
+
     isl_freev_list(list);
-    isl_list_resizem(isl_emit_i32_list(), 5, list);
+    isl_wssert(0);
+    isl_list_ensurec(isl_emit_i32_list(), 9, 1, list);
+    size = 10;
+
+    /*     do {
+            typeof(isl_emit_i32_list()) __ptr_ = isl_emit_i32_list();
+            ist_usize _size_ = 10;
+            ist_usize _require_ = 5;
+            ist_usize __capacity_ = ((((ist_usize*)(__ptr_))[-1]) / sizeof(typeof(*__ptr_)));
+            do {
+                if (__capacity_ < _size_)
+                    isl_report(rid_catch_size_overflow, "D:\\Projects\\invefa\\islang\\src\\islang.c", __func__, (ist_usize)263);
+            } while (0);
+            if (__capacity_ - _size_ < _require_) {
+                isl_report(rid_inform_list_reisze, __ptr_, __capacity_, __capacity_ - _size_, _require_, ceil_upon_powertwo(__capacity_ + _require_));
+                do {
+                    typedef typeof(*list) _element_type_;
+                    _element_type_* _ptr_ = list;
+                    ist_usize _new_capcaity_ = ceil_upon_powertwo(__capacity_ + _require_);
+                    do {
+                        if (!(_ptr_ && _new_capcaity_)) {
+                            fprintf((__acrt_iob_func(2)), "\033[" "1;31m" "a" "ssert failure:" "\033[" "0m" "\n\tin file '""D:\\Projects\\invefa\\islang\\src\\islang.c""':\n\tat fn %s(...): expression: " "\033[" "1m" "_ptr_&&_new_capcaity_" "\033[" "0m" " <line:%d>.\n", __func__, 263);
+                            exit(0x24AD6F05);
+                        }
+                    } while (0);
+                    ist_usize _capacity_ = ((((ist_usize*)(_ptr_))[-1]) / sizeof(typeof(*_ptr_)));
+                    _element_type_* _new_list_ = ((_element_type_*)(((ist_usize*)(_isl_set_adr_usize_value(isl_allocate(sizeof(ist_usize) + sizeof(_element_type_) * (_new_capcaity_), 1), sizeof(_element_type_) * (_new_capcaity_)))) + 1));
+                    memcpy(_new_list_, _ptr_, (_new_capcaity_ < _capacity_ ? _new_capcaity_ : _capacity_) * sizeof(_element_type_)); (((ist_usize*)(_new_list_))[-1]) = sizeof(_element_type_) * _new_capcaity_;
+                    do {
+                        void* _list_adr_ = _ptr_;
+                        do {
+                            if (!(_list_adr_)) {
+                                fprintf((__acrt_iob_func(2)), "\033[" "1;31m" "a" "ssert failure:" "\033[" "0m" "\n\tin file '""D:\\Projects\\invefa\\islang\\src\\islang.c""':\n\tat fn %s(...): expression: " "\033[" "1m" "_list_adr_" "\033[" "0m" " <line:%d>.\n", __func__, 263);
+                                exit(0x24AD6F05);
+                            }
+                        } while (0);
+                        isl_release((((ist_usize*)(_list_adr_)) - 1), sizeof(ist_usize) + (((ist_usize*)(_list_adr_))[-1]));
+                    } while (0); list = _new_list_;
+                } while (0);
+            }
+        } while (0); */
+
+
+
+
+    for (ist_usize i = 0; i < isl_list_ptr_get_capacity(list); ++i)
+        printf("list[%zu] = %d\n", i, list[i]);
+
+    // isl_list_ensurec(list, size, 1);
+    // list[size++] = 666;
+    isl_list_addc(list, size, 777, list);
+    isl_list_addc(list, size, 777, list);
+    isl_list_addc(list, size, 777, list);
+    isl_list_addc(list, size, 777, list);
+    isl_list_addc(list, size, 777, list);
+    isl_list_addc(list, size, 777, list);
+    isl_list_addc(list, size, 777, list);
+    isl_list_addc(list, size, 777, list);
+    isl_list_addc(list, size, 777, list);
+
+    for (ist_usize i = 0; i < isl_list_ptr_get_capacity(list); ++i)
+        printf("list[%zu] = %d\n", i, list[i]);
+
     isl_freev_list(list);
 
 }

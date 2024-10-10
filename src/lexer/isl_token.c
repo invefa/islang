@@ -74,8 +74,8 @@ inline ist_string* ist_token_dump(ist_token* this, ist_string* _buffer) {
         "token<0x%zX> {module:codepage=<%s:%s>,location=<%zu:%zu>,type=%s,"
         "extract=\"%s\",length=%zu,value={int=%lld,real=%g}}",
         (ist_usize)this,
-        this->location.codepage->module,
-        this->location.codepage->name ? this->location.codepage->name : (ist_string)"default",
+        this->location.codepage->module->name,
+        this->location.codepage->name ? this->location.codepage->name : (ist_string)"\b",
         this->location.line,
         this->location.column,
         ist_token_names[this->type],

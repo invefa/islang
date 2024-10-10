@@ -26,7 +26,10 @@ typedef struct ist_location {
 void ist_location_init(ist_location* this, struct ist_codepage* _codepage);
 void ist_location_clean(ist_location* this);
 
-/* length is the length of extracted string */
+/*
+    token is the basic unit for parser to analyze.
+    the member:length is the length of extracted string
+*/
 typedef struct ist_token {
     ist_token_type  type;
     ist_location    location;
