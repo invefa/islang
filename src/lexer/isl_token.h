@@ -57,7 +57,14 @@ typedef struct ist_token {
         .column   = 1               \
     }                               \
 })
-
+#define ist_token_consby_location(_location) \
+((ist_token){                       \
+    .value.int_value = 0,           \
+    .type     = ISL_TOKENT_UNKNOWN, \
+    .extract  = NULL,               \
+    .length   = 0,                  \
+    .location = (_location)         \
+})
 #define ist_token_consby_full(_type, _location, _extract, _length, _value) \
 ((ist_token){                 \
     .type     = (_type),      \

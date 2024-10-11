@@ -39,7 +39,7 @@ int main(void) {
 
     // isl_test_overload();
     // isl_test_xssert();
-    isl_test_list();
+    // isl_test_list();
     // isl_test_memgr();
     // isl_test_string();
     // isl_test_report();
@@ -51,7 +51,7 @@ int main(void) {
 
 void isl_test_lexer(void) {
 
-    ist_string filepath = (ist_string)"./scripts/test.is";
+    ist_string filepath = ist_string_consby_raw("./scripts/test.is");
 
     ist_string file_contents = isl_read_file(filepath);
     printf("file context:\n|\nv\n%s<--\n", file_contents);
@@ -59,17 +59,16 @@ void isl_test_lexer(void) {
 
     ist_module module = ist_module_consby_filepath(filepath);
 
-    ist_string* macro_source =
-        ist_string_createby_raw(
+    ist_string macro_source =
+        ist_string_consby_raw(
             u8"起始,*.*awa123,123.456.789,\n中间//awa\n/*1\n2*/@magic[666u32]结束");
+    ist_codepage* macro_codepage =
+        ist_codepage_createby_source(&module, ist_string_consby_raw("wrap"), macro_source);
 
-    ist_codepage* codepage =
-        ist_codepage_createby_source(&module, ist_string_consby_raw("wrap"), *macro_source);
+    ist_lexer lexer = ist_lexer_consby_module(&module);
 
-    ist_lexer lexer = ist_lexer_consby_file("./scripts/test.is");
 
     ist_string* token_dump_buffer = ist_string_create_buffer(ISL_DEFAULT_BUFFER_LENGTH);
-
 
     ist_token_dump(&lexer.cur_token, token_dump_buffer);
     printf("%s\n", *token_dump_buffer);
@@ -84,7 +83,7 @@ void isl_test_lexer(void) {
 
         //TODO: fix the source_list duplicated ptr
         if (lexer.sec_token.type == ISL_TOKENT_WRAPPER) {
-            ist_lexer_switch_codepage(&lexer, codepage);
+            ist_lexer_switch_codepage(&lexer, macro_codepage);
         }
 
         ist_lexer_advance(&lexer);
@@ -95,6 +94,12 @@ void isl_test_lexer(void) {
     printf("%s\n", *token_dump_buffer);
 
 
+    isl_wssert(0);
+    for (ist_usize i = 0; i < module.strbuf_count; ++i) {
+        printf("strbuf[%zu]:%s\n", i, module.strbuf_list[i]);
+    }
+
+    ist_module_clean(&module);
     ist_string_delete(token_dump_buffer);
     ist_lexer_clean(&lexer);
 

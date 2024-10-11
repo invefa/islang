@@ -85,7 +85,7 @@ ist_codepage* ist_codepage_createby_full(
     this->next_sequence_index += this->decode_codepoint_length;
 
     /* initialize the location */
-    ist_location_init(&this->location, this);
+    this->location = ist_location_consby_codepage(this);
 
     return this;
 
@@ -113,45 +113,32 @@ ist_codepage* ist_codepage_createby_string(
 }
 
 
-// /* the source and module must be a string that allocated in the heap */
-// inline ist_codepage* ist_codepage_createby_source(ist_string _source, ist_string _module) {
-
-//     ist_codepage* codepage = isl_malloc(ist_codepage);
-
-//     codepage->name = NULL;
-//     codepage->module = _module;
-//     codepage->source = _source;
-//     codepage->next_sequence_index = 0;
-//     codepage->decode_codepoint_length = 0;
-
-//     /* decode the first utf8 sequence */
-//     codepage->current_codepoint =
-//         isl_utf8_decode(&codepage->source,
-//                         codepage->next_sequence_index,
-//                         &codepage->decode_codepoint_length);
-//     codepage->next_sequence_index += codepage->decode_codepoint_length;
-
-//     /* initialize the location */
-//     ist_location_init(&codepage->location, codepage);
-
-//     codepage->prev_page = NULL;
-
-//     return codepage;
-
-// }
-
-
-// inline ist_codepage* ist_codepage_createby_file(ist_string _filepath) {
-//     return ist_codepage_createby_source(
-//             isl_read_file(_filepath),
-//             isl_filename_catchby_filepath(_filepath));
-// }
-
 inline void ist_codepage_delete(ist_codepage* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
     isl_free(this);
 }
 
+
+ist_lexer ist_lexer_consby_full(ist_module* _module, ist_codepage* _codepage) {
+    ist_lexer lexer = (ist_lexer){
+        .module = _module,
+        .codepage = _codepage,
+        .pre_token = ist_token_consby_location(_codepage->location),
+        .cur_token = ist_token_consby_location(_codepage->location),
+        .sec_token = ist_token_consby_location(_codepage->location),
+        .nex_token = ist_token_consby_location(_codepage->location),
+    };
+    ist_lexer_advance(&lexer);
+    ist_lexer_advance(&lexer);
+    ist_lexer_advance(&lexer);
+    return lexer;
+}
+
+
+ist_lexer ist_lexer_consby_module(ist_module* _module) {
+    return ist_lexer_consby_full(_module,
+            ist_codepage_createby_filepath(_module, _module->filepath));
+}
 
 // inline ist_lexer ist_lexer_consby_file(ist_string _filepath) {
 //     return ist_lexer_consby_codepage(ist_codepage_createby_filepath(_filepath));
@@ -192,16 +179,16 @@ inline void ist_codepage_delete(ist_codepage* this) {
 //     return ist_lexer_createby_codepage(ist_codepage_createby_file(_filepath));
 // }
 
-inline void ist_lexer_delete(ist_lexer* this) {
-    ist_lexer_clean(this);
-    isl_free(this);
-}
 
 inline void ist_lexer_clean(ist_lexer* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
 
     //TODO: delete all of the codepage on the chain.
     ist_codepage_delete(this->codepage);
+}
+inline void ist_lexer_delete(ist_lexer* this) {
+    ist_lexer_clean(this);
+    isl_free(this);
 }
 
 
@@ -213,14 +200,13 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
 
     while (ist_lexer_skip_blanks(this)) {
 
-        ist_token_initby_full(
-            &analysis_token,
+        analysis_token = ist_token_consby_full(
             ISL_TOKENT_EOF,
             this->codepage->location,
             this->codepage->source
                 + this->codepage->next_sequence_index
                 - this->codepage->decode_codepoint_length,
-            0, (ist_value) { 0 });
+            0, ist_value_consby_i64(0));
 
         switch (ist_lexer_get_current_codepoint(this)) {
         case ISL_CODEPOINT_EOCCP:
@@ -317,14 +303,13 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
     }
 
     if (!ist_lexer_get_current_codepoint(this))
-        ist_token_initby_full(
-            &analysis_token,
+        analysis_token = ist_token_consby_full(
             ISL_TOKENT_EOF,
             this->codepage->location,
             this->codepage->source
                 + this->codepage->next_sequence_index
                 - this->codepage->decode_codepoint_length,
-            0, (ist_value) { 0 });
+            0, ist_value_consby_i64(0));
 
 ist_lexer_advance_label_ending:
     return &this->pre_token;

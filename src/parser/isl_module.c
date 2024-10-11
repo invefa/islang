@@ -88,8 +88,10 @@ inline ist_usize ist_module_register_strbuf(ist_module* this, ist_string _strbuf
     for (ist_usize i = 0; i < this->strbuf_count; ++i)
         if (this->strbuf_list[i] == _strbuf) return i;
 
-    isl_list_ensurem(this->strbuf_list, this->strbuf_count, 1);
-    this->strbuf_list[this->strbuf_count++] = _strbuf;
+    isl_list_addm(this->strbuf_list, this->strbuf_count, _strbuf);
+    // isl_list_ensurem(this->strbuf_list, this->strbuf_count, 1);
+    // this->strbuf_list[this->strbuf_count++] = _strbuf;
+
     return this->strbuf_count - 1;
 }
 ist_usize ist_module_register_source(ist_module* this, ist_string _source) {
@@ -97,11 +99,14 @@ ist_usize ist_module_register_source(ist_module* this, ist_string _source) {
         if (this->strbuf_list[this->srcidx_list[i]] == _source)
             return this->srcidx_list[i];
 
-    isl_list_ensurem(this->srcidx_list, this->srcidx_count, 1);
-    this->srcidx_list[this->srcidx_count++] = this->strbuf_count;
+    isl_list_addm(this->srcidx_list, this->srcidx_count, this->strbuf_count);
+    // isl_list_ensurem(this->srcidx_list, this->srcidx_count, 1);
+    // this->srcidx_list[this->srcidx_count++] = this->strbuf_count;
 
-    isl_list_ensurem(this->strbuf_list, this->strbuf_count, 1);
-    this->strbuf_list[this->strbuf_count++] = _source;
+    isl_list_addm(this->strbuf_list, this->strbuf_count, _source);
+    // isl_list_ensurem(this->strbuf_list, this->strbuf_count, 1);
+    // this->strbuf_list[this->strbuf_count++] = _source;
+
     return this->strbuf_count - 1;
 }
 
