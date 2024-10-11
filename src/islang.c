@@ -59,9 +59,8 @@ void isl_test_lexer(void) {
 
     ist_module module = ist_module_consby_filepath(filepath);
 
-    ist_string macro_source =
-        ist_string_consby_raw(
-            u8"起始,*.*awa123,123.456.789,\n中间//awa\n/*1\n2*/@magic[666u32]结束");
+    ist_string macro_source = ist_string_consby_raw(
+        u8"起始,*.*awa123,123.456.789,\n中间//awa\n/*1\n2*/@magic[666u32]结束");
     ist_codepage* macro_codepage =
         ist_codepage_createby_source(&module, ist_string_consby_raw("wrap"), macro_source);
 
@@ -99,9 +98,9 @@ void isl_test_lexer(void) {
         printf("strbuf[%zu]:%s\n", i, module.strbuf_list[i]);
     }
 
+    ist_lexer_clean(&lexer);
     ist_module_clean(&module);
     ist_string_delete(token_dump_buffer);
-    ist_lexer_clean(&lexer);
 
 }
 

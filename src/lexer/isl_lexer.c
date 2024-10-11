@@ -115,6 +115,7 @@ ist_codepage* ist_codepage_createby_string(
 
 inline void ist_codepage_delete(ist_codepage* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
+    if (this->prev_page) ist_codepage_delete(this->prev_page);
     isl_free(this);
 }
 
@@ -140,50 +141,9 @@ ist_lexer ist_lexer_consby_module(ist_module* _module) {
             ist_codepage_createby_filepath(_module, _module->filepath));
 }
 
-// inline ist_lexer ist_lexer_consby_file(ist_string _filepath) {
-//     return ist_lexer_consby_codepage(ist_codepage_createby_filepath(_filepath));
-// }
-
-// inline ist_lexer ist_lexer_consby_source(ist_string _source, ist_string _module) {
-//     return ist_lexer_consby_codepage(ist_codepage_createby_source(_source, _module));
-// }
-
-// inline ist_lexer ist_lexer_consby_codepage(ist_codepage* _codepage) {
-//     ist_lexer lexer;
-//     ist_lexer_initby_codepage(&lexer, _codepage);
-//     return lexer;
-// }
-
-// inline void ist_lexer_initby_codepage(ist_lexer* this, ist_codepage* _codepage) {
-//     this->codepage = _codepage;
-//     ist_token_initby_location(&this->pre_token, _codepage->location);
-//     ist_token_initby_location(&this->cur_token, _codepage->location);
-//     ist_token_initby_location(&this->nex_token, _codepage->location);
-//     ist_token_initby_location(&this->sec_token, _codepage->location);
-//     ist_lexer_advance(this);
-//     ist_lexer_advance(this);
-//     ist_lexer_advance(this);
-// }
-
-// inline ist_lexer* ist_lexer_createby_codepage(ist_codepage* _codepage) {
-//     ist_lexer* lexer = isl_malloc(ist_lexer);
-//     ist_lexer_initby_codepage(lexer, _codepage);
-//     return lexer;
-// }
-
-// inline ist_lexer* ist_lexer_createby_source(ist_string _source, ist_string _module) {
-//     return ist_lexer_createby_codepage(ist_codepage_createby_source(_source, _module));
-// }
-
-// inline ist_lexer* ist_lexer_createby_file(ist_string _filepath) {
-//     return ist_lexer_createby_codepage(ist_codepage_createby_file(_filepath));
-// }
-
 
 inline void ist_lexer_clean(ist_lexer* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
-
-    //TODO: delete all of the codepage on the chain.
     ist_codepage_delete(this->codepage);
 }
 inline void ist_lexer_delete(ist_lexer* this) {

@@ -76,7 +76,7 @@ ist_codepage* ist_codepage_createby_string(
 void ist_codepage_delete(ist_codepage* this);
 
 
-//TODO: optimize symbol management.
+//TODO: add an error signal.
 //TODO: support lookahead.
 typedef struct ist_lexer {
 
@@ -93,8 +93,6 @@ typedef struct ist_lexer {
         nex_token, /* next token, the token after the current token */
         sec_token; /* second token, the token after the next token */
 
-    //TODO: add an error signal.
-
 } ist_lexer;
 
 ist_lexer ist_lexer_consby_full(ist_module* _module, ist_codepage* _codepage);
@@ -103,15 +101,6 @@ ist_lexer ist_lexer_consby_module(ist_module* _module);
 
 void ist_lexer_clean(ist_lexer* this);
 void ist_lexer_delete(ist_lexer* this);
-
-// ist_lexer ist_lexer_consby_source(ist_string _source, ist_string _module);
-// ist_lexer ist_lexer_consby_codepage(ist_codepage* _codepage);
-
-// void      ist_lexer_initby_codepage(ist_lexer* this, ist_codepage* _codepage);
-
-// ist_lexer* ist_lexer_createby_codepage(ist_codepage* _codepage);
-// ist_lexer* ist_lexer_createby_source(ist_string _source, ist_string _module);
-// ist_lexer* ist_lexer_createby_file(ist_string _filepath);
 
 
 ist_token* ist_lexer_advance(ist_lexer* this);
