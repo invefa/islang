@@ -51,18 +51,20 @@ int main(void) {
 
 void isl_test_lexer(void) {
 
-    ist_string file = isl_read_file("./scripts/test.is");
-    printf("file context:\n|\nv\n%s<--\n", file);
-    ist_string_clean(&file);
+    ist_string filepath = (ist_string)"./scripts/test.is";
 
-    ist_module module = ist_module_consby_filepath(file);
+    ist_string file_contents = isl_read_file(filepath);
+    printf("file context:\n|\nv\n%s<--\n", file_contents);
+    ist_string_clean(&file_contents);
 
-    ist_string* source =
+    ist_module module = ist_module_consby_filepath(filepath);
+
+    ist_string* macro_source =
         ist_string_createby_raw(
             u8"起始,*.*awa123,123.456.789,\n中间//awa\n/*1\n2*/@magic[666u32]结束");
 
     ist_codepage* codepage =
-        ist_codepage_createby_source(*source, ist_string_consby_raw("test:wrap"));
+        ist_codepage_createby_source(&module, ist_string_consby_raw("wrap"), *macro_source);
 
     ist_lexer lexer = ist_lexer_consby_file("./scripts/test.is");
 
@@ -95,7 +97,6 @@ void isl_test_lexer(void) {
 
     ist_string_delete(token_dump_buffer);
     ist_lexer_clean(&lexer);
-    isl_free(source);
 
 }
 
