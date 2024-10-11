@@ -30,8 +30,6 @@ typedef struct ist_location {
     .column   = 1               \
 })
 
-// void ist_location_initby_full(ist_location* this, struct ist_codepage* _codepage);
-// void ist_location_clean(ist_location* this);
 
 /*
     token is the basic unit for parser to analyze.

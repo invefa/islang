@@ -51,69 +51,35 @@ int main(void) {
 
 void isl_test_lexer(void) {
 
-#define print_module()\
-    isl_report(rid_unknown);\
-    for (ist_usize i = 0; i < module.strbuf_count; ++i) {\
-        printf("strbuf[%zu]: ->%s<-\n\n", i, module.strbuf_list[i]);\
-    }\
-    isl_report(rid_unknown);\
-    for (ist_usize i = 0; i < module.srcidx_count; ++i) {\
-        printf("src[%zu]:->%s<-\n\n", i, module.strbuf_list[module.srcidx_list[i]]);\
-    }\
-    isl_report(rid_unknown)
+    ist_string  filepath = ist_string_consby_raw("./scripts/test.is");
+    ist_string  macro_source = ist_string_consby_raw(
+        u8"起始,*.*awa123,123.456.789,\n中间//awa\n/*1\n2*/@magic[666u32]结束");
 
-    ist_string filepath = ist_string_consby_raw("./scripts/test.is");
-
-    ist_string file_contents = isl_read_file(filepath);
+    ist_string  file_contents = isl_read_file(filepath);
     printf("file context:\n|\nv\n%s<--\n", file_contents);
     ist_string_clean(&file_contents);
 
-    ist_module module = ist_module_consby_filepath(filepath);
+    ist_module  module = ist_module_consby_filepath(filepath);
+    ist_lexer   lexer = ist_lexer_consby_module(&module);
+    ist_string* dumpbuf = ist_string_create_buffer(32);
 
-
-    ist_string macro_source = ist_string_consby_raw(
-        u8"起始,*.*awa123,123.456.789,\n中间//awa\n/*1\n2*/@magic[666u32]结束");
-
-
-    ist_lexer lexer = ist_lexer_consby_module(&module);
-
-
-    ist_string* token_dump_buffer = ist_string_create_buffer(ISL_DEFAULT_BUFFER_LENGTH);
-
-    ist_token_dump(&lexer.cur_token, token_dump_buffer);
-    printf("%s\n", *token_dump_buffer);
-
-    ist_token_dump(&lexer.nex_token, token_dump_buffer);
-    printf("%s\n", *token_dump_buffer);
-
+    printf("%s\n", *ist_token_dump(&lexer.cur_token, dumpbuf));
+    printf("%s\n", *ist_token_dump(&lexer.nex_token, dumpbuf));
     while (lexer.sec_token.type != ISL_TOKENT_EOF) {
-
-        ist_token_dump(&lexer.sec_token, token_dump_buffer);
-        printf("%s\n", *token_dump_buffer);
-
-        //TODO: fix the source_list duplicated ptr
+        printf("%s\n", *ist_token_dump(&lexer.sec_token, dumpbuf));
         if (lexer.sec_token.type == ISL_TOKENT_WRAPPER)
             ist_lexer_switch_codepage(&lexer,
                 ist_codepage_createby_source(&module,
                     ist_string_consby_raw("wrap"),
                     macro_source));
 
-
         ist_lexer_advance(&lexer);
-
     }
-
-    token_dump_buffer = ist_token_dump(&lexer.sec_token, token_dump_buffer);
-    printf("%s\n", *token_dump_buffer);
-
-
-
-    print_module();
-
+    printf("%s\n", *ist_token_dump(&lexer.sec_token, dumpbuf));
 
     ist_lexer_clean(&lexer);
     ist_module_clean(&module);
-    ist_string_delete(token_dump_buffer);
+    ist_string_delete(dumpbuf);
 
 }
 
