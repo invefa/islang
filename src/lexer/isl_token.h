@@ -74,16 +74,6 @@ typedef struct ist_token {
     .value    = (_value)      \
 })
 
-// void ist_token_init_empty(ist_token* this);
-// void ist_token_initby_location(ist_token* this, ist_location _location);
-
-// void ist_token_initby_full(
-//     ist_token* this,
-//     ist_token_type  _type,
-//     ist_location    _location,
-//     ist_string      _extract,
-//     ist_usize       _length,
-//     ist_value       _value);
 
 ist_string* ist_token_dump(ist_token* this, ist_string* _buffer);
 
