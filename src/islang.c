@@ -279,61 +279,18 @@ void isl_test_list(void) {
     isl_list_ensurec(isl_emit_i32_list(), 9, 1, list);
     size = 10;
 
-    /*     do {
-            typeof(isl_emit_i32_list()) __ptr_ = isl_emit_i32_list();
-            ist_usize _size_ = 10;
-            ist_usize _require_ = 5;
-            ist_usize __capacity_ = ((((ist_usize*)(__ptr_))[-1]) / sizeof(typeof(*__ptr_)));
-            do {
-                if (__capacity_ < _size_)
-                    isl_report(rid_catch_size_overflow, "D:\\Projects\\invefa\\islang\\src\\islang.c", __func__, (ist_usize)263);
-            } while (0);
-            if (__capacity_ - _size_ < _require_) {
-                isl_report(rid_inform_list_reisze, __ptr_, __capacity_, __capacity_ - _size_, _require_, ceil_upon_powertwo(__capacity_ + _require_));
-                do {
-                    typedef typeof(*list) _element_type_;
-                    _element_type_* _ptr_ = list;
-                    ist_usize _new_capcaity_ = ceil_upon_powertwo(__capacity_ + _require_);
-                    do {
-                        if (!(_ptr_ && _new_capcaity_)) {
-                            fprintf((__acrt_iob_func(2)), "\033[" "1;31m" "a" "ssert failure:" "\033[" "0m" "\n\tin file '""D:\\Projects\\invefa\\islang\\src\\islang.c""':\n\tat fn %s(...): expression: " "\033[" "1m" "_ptr_&&_new_capcaity_" "\033[" "0m" " <line:%d>.\n", __func__, 263);
-                            exit(0x24AD6F05);
-                        }
-                    } while (0);
-                    ist_usize _capacity_ = ((((ist_usize*)(_ptr_))[-1]) / sizeof(typeof(*_ptr_)));
-                    _element_type_* _new_list_ = ((_element_type_*)(((ist_usize*)(_isl_set_adr_usize_value(isl_allocate(sizeof(ist_usize) + sizeof(_element_type_) * (_new_capcaity_), 1), sizeof(_element_type_) * (_new_capcaity_)))) + 1));
-                    memcpy(_new_list_, _ptr_, (_new_capcaity_ < _capacity_ ? _new_capcaity_ : _capacity_) * sizeof(_element_type_)); (((ist_usize*)(_new_list_))[-1]) = sizeof(_element_type_) * _new_capcaity_;
-                    do {
-                        void* _list_adr_ = _ptr_;
-                        do {
-                            if (!(_list_adr_)) {
-                                fprintf((__acrt_iob_func(2)), "\033[" "1;31m" "a" "ssert failure:" "\033[" "0m" "\n\tin file '""D:\\Projects\\invefa\\islang\\src\\islang.c""':\n\tat fn %s(...): expression: " "\033[" "1m" "_list_adr_" "\033[" "0m" " <line:%d>.\n", __func__, 263);
-                                exit(0x24AD6F05);
-                            }
-                        } while (0);
-                        isl_release((((ist_usize*)(_list_adr_)) - 1), sizeof(ist_usize) + (((ist_usize*)(_list_adr_))[-1]));
-                    } while (0); list = _new_list_;
-                } while (0);
-            }
-        } while (0); */
-
-
-
-
     for (ist_usize i = 0; i < isl_list_ptr_get_capacity(list); ++i)
         printf("list[%zu] = %d\n", i, list[i]);
 
-    // isl_list_ensurec(list, size, 1);
-    // list[size++] = 666;
-    isl_list_addc(list, size, 777, list);
-    isl_list_addc(list, size, 777, list);
-    isl_list_addc(list, size, 777, list);
-    isl_list_addc(list, size, 777, list);
-    isl_list_addc(list, size, 777, list);
-    isl_list_addc(list, size, 777, list);
-    isl_list_addc(list, size, 777, list);
-    isl_list_addc(list, size, 777, list);
-    isl_list_addc(list, size, 777, list);
+    isl_list_addc(list, size, 66, list);
+    isl_list_addc(list, size, 66, list);
+    isl_list_addc(list, size, 66, list);
+    isl_list_addc(list, size, 66, list);
+    isl_list_addc(list, size, 66, list);
+    isl_list_addc(list, size, 66, list);
+    isl_list_addc(list, size, 66, list);
+    isl_list_addc(list, size, 66, list);
+    isl_list_addc(list, size, 66, list);
 
     for (ist_usize i = 0; i < isl_list_ptr_get_capacity(list); ++i)
         printf("list[%zu] = %d\n", i, list[i]);
