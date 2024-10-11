@@ -48,8 +48,7 @@ inline ist_string* ist_string_create_buffer(ist_usize _capacity) {
 
 inline void ist_string_clean(ist_string* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
-    if (*this)
-        isl_freev_list(*this);
+    if (*this) isl_freev_list(*this);
     *this = NULL;
 }
 inline void ist_string_delete(ist_string* this) {
@@ -63,6 +62,9 @@ inline void ist_string_buffer_ensure(
     ist_usize _buffer_size,
     ist_usize _required_length) {
 
+    /* check nullptr */
+    isl_assert(this);
+
     /* check buffer remaining length */
     if (isl_list_catch_length(*this) - _buffer_size >= _required_length) return;
 
@@ -75,9 +77,25 @@ inline void ist_string_buffer_ensure(
     isl_list_resizec(*this, ceil_upon_powertwo(_buffer_size + _required_length));
 }
 
-// inline void ist_string_buffer_append_autostv(ist_string* this, ist_usize* _index, ist_string _string, ist_usize _length) {
-//     ist_string_buffer_ensure(this, *_index, _length);
-//     memcpy((*this) + *_index, _string, _length);
-//     *_index += _length;
-//     (*this)[*_index] = '\0';
-// }
+inline ist_string* ist_string_buffer_append_ref(
+    ist_string* this,
+    ist_usize* _indexv,
+    ist_string _string,
+    ist_usize _length) {
+
+    /* check nullptr */
+    isl_assert(_indexv);
+
+    /* check buffer remaining length */
+    ist_string_buffer_ensure(this, *_indexv, _length + 1);
+
+    /* append string */
+    memcpy((*this) + (*_indexv), _string, _length);
+    (*_indexv) += _length;
+    (*this)[*_indexv] = '\0';
+
+    return this;
+}
+ist_string* ist_string_buffer_append_raw(ist_string* this, ist_usize* _indexv, char* _string) {
+    return ist_string_buffer_append_ref(this, _indexv, (ist_string)_string, strlen(_string));
+}

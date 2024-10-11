@@ -22,6 +22,7 @@ void        ist_string_clean(ist_string* this);
 void        ist_string_delete(ist_string* this);
 
 void        ist_string_buffer_ensure(ist_string* this, ist_usize _buffer_size, ist_usize _required_length);
-// void        ist_string_buffer_append_autostv(ist_string* this, ist_usize* _index, ist_string _string, ist_usize _length);
+ist_string* ist_string_buffer_append_ref(ist_string* this, ist_usize* _indexv, ist_string _string, ist_usize _length);
+ist_string* ist_string_buffer_append_raw(ist_string* this, ist_usize* _indexv, char* _string);
 
 #endif

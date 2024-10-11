@@ -41,15 +41,17 @@ int main(void) {
     // isl_test_xssert();
     // isl_test_list();
     // isl_test_memgr();
-    // isl_test_string();
+    isl_test_string();
     // isl_test_report();
-    isl_test_lexer();
+    // isl_test_lexer();
 
     return 0;
 }
 
 
 void isl_test_lexer(void) {
+
+    isl_report(rid_unknown);
 
     /* init some basic information */
     ist_string  filepath = ist_string_consby_raw("./scripts/test.is");
@@ -143,34 +145,20 @@ void isl_test_string(void) {
 
     for (ist_usize i = 0;i < isl_list_catch_length(*buffer);++i) {
         u8_to_string((*buffer)[i], tmp_buffer, 16);
-        if (i == 0) {
-            printf("encoded_utf8_sequence = {");
-            continue;
-        }
-        if (i == isl_list_catch_length(*buffer) - 1) {
-            printf("0x%s", *tmp_buffer);
-            break;
-        }
+        if (i == 0) printf("encoded_utf8_sequence = {");
         printf("0x%s,", *tmp_buffer);
     }
-    printf("}\n\n");
+    printf("\b}\n\n");
 
     ist_u8 decode_length;
     index = 0;
     for (ist_usize i = 0;i < 132;++i) {
         u32_to_string(isl_utf8_decode(buffer, index, &decode_length), tmp_buffer, 16);
         index += decode_length;
-        if (i == 0) {
-            printf("decoded_utf8_codepoints = {");
-            continue;
-        }
-        if (i == 131) {
-            printf("0x%s", *tmp_buffer);
-            break;
-        }
+        if (i == 0) printf("decoded_utf8_codepoints = {");
         printf("0x%s,", *tmp_buffer);
     }
-    printf("}\n\n");
+    printf("\b}\n\n");
 
     ist_string* str4 = ist_string_createby_ref("汉", 5);
     printf("str4 context = %s\n", *str4);
@@ -179,7 +167,15 @@ void isl_test_string(void) {
     index += decode_length;
     printf("str4 codepoint = 0x%s\n", *tmp_buffer);
 
-    ist_string* str5 = ist_string_createby_ref("", 0);
+    ist_string* str5 = ist_string_createby_raw("just");
+    index = 4;
+
+    ist_string_buffer_append_raw(str5, &index, "udio");
+    ist_string_buffer_append_raw(str5, &index, "udio");
+
+
+    printf("str5 = %s\n", *str5);
+    printf("index = %zu\n", index);
 
     ist_string_delete(str1);
     ist_string_delete(str2);
