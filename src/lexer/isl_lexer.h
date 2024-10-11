@@ -52,10 +52,26 @@ typedef struct ist_codepage {
 
 } ist_codepage;
 
-ist_codepage* ist_codepage_createby_full(ist_string _source, ist_module _module);
-ist_codepage* ist_codepage_createby_source(ist_string _source, ist_string _module);
-ist_codepage* ist_codepage_createby_file(ist_string _filepath);
-// ist_codepage* ist_codepage_createby_string(ist_string _string, ist_usize _length);
+ist_codepage* ist_codepage_createby_full(
+    ist_string  _name,
+    ist_module* _module,
+    ist_string  _source,
+    ist_codepage* _prev_page);
+
+ist_codepage* ist_codepage_createby_filepath(
+    ist_module* _module,
+    ist_string  _filepath);
+
+ist_codepage* ist_codepage_createby_source(
+    ist_module* _module,
+    ist_string  _name,
+    ist_string  _source);
+
+ist_codepage* ist_codepage_createby_string(
+    ist_module* _module,
+    ist_string  _name,
+    ist_string  _string,
+    ist_usize   _length);
 
 void ist_codepage_delete(ist_codepage* this);
 

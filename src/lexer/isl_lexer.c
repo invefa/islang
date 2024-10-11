@@ -53,39 +53,101 @@ inline ist_string isl_read_file(ist_string _filepath) {
 }
 
 
-/* the source and module must be a string that allocated in the heap */
-inline ist_codepage* ist_codepage_createby_source(ist_string _source, ist_string _module) {
+ist_codepage* ist_codepage_createby_full(
+    ist_string  _name,
+    ist_module* _module,
+    ist_string  _source,
+    ist_codepage* _prev_page) {
 
-    ist_codepage* codepage = isl_malloc(ist_codepage);
+    isl_assert(_module);
 
-    codepage->name = NULL;
-    codepage->module = _module;
-    codepage->source = _source;
-    codepage->next_sequence_index = 0;
-    codepage->decode_codepoint_length = 0;
+    ist_codepage* this = isl_malloc(ist_codepage);
+
+    /* initialize the basic information */
+    this->name = _name;
+    this->module = _module;
+    this->source = _source;
+    this->prev_page = _prev_page;
+
+    ist_module_register_strbuf(_module, _name);
+    ist_module_register_source(_module, _source);
+
+    /* initialize the UTF-8 decode information */
+    this->next_sequence_index = 0;
+    this->decode_codepoint_length = 0;
 
     /* decode the first utf8 sequence */
-    codepage->current_codepoint =
-        isl_utf8_decode(&codepage->source,
-                        codepage->next_sequence_index,
-                        &codepage->decode_codepoint_length);
-    codepage->next_sequence_index += codepage->decode_codepoint_length;
+    this->current_codepoint =
+        isl_utf8_decode(&this->source,
+                        this->next_sequence_index,
+                        &this->decode_codepoint_length);
+    this->next_sequence_index += this->decode_codepoint_length;
 
     /* initialize the location */
-    ist_location_init(&codepage->location, codepage);
+    ist_location_init(&this->location, this);
 
-    codepage->prev_page = NULL;
-
-    return codepage;
+    return this;
 
 }
 
+ist_codepage* ist_codepage_createby_filepath(
+    ist_module* _module,
+    ist_string  _filepath) {
+    ist_string source = isl_read_file(_filepath);
+    return ist_codepage_createby_full(NULL, _module, source, NULL);
 
-inline ist_codepage* ist_codepage_createby_file(ist_string _filepath) {
-    return ist_codepage_createby_source(
-            isl_read_file(_filepath),
-            isl_filename_catchby_filepath(_filepath));
 }
+
+ist_codepage* ist_codepage_createby_source(
+    ist_module* _module,
+    ist_string  _name,
+    ist_string  _source) {
+    return ist_codepage_createby_full(_name, _module, _source, NULL);
+}
+
+
+ist_codepage* ist_codepage_createby_string(
+    ist_module* _module,
+    ist_string  _name,
+    ist_string  _string,
+    ist_usize   _length) {
+    return ist_codepage_createby_full(_name, _module,
+                ist_string_consby_ref(_string, _length), NULL);
+}
+
+// /* the source and module must be a string that allocated in the heap */
+// inline ist_codepage* ist_codepage_createby_source(ist_string _source, ist_string _module) {
+
+//     ist_codepage* codepage = isl_malloc(ist_codepage);
+
+//     codepage->name = NULL;
+//     codepage->module = _module;
+//     codepage->source = _source;
+//     codepage->next_sequence_index = 0;
+//     codepage->decode_codepoint_length = 0;
+
+//     /* decode the first utf8 sequence */
+//     codepage->current_codepoint =
+//         isl_utf8_decode(&codepage->source,
+//                         codepage->next_sequence_index,
+//                         &codepage->decode_codepoint_length);
+//     codepage->next_sequence_index += codepage->decode_codepoint_length;
+
+//     /* initialize the location */
+//     ist_location_init(&codepage->location, codepage);
+
+//     codepage->prev_page = NULL;
+
+//     return codepage;
+
+// }
+
+
+// inline ist_codepage* ist_codepage_createby_file(ist_string _filepath) {
+//     return ist_codepage_createby_source(
+//             isl_read_file(_filepath),
+//             isl_filename_catchby_filepath(_filepath));
+// }
 
 inline void ist_codepage_delete(ist_codepage* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
