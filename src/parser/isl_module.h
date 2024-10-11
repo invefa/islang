@@ -45,15 +45,6 @@ typedef struct ist_module {
     ist_sbtype* strbuf_types;
     ist_usize   strbuf_count;
 
-    /*
-        The list of source indexes for this module, it will store all source indexes.
-        It allows we find the source code strbuf that mixed in the strbuf_list.
-        If you want to add a new source code, you should add a new source index here,
-        to delete a source code, you should delete the corresponding source index here.
-    */
-    // ist_usize* srcidx_list;
-    // ist_usize  srcidx_count;
-
 } ist_module;
 
 ist_module  ist_module_consby_full(ist_string _name, ist_string _filepath);
