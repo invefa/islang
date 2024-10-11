@@ -5,11 +5,12 @@
 #include "isl_string.h"
 #include "isl_value.h"
 
-typedef enum ist_token_type {
+typedef ist_u8 ist_token_type;
+enum ist_token_type {
 #   define manifest(_name, _reflect) ISL_TOKENT_##_name,
 #   include "isl_tokens.h"
 #   undef manifest
-} ist_token_type;
+};
 
 extern const ist_string ist_token_reflects[];
 extern const ist_string ist_token_names[];

@@ -96,6 +96,6 @@ inline ist_string* ist_string_buffer_append_ref(
 
     return this;
 }
-ist_string* ist_string_buffer_append_raw(ist_string* this, ist_usize* _indexv, char* _string) {
+inline ist_string* ist_string_buffer_append_raw(ist_string* this, ist_usize* _indexv, char* _string) {
     return ist_string_buffer_append_ref(this, _indexv, (ist_string)_string, strlen(_string));
 }

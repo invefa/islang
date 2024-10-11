@@ -41,9 +41,9 @@ int main(void) {
     // isl_test_xssert();
     // isl_test_list();
     // isl_test_memgr();
-    isl_test_string();
+    // isl_test_string();
     // isl_test_report();
-    // isl_test_lexer();
+    isl_test_lexer();
 
     return 0;
 }
@@ -171,7 +171,7 @@ void isl_test_string(void) {
     index = 4;
 
     ist_string_buffer_append_raw(str5, &index, "udio");
-    ist_string_buffer_append_raw(str5, &index, "udio");
+    ist_string_buffer_append_raw(str5, &index, " awa");
 
 
     printf("str5 = %s\n", *str5);
@@ -187,13 +187,10 @@ void isl_test_string(void) {
 }
 
 
-
 typedef struct ist_i32_list {
     ist_i32* data;
     ist_usize size;
 } ist_i32_list;
-
-
 
 ist_i32* isl_emit_i32_list() {
     ist_i32* list = isl_malloc_list(ist_i32, 10);
