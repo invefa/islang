@@ -51,32 +51,39 @@ int main(void) {
 
 void isl_test_lexer(void) {
 
+    /* init some basic information */
     ist_string  filepath = ist_string_consby_raw("./scripts/test.is");
     ist_string  macro_source = ist_string_consby_raw(
         u8"起始,*.*awa123,123.456.789,\n中间//awa\n/*1\n2*/@magic[666u32]结束");
 
+    /* print file content */
     ist_string  file_contents = isl_read_file(filepath);
     printf("file context:\n|\nv\n%s<--\n", file_contents);
     ist_string_clean(&file_contents);
 
+    /* construct module and lexer, and create dump buffer */
     ist_module  module = ist_module_consby_filepath(filepath);
     ist_lexer   lexer = ist_lexer_consby_module(&module);
     ist_string* dumpbuf = ist_string_create_buffer(32);
 
+    /* make sure token dumping synchronized with fn:advance analysis */
     printf("%s\n", *ist_token_dump(&lexer.cur_token, dumpbuf));
     printf("%s\n", *ist_token_dump(&lexer.nex_token, dumpbuf));
     while (lexer.sec_token.type != ISL_TOKENT_EOF) {
         printf("%s\n", *ist_token_dump(&lexer.sec_token, dumpbuf));
+
+        /* switch codepage if the current token is a wrapper */
         if (lexer.sec_token.type == ISL_TOKENT_WRAPPER)
             ist_lexer_switch_codepage(&lexer,
                 ist_codepage_createby_source(&module,
-                    ist_string_consby_raw("wrap"),
-                    macro_source));
+                    ist_string_consby_raw("wrap"), macro_source));
 
         ist_lexer_advance(&lexer);
     }
+    /* print the last token:EOF */
     printf("%s\n", *ist_token_dump(&lexer.sec_token, dumpbuf));
 
+    /* clean up */
     ist_lexer_clean(&lexer);
     ist_module_clean(&module);
     ist_string_delete(dumpbuf);
@@ -84,9 +91,9 @@ void isl_test_lexer(void) {
 }
 
 
-// #define pal() printf("allocated length = %u\n", isl_allocated_length)
 
 void isl_test_report(void) {
+    // #define pal() printf("allocated length = %u\n", isl_allocated_length)
 
     // fprintf(stderr, ANSI_GRE_SET("this is a info    message: %d\n"), 123456);
     // fprintf(stderr, ANSI_YEL_SET("this is a warning message: %d\n"), 123456);
