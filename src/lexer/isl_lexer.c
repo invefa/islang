@@ -163,7 +163,7 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
     this->nex_token = this->sec_token;
 
     while (ist_lexer_skip_blanks(this)) {
-
+		/*
         analysis_token = ist_token_consby_full(
             ISL_TOKENT_EOF,
             this->codepage->location,
@@ -171,7 +171,7 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
                 + this->codepage->next_sequence_index
                 - this->codepage->decode_codepoint_length,
             0, ist_value_consby_i64(0));
-
+		*/
         switch (ist_lexer_get_current_codepoint(this)) {
         case ISL_CODEPOINT_EOCCP:
             ist_lexer_advance_codepoint(this);
@@ -266,6 +266,10 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
         break;
     }
 
+    /*
+        when skip_blanks(...) done, and the current codepoint was zero,
+        we need reset the analysis_token, because the reset logic within the while stmt.
+    
     if (!ist_lexer_get_current_codepoint(this))
         analysis_token = ist_token_consby_full(
             ISL_TOKENT_EOF,
@@ -274,7 +278,7 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
                 + this->codepage->next_sequence_index
                 - this->codepage->decode_codepoint_length,
             0, ist_value_consby_i64(0));
-
+    */
 ist_lexer_advance_label_ending:
     return &this->pre_token;
 }
@@ -293,9 +297,17 @@ inline void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage) 
 
 
 inline ist_codepoint ist_lexer_skip_blanks(ist_lexer* this) {
-    while (isspace(ist_lexer_get_current_codepoint(this))) {
+    while (isspace(ist_lexer_get_current_codepoint(this)))
         ist_lexer_advance_codepoint(this);
-    }
+
+    analysis_token = ist_token_consby_full(
+        ISL_TOKENT_EOF,
+        this->codepage->location,
+        this->codepage->source
+            + this->codepage->next_sequence_index
+            - this->codepage->decode_codepoint_length,
+        0, ist_value_consby_i64(0));
+
     return ist_lexer_get_current_codepoint(this);
 }
 
