@@ -51,6 +51,17 @@ int main(void) {
 
 void isl_test_lexer(void) {
 
+#define print_module()\
+    isl_wssert(0);\
+    for (ist_usize i = 0; i < module.strbuf_count; ++i) {\
+        printf("strbuf[%zu]:%s\n\n", i, module.strbuf_list[i]);\
+    }\
+    isl_wssert(0);\
+    for (ist_usize i = 0; i < module.srcidx_count; ++i) {\
+        printf("src[%zu]:%s\n\n", i, module.strbuf_list[module.srcidx_list[i]]);\
+    }\
+    isl_wssert(0)
+
     ist_string filepath = ist_string_consby_raw("./scripts/test.is");
 
     ist_string file_contents = isl_read_file(filepath);
@@ -58,6 +69,7 @@ void isl_test_lexer(void) {
     ist_string_clean(&file_contents);
 
     ist_module module = ist_module_consby_filepath(filepath);
+
 
     ist_string macro_source = ist_string_consby_raw(
         u8"起始,*.*awa123,123.456.789,\n中间//awa\n/*1\n2*/@magic[666u32]结束");
@@ -93,10 +105,9 @@ void isl_test_lexer(void) {
     printf("%s\n", *token_dump_buffer);
 
 
-    isl_wssert(0);
-    for (ist_usize i = 0; i < module.strbuf_count; ++i) {
-        printf("strbuf[%zu]:%s\n", i, module.strbuf_list[i]);
-    }
+
+    print_module();
+
 
     ist_lexer_clean(&lexer);
     ist_module_clean(&module);

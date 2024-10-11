@@ -74,6 +74,7 @@ ist_codepage* ist_codepage_createby_string(
     ist_usize   _length);
 
 void ist_codepage_delete(ist_codepage* this);
+void ist_codepage_delete_chain(ist_codepage* this);
 
 
 //TODO: add an error signal.

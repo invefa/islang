@@ -115,7 +115,11 @@ ist_codepage* ist_codepage_createby_string(
 
 inline void ist_codepage_delete(ist_codepage* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
-    if (this->prev_page) ist_codepage_delete(this->prev_page);
+    isl_free(this);
+}
+inline void ist_codepage_delete_chain(ist_codepage* this) {
+    isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
+    if (this->prev_page) ist_codepage_delete_chain(this->prev_page);
     isl_free(this);
 }
 
@@ -144,7 +148,7 @@ ist_lexer ist_lexer_consby_module(ist_module* _module) {
 
 inline void ist_lexer_clean(ist_lexer* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
-    ist_codepage_delete(this->codepage);
+    ist_codepage_delete_chain(this->codepage);
 }
 inline void ist_lexer_delete(ist_lexer* this) {
     ist_lexer_clean(this);
