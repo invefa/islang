@@ -163,98 +163,90 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
     this->nex_token = this->sec_token;
 
     while (ist_lexer_skip_blanks(this)) {
-		/*
-        analysis_token = ist_token_consby_full(
-            ISL_TOKENT_EOF,
-            this->codepage->location,
-            this->codepage->source
-                + this->codepage->next_sequence_index
-                - this->codepage->decode_codepoint_length,
-            0, ist_value_consby_i64(0));
-		*/
+
         switch (ist_lexer_get_current_codepoint(this)) {
-        case ISL_CODEPOINT_EOCCP:
-            ist_lexer_advance_codepoint(this);
-            continue;
-        case ISL_CODEPOINT_ERROR:
-            goto ist_lexer_advance_label_ending;
-
-            CHECK_SINCHAR_TOKENT('(', ISL_TOKENT_LPARE);
-            CHECK_SINCHAR_TOKENT(')', ISL_TOKENT_RPARE);
-
-            CHECK_SINCHAR_TOKENT('{', ISL_TOKENT_LBRACE);
-            CHECK_SINCHAR_TOKENT('}', ISL_TOKENT_RBRACE);
-
-            CHECK_SINCHAR_TOKENT('[', ISL_TOKENT_LBRACKET);
-            CHECK_SINCHAR_TOKENT(']', ISL_TOKENT_RBRACKET);
-
-            CHECK_SINCHAR_TOKENT(',', ISL_TOKENT_COMMA);
-            CHECK_SINCHAR_TOKENT(';', ISL_TOKENT_EOS);
-            CHECK_SINCHAR_TOKENT(':', ISL_TOKENT_COLON);
-            CHECK_SINCHAR_TOKENT('.', ISL_TOKENT_DOT);
-            CHECK_SINCHAR_TOKENT('?', ISL_TOKENT_QUESTION);
-
-            CHECK_BINCHAR_TOKENT('=', '=', ISL_TOKENT_ASSIGN, ISL_TOKENT_EQUAL);
-            CHECK_BINCHAR_TOKENT('!', '=', ISL_TOKENT_LNOT, ISL_TOKENT_NOTEQUAL);
-
-            CHECK_BINCHAR_TOKENT('&', '&', ISL_TOKENT_AND, ISL_TOKENT_LAND);
-            CHECK_BINCHAR_TOKENT('|', '|', ISL_TOKENT_OR, ISL_TOKENT_LOR);
-
-            CHECK_BINCHAR_TOKENT('*', '=', ISL_TOKENT_MUL, ISL_TOKENT_MUL_ASSIGN);
-            CHECK_BINCHAR_TOKENT('%', '=', ISL_TOKENT_MOD, ISL_TOKENT_MOD_ASSIGN);
-
-            CHECK_BINCHAR_TOKENT_HEAD('<', '=', ISL_TOKENT_LESSEQUAL)
-                CHECK_BINCHAR_TOKENT_BODY('<', ISL_TOKENT_LSHIFT)
-                CHECK_BINCHAR_TOKENT_TAIL(ISL_TOKENT_LESSTHAN);
-
-            CHECK_BINCHAR_TOKENT_HEAD('>', '=', ISL_TOKENT_GREATEQUAL)
-                CHECK_BINCHAR_TOKENT_BODY('>', ISL_TOKENT_RSHIFT)
-                CHECK_BINCHAR_TOKENT_TAIL(ISL_TOKENT_GREATERTHAN);
-
-            CHECK_BINCHAR_TOKENT_HEAD('+', '=', ISL_TOKENT_ADD_ASSIGN)
-                CHECK_BINCHAR_TOKENT_BODY('+', ISL_TOKENT_SELFADD)
-                CHECK_BINCHAR_TOKENT_TAIL(ISL_TOKENT_ADD);
-
-            CHECK_BINCHAR_TOKENT_HEAD('-', '=', ISL_TOKENT_SUB_ASSIGN)
-                CHECK_BINCHAR_TOKENT_BODY('-', ISL_TOKENT_SELFSUB)
-                CHECK_BINCHAR_TOKENT_BODY('>', ISL_TOKENT_WRAPPER)
-                CHECK_BINCHAR_TOKENT_TAIL(ISL_TOKENT_SUB);
-
-        case '/': {
-            ist_codepoint next_codepoint = ist_lexer_get_next_codepoint(this);
-            if (ist_lexer_get_next_codepoint(this) == '=') {
-                ist_lexer_advance_codepoint(this);
-                analysis_token.type = ISL_TOKENT_DIV_ASSIGN; break;
-            } else if (next_codepoint == '/' || next_codepoint == '*') {
-                ist_lexer_advance_codepoint(this);
-                ist_lexer_advance_codepoint(this);
-                ist_lexer_skip_comment(this, next_codepoint == '*');
-                continue;
-            }
-            analysis_token.type = ISL_TOKENT_DIV; break;
-        }
-
-        case '"':
-            ist_lexer_parse_string(this);
-            goto ist_lexer_advance_label_ending;
-
-        default:
-            if (isdigit(ist_lexer_get_current_codepoint(this))) {
-                ist_lexer_parse_number(this);
-            } else if (
-                    isl_utf8_legal_identifier_codepoint(
-                        ist_lexer_get_current_codepoint(this), true)) {
-                ist_lexer_parse_identifier(this);
-            } else {
-                isl_report(
-                    rid_unrecongnized_codepoint,
-                    this->codepage->location,
-                    ist_lexer_get_current_codepoint(this));
-
+            case ISL_CODEPOINT_EOCCP:
                 ist_lexer_advance_codepoint(this);
                 continue;
+            case ISL_CODEPOINT_ERROR:
+                goto ist_lexer_advance_label_ending;
+
+                CHECK_SINCHAR_TOKENT('(', ISL_TOKENT_LPARE);
+                CHECK_SINCHAR_TOKENT(')', ISL_TOKENT_RPARE);
+
+                CHECK_SINCHAR_TOKENT('{', ISL_TOKENT_LBRACE);
+                CHECK_SINCHAR_TOKENT('}', ISL_TOKENT_RBRACE);
+
+                CHECK_SINCHAR_TOKENT('[', ISL_TOKENT_LBRACKET);
+                CHECK_SINCHAR_TOKENT(']', ISL_TOKENT_RBRACKET);
+
+                CHECK_SINCHAR_TOKENT(',', ISL_TOKENT_COMMA);
+                CHECK_SINCHAR_TOKENT(';', ISL_TOKENT_EOS);
+                CHECK_SINCHAR_TOKENT(':', ISL_TOKENT_COLON);
+                CHECK_SINCHAR_TOKENT('.', ISL_TOKENT_DOT);
+                CHECK_SINCHAR_TOKENT('?', ISL_TOKENT_QUESTION);
+
+                CHECK_BINCHAR_TOKENT('=', '=', ISL_TOKENT_ASSIGN, ISL_TOKENT_EQUAL);
+                CHECK_BINCHAR_TOKENT('!', '=', ISL_TOKENT_LNOT, ISL_TOKENT_NOTEQUAL);
+
+                CHECK_BINCHAR_TOKENT('&', '&', ISL_TOKENT_AND, ISL_TOKENT_LAND);
+                CHECK_BINCHAR_TOKENT('|', '|', ISL_TOKENT_OR, ISL_TOKENT_LOR);
+
+                CHECK_BINCHAR_TOKENT('*', '=', ISL_TOKENT_MUL, ISL_TOKENT_MUL_ASSIGN);
+                CHECK_BINCHAR_TOKENT('%', '=', ISL_TOKENT_MOD, ISL_TOKENT_MOD_ASSIGN);
+
+                CHECK_BINCHAR_TOKENT_HEAD('<', '=', ISL_TOKENT_LESSEQUAL)
+                    CHECK_BINCHAR_TOKENT_BODY('<', ISL_TOKENT_LSHIFT)
+                    CHECK_BINCHAR_TOKENT_TAIL(ISL_TOKENT_LESSTHAN);
+
+                CHECK_BINCHAR_TOKENT_HEAD('>', '=', ISL_TOKENT_GREATEQUAL)
+                    CHECK_BINCHAR_TOKENT_BODY('>', ISL_TOKENT_RSHIFT)
+                    CHECK_BINCHAR_TOKENT_TAIL(ISL_TOKENT_GREATERTHAN);
+
+                CHECK_BINCHAR_TOKENT_HEAD('+', '=', ISL_TOKENT_ADD_ASSIGN)
+                    CHECK_BINCHAR_TOKENT_BODY('+', ISL_TOKENT_SELFADD)
+                    CHECK_BINCHAR_TOKENT_TAIL(ISL_TOKENT_ADD);
+
+                CHECK_BINCHAR_TOKENT_HEAD('-', '=', ISL_TOKENT_SUB_ASSIGN)
+                    CHECK_BINCHAR_TOKENT_BODY('-', ISL_TOKENT_SELFSUB)
+                    CHECK_BINCHAR_TOKENT_BODY('>', ISL_TOKENT_WRAPPER)
+                    CHECK_BINCHAR_TOKENT_TAIL(ISL_TOKENT_SUB);
+
+            case '/': {
+                ist_codepoint next_codepoint = ist_lexer_get_next_codepoint(this);
+                if (ist_lexer_get_next_codepoint(this) == '=') {
+                    ist_lexer_advance_codepoint(this);
+                    analysis_token.type = ISL_TOKENT_DIV_ASSIGN; break;
+                } else if (next_codepoint == '/' || next_codepoint == '*') {
+                    ist_lexer_advance_codepoint(this);
+                    ist_lexer_advance_codepoint(this);
+                    ist_lexer_skip_comment(this, next_codepoint == '*');
+                    continue;
+                }
+                analysis_token.type = ISL_TOKENT_DIV; break;
             }
-            goto ist_lexer_advance_label_ending;
+
+            case '"':
+                ist_lexer_parse_string(this);
+                goto ist_lexer_advance_label_ending;
+
+            default:
+                if (isdigit(ist_lexer_get_current_codepoint(this))) {
+                    ist_lexer_parse_number(this);
+                } else if (
+                        isl_utf8_legal_identifier_codepoint(
+                            ist_lexer_get_current_codepoint(this), true)) {
+                    ist_lexer_parse_identifier(this);
+                } else {
+                    isl_report(
+                        rid_unrecongnized_codepoint,
+                        this->codepage->location,
+                        ist_lexer_get_current_codepoint(this));
+
+                    ist_lexer_advance_codepoint(this);
+                    continue;
+                }
+                goto ist_lexer_advance_label_ending;
         }
 
         analysis_token.length =
@@ -266,19 +258,6 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
         break;
     }
 
-    /*
-        when skip_blanks(...) done, and the current codepoint was zero,
-        we need reset the analysis_token, because the reset logic within the while stmt.
-    
-    if (!ist_lexer_get_current_codepoint(this))
-        analysis_token = ist_token_consby_full(
-            ISL_TOKENT_EOF,
-            this->codepage->location,
-            this->codepage->source
-                + this->codepage->next_sequence_index
-                - this->codepage->decode_codepoint_length,
-            0, ist_value_consby_i64(0));
-    */
 ist_lexer_advance_label_ending:
     return &this->pre_token;
 }
@@ -300,6 +279,7 @@ inline ist_codepoint ist_lexer_skip_blanks(ist_lexer* this) {
     while (isspace(ist_lexer_get_current_codepoint(this)))
         ist_lexer_advance_codepoint(this);
 
+    /* when skip blanks was done, we should reset analysis_token again */
     analysis_token = ist_token_consby_full(
         ISL_TOKENT_EOF,
         this->codepage->location,
@@ -417,7 +397,6 @@ inline void ist_lexer_skip_comment(ist_lexer* this, ist_bool _is_block) {
     }
 }
 
-
 inline ist_codepoint ist_lexer_get_next_codepoint(ist_lexer* this) {
     return isl_utf8_decode(
             &this->codepage->source,
@@ -444,7 +423,7 @@ inline void ist_lexer_advance_codepoint(ist_lexer* this) {
     if (!ist_lexer_get_next_codepoint(this) && this->codepage->prev_page) {
         this->codepage->current_codepoint = ISL_CODEPOINT_EOCCP;
         /*
-            because we must advance next_sequence_index,
+            because we must advance next_sequence_index (to be compatible with parse_identifier),
             and the next codepoint is ASCII::EOF, so we should +1.
         */
         ++this->codepage->next_sequence_index;
@@ -464,10 +443,10 @@ inline void ist_lexer_advance_codepoint(ist_lexer* this) {
 
 }
 
+/* return the current codepoint */
 inline ist_codepoint ist_lexer_get_current_codepoint(ist_lexer* this) {
     return this->codepage->current_codepoint;
 }
-
 
 /*
     if next codepoint matches arg codepoint, then advance to the next codepoint,

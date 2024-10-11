@@ -186,9 +186,9 @@ help:
 	@$(echo_cmd) write by invefa.
 
 #set phony targets
-.PHONY:									\
-build rebuild							\
-run debug build-run build-debug			\
-clean clean-all clean-target			\
-clean-object clean-depend clean-dirs	\
+.PHONY:                                 \
+build rebuild                           \
+run debug build-run build-debug         \
+clean clean-all clean-target            \
+clean-object clean-depend clean-dirs    \
 depend mkdirs mk-build-dir echo help
