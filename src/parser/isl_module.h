@@ -42,18 +42,19 @@ typedef struct ist_module {
 
 } ist_module;
 
-void        ist_module_initby_name(ist_module* this, ist_string _name);
 ist_module  ist_module_consby_name(ist_string _name);
+ist_module* ist_module_initby_name(ist_module* this, ist_string _name);
 ist_module* ist_module_createby_name(ist_string _name);
 
-void        ist_module_initby_filepath(ist_module* this, ist_string _filepath);
 ist_module  ist_module_consby_filepath(ist_string _filepath);
+ist_module* ist_module_initby_filepath(ist_module* this, ist_string _filepath);
 ist_module* ist_module_createby_filepath(ist_string _filepath);
+
+void        ist_module_clean(ist_module* this);
+void        ist_module_delete(ist_module* this);
 
 ist_usize   ist_module_register_strbuf(ist_module* this, ist_string _strbuf);
 ist_usize   ist_module_register_source(ist_module* this, ist_string _source);
 
-void        ist_module_clean(ist_module* this);
-void        ist_module_delete(ist_module* this);
 
 #endif
