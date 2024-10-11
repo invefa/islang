@@ -19,6 +19,7 @@ typedef struct ist_module {
         We will extract the filename from the filepath and set it as the name of this module.
     */
     ist_string name;
+    ist_string filepath;
 
     /*
         The list of string buffers for this module, it will store all string buffers.
@@ -42,9 +43,9 @@ typedef struct ist_module {
 
 } ist_module;
 
-ist_module  ist_module_consby_name(ist_string _name);
-ist_module* ist_module_initby_name(ist_module* this, ist_string _name);
-ist_module* ist_module_createby_name(ist_string _name);
+ist_module  ist_module_consby_full(ist_string _name, ist_string _filepath);
+ist_module* ist_module_initby_full(ist_module* this, ist_string _name, ist_string _filepath);
+ist_module* ist_module_createby_full(ist_string _name, ist_string _filepath);
 
 ist_module  ist_module_consby_filepath(ist_string _filepath);
 ist_module* ist_module_initby_filepath(ist_module* this, ist_string _filepath);
