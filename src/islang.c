@@ -52,15 +52,15 @@ int main(void) {
 void isl_test_lexer(void) {
 
 #define print_module()\
-    isl_wssert(0);\
+    isl_report(rid_unknown);\
     for (ist_usize i = 0; i < module.strbuf_count; ++i) {\
-        printf("strbuf[%zu]:%s\n\n", i, module.strbuf_list[i]);\
+        printf("strbuf[%zu]: ->%s<-\n\n", i, module.strbuf_list[i]);\
     }\
-    isl_wssert(0);\
+    isl_report(rid_unknown);\
     for (ist_usize i = 0; i < module.srcidx_count; ++i) {\
-        printf("src[%zu]:%s\n\n", i, module.strbuf_list[module.srcidx_list[i]]);\
+        printf("src[%zu]:->%s<-\n\n", i, module.strbuf_list[module.srcidx_list[i]]);\
     }\
-    isl_wssert(0)
+    isl_report(rid_unknown)
 
     ist_string filepath = ist_string_consby_raw("./scripts/test.is");
 
@@ -73,8 +73,7 @@ void isl_test_lexer(void) {
 
     ist_string macro_source = ist_string_consby_raw(
         u8"起始,*.*awa123,123.456.789,\n中间//awa\n/*1\n2*/@magic[666u32]结束");
-    ist_codepage* macro_codepage =
-        ist_codepage_createby_source(&module, ist_string_consby_raw("wrap"), macro_source);
+
 
     ist_lexer lexer = ist_lexer_consby_module(&module);
 
@@ -93,9 +92,12 @@ void isl_test_lexer(void) {
         printf("%s\n", *token_dump_buffer);
 
         //TODO: fix the source_list duplicated ptr
-        if (lexer.sec_token.type == ISL_TOKENT_WRAPPER) {
-            ist_lexer_switch_codepage(&lexer, macro_codepage);
-        }
+        if (lexer.sec_token.type == ISL_TOKENT_WRAPPER)
+            ist_lexer_switch_codepage(&lexer,
+                ist_codepage_createby_source(&module,
+                    ist_string_consby_raw("wrap"),
+                    macro_source));
+
 
         ist_lexer_advance(&lexer);
 

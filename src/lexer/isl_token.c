@@ -71,7 +71,7 @@ inline ist_string* ist_token_dump(ist_token* this, ist_string* _buffer) {
         this->extract[this->length] = '\0';
     }
     snprintf(*_buffer, ISL_DEFAULT_BUFFER_LENGTH,
-        "token<0x%zX> {module:codepage=<%s:%s>,location=<%zu:%zu>,type=%s,"
+        "token<0x%zX> {module=<%s:%s>,location=<%zu:%zu>,type=%s,"
         "extract=\"%s\",length=%zu,value={int=%lld,real=%g}}",
         (ist_usize)this,
         this->location.codepage->module->name,

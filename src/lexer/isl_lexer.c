@@ -282,8 +282,12 @@ ist_lexer_advance_label_ending:
 inline void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage) {
     _codepage->prev_page = this->codepage;
     this->codepage = _codepage;
-    ist_module_register_source(this->module, _codepage->source);
-    ist_module_register_strbuf(this->module, _codepage->name);
+    /*
+        when the codepage created, the source and name will be registered,
+        so we don't need to register again.
+    */
+    // ist_module_register_source(this->module, _codepage->source);
+    // ist_module_register_strbuf(this->module, _codepage->name);
 
 }
 
