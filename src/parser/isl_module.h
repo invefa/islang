@@ -10,6 +10,18 @@
 
 ist_string isl_filename_catchby_filepath(ist_string _filepath);
 
+/* strbuf type */
+typedef ist_u8 ist_sbtype;
+enum ist_sbtype {
+    ISL_STRBUFT_UNKNOWN,    /* unknown */
+    ISL_STRBUFT_SYMBOL,     /* symbol */
+    ISL_STRBUFT_SOURCE,     /* source code */
+    ISL_STRBUFT_NAME,       /* struct name */
+    ISL_STRBUFT_FILEPATH,   /* file path */
+    ISL_STRBUFT_LITERAL,    /* string literal analyzed from source */
+};
+
+
 typedef struct ist_module {
 
     /*
@@ -30,6 +42,7 @@ typedef struct ist_module {
         when the compilation is finished.
     */
     ist_string* strbuf_list;
+    ist_sbtype* strbuf_types;
     ist_usize   strbuf_count;
 
     /*
@@ -38,8 +51,8 @@ typedef struct ist_module {
         If you want to add a new source code, you should add a new source index here,
         to delete a source code, you should delete the corresponding source index here.
     */
-    ist_usize* srcidx_list;
-    ist_usize  srcidx_count;
+    // ist_usize* srcidx_list;
+    // ist_usize  srcidx_count;
 
 } ist_module;
 
@@ -54,8 +67,7 @@ ist_module* ist_module_createby_filepath(ist_string _filepath);
 void        ist_module_clean(ist_module* this);
 void        ist_module_delete(ist_module* this);
 
-ist_usize   ist_module_register_strbuf(ist_module* this, ist_string _strbuf);
-ist_usize   ist_module_register_source(ist_module* this, ist_string _source);
+ist_usize   ist_module_register_strbuf(ist_module* this, ist_string _strbuf, ist_sbtype _type);
 
 
 #endif

@@ -29,12 +29,13 @@ inline ist_module ist_module_consby_full(ist_string _name, ist_string _filepath)
         .name = _name,
         .filepath = _filepath,
         .strbuf_list = isl_malloc_list(ist_string, 4),
-        .srcidx_list = isl_malloc_list(ist_usize, 2),
+        .strbuf_types = isl_malloc_list(ist_sbtype, 4),
         .strbuf_count = 0,
-        .srcidx_count = 0,
+        // .srcidx_list = isl_malloc_list(ist_usize, 2),
+        // .srcidx_count = 0,
     };
-    ist_module_register_strbuf(&module, _name);
-    ist_module_register_strbuf(&module, _filepath);
+    ist_module_register_strbuf(&module, _name, ISL_STRBUFT_NAME);
+    ist_module_register_strbuf(&module, _filepath, ISL_STRBUFT_FILEPATH);
     return module;
 }
 inline ist_module* ist_module_initby_full(ist_module* this, ist_string _name, ist_string _filepath) {
@@ -68,13 +69,14 @@ inline void ist_module_clean(ist_module* this) {
     }
 
     isl_freev_list(this->strbuf_list);
-    isl_freev_list(this->srcidx_list);
+    isl_freev_list(this->strbuf_types);
+    // isl_freev_list(this->srcidx_list);
 
     this->name = NULL;
     this->filepath = NULL;
 
     this->strbuf_count = 0;
-    this->srcidx_count = 0;
+    // this->srcidx_count = 0;
 
 }
 inline void ist_module_delete(ist_module* this) {
@@ -83,23 +85,15 @@ inline void ist_module_delete(ist_module* this) {
 }
 
 
-inline ist_usize ist_module_register_strbuf(ist_module* this, ist_string _strbuf) {
+inline ist_usize ist_module_register_strbuf(ist_module* this, ist_string _strbuf, ist_sbtype _type) {
 
     for (ist_usize i = 0; i < this->strbuf_count; ++i)
         if (this->strbuf_list[i] == _strbuf) return i;
 
+    ist_usize strbuf_count = this->strbuf_count;
     isl_list_addm(this->strbuf_list, this->strbuf_count, _strbuf);
-
+    isl_list_addm(this->strbuf_types, strbuf_count, _type);
     return this->strbuf_count - 1;
 }
-ist_usize ist_module_register_source(ist_module* this, ist_string _source) {
-    for (ist_usize i = 0; i < this->srcidx_count; ++i)
-        if (this->strbuf_list[this->srcidx_list[i]] == _source)
-            return this->srcidx_list[i];
 
-    isl_list_addm(this->srcidx_list, this->srcidx_count, this->strbuf_count);
-    isl_list_addm(this->strbuf_list, this->strbuf_count, _source);
-
-    return this->strbuf_count - 1;
-}
 
