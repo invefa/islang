@@ -336,7 +336,7 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
             if (lookahead_mode) {
                 ist_lexer_ahead_store_token(this->sec_token);
                 ++this->ahead_token_index;
-            } else this->ahead_backup_count = this->ahead_token_index = 0;
+            } else this->ahead_token_count = this->ahead_token_index = 0;
         }
     } else this->sec_token = ist_lexer_lex(this);
     return &this->pre_token;

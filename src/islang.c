@@ -56,7 +56,7 @@ void isl_test_lexer(void) {
     /* init some basic information */
     ist_string  filepath = ist_string_consby_raw("./scripts/test.is");
     ist_string  macro_source = ist_string_consby_raw(
-        u8"起始,*.*awa123,123.456.789,\n中间//awa\n/*1\n2*/@magic[666u32]结束");
+        u8"起始 1 is a num;@\n中间//awa\n/*1\n2*/\n886结束");
 
     /* print file content */
     ist_string  file_contents = isl_read_file(filepath);
@@ -74,11 +74,11 @@ void isl_test_lexer(void) {
     while (lexer.sec_token.type != ISL_TOKENT_EOF) {
         printf("%s\n", *ist_token_dump(&lexer.sec_token, dumpbuf));
 
-        // /* switch codepage if the current token is a wrapper */
-        // if (lexer.sec_token.type == ISL_TOKENT_WRAPPER)
-        //     ist_lexer_switch_codepage(&lexer,
-        //         ist_codepage_createby_source(&module,
-        //             ist_string_consby_raw("wrap"), macro_source));
+        /* switch codepage if the current token is a wrapper */
+        if (lexer.sec_token.type == ISL_TOKENT_WRAPPER)
+            ist_lexer_switch_codepage(&lexer,
+                ist_codepage_createby_source(&module,
+                    ist_string_consby_raw("wrap"), macro_source));
 
         if (lexer.sec_token.type == ISL_TOKENT_VL_INT) {
             ist_lexer_lookahead_start(&lexer);

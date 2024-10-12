@@ -1,6 +1,6 @@
 import io;;;
 123 is a num;
-yes it is;
+yes it is->cast!(string);
 /* import io;
 
 using main = fn:int(void) {
