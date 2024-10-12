@@ -172,7 +172,7 @@ inline void ist_lexer_delete(ist_lexer* this) {
 }
 
 
-#define ist_lexer_ahead_backup()    \
+#define ist_lexer_ahead_store_backup() \
 isl_list_addm(                      \
     this->ahead_backup_stack,       \
     this->ahead_backup_count,       \
@@ -201,7 +201,7 @@ void ist_lexer_lookahead_start(ist_lexer* this) {
         this->ahead_token_index = this->ahead_token_count;
     }
 
-    ist_lexer_ahead_backup();
+    ist_lexer_ahead_store_backup();
 }
 void ist_lexer_lookahead_end(ist_lexer* this) {
     isl_assert(this->ahead_token_count && this->ahead_backup_count);
@@ -318,6 +318,10 @@ inline ist_token ist_lexer_lex(ist_lexer* this) {
 }
 
 inline ist_token* ist_lexer_advance(ist_lexer* this) {
+#define lookahead_mode      (this->ahead_backup_count)
+#define has_ahead_tokens    (this->ahead_token_count)
+#define list_remaining      (this->ahead_token_index<this->ahead_token_count)
+#define read_from_list()    this->sec_token=this->ahead_token_list[this->ahead_token_index++]
 
     isl_assert(this->ahead_token_index <= this->ahead_token_count);
 
@@ -325,45 +329,42 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
     this->cur_token = this->nex_token;
     this->nex_token = this->sec_token;
 
-    /* when has ahead tokens */
-    if (this->ahead_token_count) {
-        if (this->ahead_token_index < this->ahead_token_count) {
-
-            /* when not at the end of the list, use it */
-            this->sec_token = this->ahead_token_list[this->ahead_token_index++];
-            return &this->pre_token;
-
-        } else if (this->ahead_token_index == this->ahead_token_count) {
-            if (this->ahead_backup_count) {
-                ist_lexer_ahead_store_token(this->sec_token = ist_lexer_lex(this));
-                return &this->pre_token;
-            } else {
-                this->ahead_backup_count = this->ahead_token_index = 0;
-                this->sec_token = ist_lexer_lex(this);
-                return &this->pre_token;
-            }
-
-            // /* there is no more ahead tokens, and will not appear this time */
-            // if (!this->ahead_backup_count) {
-            //     this->ahead_token_count = this->ahead_token_index = 0;
-            // }
-
+    if (has_ahead_tokens) {
+        if (list_remaining) read_from_list();
+        else {
+            this->sec_token = ist_lexer_lex(this);
+            if (lookahead_mode) {
+                ist_lexer_ahead_store_token(this->sec_token);
+                ++this->ahead_token_index;
+            } else this->ahead_backup_count = this->ahead_token_index = 0;
         }
     } else this->sec_token = ist_lexer_lex(this);
+    return &this->pre_token;
 
+    // /* when has ahead tokens */
+    // if (this->ahead_token_count) {
+    //     /* when not at the end of the list, use it */
+    //     if (this->ahead_token_index < this->ahead_token_count) {
+    //         this->sec_token = this->ahead_token_list[this->ahead_token_index++];
+    //         return &this->pre_token;
 
-    // /* when has ahead tokens, and the process is within lookahead-mode */
-    // if (this->ahead_token_count && this->ahead_backup_count) {
-
-    //     /* when the list has no token to read, we store analysis_token to list */
-    //     if (this->ahead_token_index == this->ahead_token_count) {
-    //         ist_lexer_ahead_store_token(analysis_token);
-    //         ++this->ahead_token_index;
+    //         /* when at the end of the list */
+    //     } else if (this->ahead_token_index == this->ahead_token_count) {
+    //         /* when the process within lookahead-mode */
+    //         if (this->ahead_backup_count) {
+    //             this->sec_token = ist_lexer_lex(this);
+    //             ist_lexer_ahead_store_token(this->sec_token);
+    //             ++this->ahead_token_index;
+    //             return &this->pre_token;
+    //         } else this->ahead_backup_count = this->ahead_token_index = 0;
     //     }
     // }
 
-
-    return &this->pre_token;
+    // this->sec_token = ist_lexer_lex(this);
+#undef lookahead_mode
+#undef has_ahead_tokens
+#undef list_remaining
+#undef read_from_list
 }
 
 inline void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage) {

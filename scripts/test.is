@@ -1,4 +1,7 @@
-import io;
+import io;;;
+123 is a num;
+yes it is;
+/* import io;
 
 using main = fn:int(void) {
     println("hell");
@@ -7,4 +10,4 @@ using main = fn:int(void) {
     println(a->cast!(string)+b->cast!(string));
     return 0;
 };
-文本
+文本 */

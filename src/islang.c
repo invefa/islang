@@ -74,21 +74,21 @@ void isl_test_lexer(void) {
     while (lexer.sec_token.type != ISL_TOKENT_EOF) {
         printf("%s\n", *ist_token_dump(&lexer.sec_token, dumpbuf));
 
-        /* switch codepage if the current token is a wrapper */
-        if (lexer.sec_token.type == ISL_TOKENT_WRAPPER)
-            ist_lexer_switch_codepage(&lexer,
-                ist_codepage_createby_source(&module,
-                    ist_string_consby_raw("wrap"), macro_source));
+        // /* switch codepage if the current token is a wrapper */
+        // if (lexer.sec_token.type == ISL_TOKENT_WRAPPER)
+        //     ist_lexer_switch_codepage(&lexer,
+        //         ist_codepage_createby_source(&module,
+        //             ist_string_consby_raw("wrap"), macro_source));
 
-        // if (lexer.sec_token.type == ISL_TOKENT_VL_INT) {
-        //     ist_lexer_lookahead_start(&lexer);
-        //     while (lexer.sec_token.type != ISL_TOKENT_EOS
-        //         && lexer.sec_token.type != ISL_TOKENT_EOF) {
-        //         ist_lexer_advance(&lexer);
-        //         printf("%s\n", *ist_token_dump(&lexer.sec_token, dumpbuf));
-        //     }
-        //     ist_lexer_lookahead_end(&lexer);
-        // }
+        if (lexer.sec_token.type == ISL_TOKENT_VL_INT) {
+            ist_lexer_lookahead_start(&lexer);
+            while (lexer.sec_token.type != ISL_TOKENT_EOS
+                && lexer.sec_token.type != ISL_TOKENT_EOF) {
+                ist_lexer_advance(&lexer);
+                printf("%s\n", *ist_token_dump(&lexer.sec_token, dumpbuf));
+            }
+            ist_lexer_lookahead_end(&lexer);
+        }
 
         ist_lexer_advance(&lexer);
     }
