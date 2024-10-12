@@ -91,11 +91,10 @@ typedef struct ist_lexer {
 
     ist_token* ahead_token_list;
     ist_usize  ahead_token_count;
+    ist_usize  ahead_token_index;
 
-    ist_usize  ahead_read_index;
-
-    ist_usize* ahead_read_index_stack;
-    ist_usize  ahead_read_index_count;
+    ist_usize* ahead_backup_stack;
+    ist_usize  ahead_backup_count;
 
 } ist_lexer;
 
