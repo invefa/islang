@@ -10,7 +10,7 @@
 #include "isl_report.h"
 #include "isl_module.h"
 
-#define analysis_token (this->sec_token)
+#define analysis_token (this->ana_token)
 
 #define CHECK_SINCHAR_TOKENT(_char, _tokent) \
     case _char:analysis_token.type=_tokent;break
@@ -126,13 +126,25 @@ inline void ist_codepage_delete_chain(ist_codepage* this) {
 
 ist_lexer ist_lexer_consby_full(ist_module* _module, ist_codepage* _codepage) {
     ist_lexer lexer = (ist_lexer){
+
         .module = _module,
         .codepage = _codepage,
+
         .pre_token = ist_token_consby_location(_codepage->location),
         .cur_token = ist_token_consby_location(_codepage->location),
         .sec_token = ist_token_consby_location(_codepage->location),
         .nex_token = ist_token_consby_location(_codepage->location),
+        .ana_token = ist_token_consby_location(_codepage->location),
+
+        .ahead_token_list = NULL,
+        .ahead_token_count = 0,
+        .ahead_token_index = 0,
+
+        .ahead_backup_stack = NULL,
+        .ahead_backup_count = 0
+
     };
+
     ist_lexer_advance(&lexer);
     ist_lexer_advance(&lexer);
     ist_lexer_advance(&lexer);
@@ -149,6 +161,10 @@ ist_lexer ist_lexer_consby_module(ist_module* _module) {
 inline void ist_lexer_clean(ist_lexer* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
     ist_codepage_delete_chain(this->codepage);
+
+    if (this->ahead_token_list) isl_freev_list(this->ahead_token_list);
+    if (this->ahead_backup_stack) isl_freev_list(this->ahead_backup_stack);
+
 }
 inline void ist_lexer_delete(ist_lexer* this) {
     ist_lexer_clean(this);
@@ -156,11 +172,51 @@ inline void ist_lexer_delete(ist_lexer* this) {
 }
 
 
-inline ist_token* ist_lexer_advance(ist_lexer* this) {
+#define ist_lexer_ahead_backup()    \
+isl_list_addm(                      \
+    this->ahead_backup_stack,       \
+    this->ahead_backup_count,       \
+    this->ahead_token_index - 3)
 
-    this->pre_token = this->cur_token;
-    this->cur_token = this->nex_token;
-    this->nex_token = this->sec_token;
+#define ist_lexer_ahead_store_token(_token) \
+isl_list_addm(this->ahead_token_list, this->ahead_token_count, _token)
+
+void ist_lexer_lookahead_start(ist_lexer* this) {
+
+    if (!this->ahead_token_list) {
+        this->ahead_token_list = isl_malloc_list(ist_token, 8);
+        isl_assert(!this->ahead_token_count);
+    }
+
+    if (!this->ahead_backup_stack) {
+        this->ahead_backup_stack = isl_malloc_list(ist_usize, 4);
+        isl_assert(!this->ahead_backup_count);
+    }
+
+    if (!this->ahead_token_count) {
+        ist_lexer_ahead_store_token(this->pre_token);
+        ist_lexer_ahead_store_token(this->cur_token);
+        ist_lexer_ahead_store_token(this->nex_token);
+        ist_lexer_ahead_store_token(this->sec_token);
+        this->ahead_token_index = this->ahead_token_count;
+    }
+
+    ist_lexer_ahead_backup();
+}
+void ist_lexer_lookahead_end(ist_lexer* this) {
+    isl_assert(this->ahead_token_count && this->ahead_backup_count);
+
+    this->ahead_token_index = this->ahead_backup_stack[--this->ahead_backup_count];
+
+    this->pre_token = this->ahead_token_list[this->ahead_token_index - 1];
+    this->cur_token = this->ahead_token_list[this->ahead_token_index++];
+    this->nex_token = this->ahead_token_list[this->ahead_token_index++];
+    this->sec_token = this->ahead_token_list[this->ahead_token_index++];
+
+}
+
+
+inline ist_token ist_lexer_lex(ist_lexer* this) {
 
     while (ist_lexer_skip_blanks(this)) {
 
@@ -169,7 +225,7 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
                 ist_lexer_advance_codepoint(this);
                 continue;
             case ISL_CODEPOINT_ERROR:
-                goto ist_lexer_advance_label_ending;
+                return analysis_token;
 
                 CHECK_SINCHAR_TOKENT('(', ISL_TOKENT_LPARE);
                 CHECK_SINCHAR_TOKENT(')', ISL_TOKENT_RPARE);
@@ -228,7 +284,7 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
 
             case '"':
                 ist_lexer_parse_string(this);
-                goto ist_lexer_advance_label_ending;
+                return analysis_token;
 
             default:
                 if (isdigit(ist_lexer_get_current_codepoint(this))) {
@@ -246,7 +302,7 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
                     ist_lexer_advance_codepoint(this);
                     continue;
                 }
-                goto ist_lexer_advance_label_ending;
+                return analysis_token;
         }
 
         analysis_token.length =
@@ -257,8 +313,56 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
         ist_lexer_advance_codepoint(this);
         break;
     }
+    return analysis_token;
 
-ist_lexer_advance_label_ending:
+}
+
+inline ist_token* ist_lexer_advance(ist_lexer* this) {
+
+    isl_assert(this->ahead_token_index <= this->ahead_token_count);
+
+    this->pre_token = this->cur_token;
+    this->cur_token = this->nex_token;
+    this->nex_token = this->sec_token;
+
+    /* when has ahead tokens */
+    if (this->ahead_token_count) {
+        if (this->ahead_token_index < this->ahead_token_count) {
+
+            /* when not at the end of the list, use it */
+            this->sec_token = this->ahead_token_list[this->ahead_token_index++];
+            return &this->pre_token;
+
+        } else if (this->ahead_token_index == this->ahead_token_count) {
+            if (this->ahead_backup_count) {
+                ist_lexer_ahead_store_token(this->sec_token = ist_lexer_lex(this));
+                return &this->pre_token;
+            } else {
+                this->ahead_backup_count = this->ahead_token_index = 0;
+                this->sec_token = ist_lexer_lex(this);
+                return &this->pre_token;
+            }
+
+            // /* there is no more ahead tokens, and will not appear this time */
+            // if (!this->ahead_backup_count) {
+            //     this->ahead_token_count = this->ahead_token_index = 0;
+            // }
+
+        }
+    } else this->sec_token = ist_lexer_lex(this);
+
+
+    // /* when has ahead tokens, and the process is within lookahead-mode */
+    // if (this->ahead_token_count && this->ahead_backup_count) {
+
+    //     /* when the list has no token to read, we store analysis_token to list */
+    //     if (this->ahead_token_index == this->ahead_token_count) {
+    //         ist_lexer_ahead_store_token(analysis_token);
+    //         ++this->ahead_token_index;
+    //     }
+    // }
+
+
     return &this->pre_token;
 }
 
