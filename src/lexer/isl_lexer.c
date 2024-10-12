@@ -316,8 +316,7 @@ inline void ist_lexer_parse_number(ist_lexer* this) {
     ist_usize dot_count = 0;
     while (isdigit(ist_lexer_get_current_codepoint(this))
             || ist_lexer_get_current_codepoint(this) == '.') {
-        if (ist_lexer_get_current_codepoint(this) == '.')
-            ++dot_count;
+        if (ist_lexer_get_current_codepoint(this) == '.') ++dot_count;
         ist_lexer_advance_codepoint(this);
     }
     isl_ifreport(dot_count > 1,

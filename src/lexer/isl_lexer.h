@@ -81,18 +81,21 @@ void ist_codepage_delete_chain(ist_codepage* this);
 //TODO: support lookahead.
 typedef struct ist_lexer {
 
-    /* the module which this lexer belongs to */
-    ist_module* module;
+    ist_module* module;     /*  the module which this lexer belongs to               */
+    ist_codepage* codepage; /*  the codepage currently being read                    */
+    ist_token               /*  the lexer will provide a table of token              */
+        pre_token,          /*  previous token, the token before the current token   */
+        cur_token,          /*  current token, the current token                     */
+        nex_token,          /*  next token, the token after the current token        */
+        sec_token;          /*  second token, the token after the next token         */
 
-    /* the codepage currently being read */
-    ist_codepage* codepage;
+    ist_token* ahead_token_list;
+    ist_usize  ahead_token_count;
 
-    /* the lexer will provide a table of token */
-    ist_token
-        pre_token, /* previous token, the token before the current token */
-        cur_token, /* current token, the current token */
-        nex_token, /* next token, the token after the current token */
-        sec_token; /* second token, the token after the next token */
+    ist_usize  ahead_read_index;
+
+    ist_usize* ahead_read_index_stack;
+    ist_usize  ahead_read_index_count;
 
 } ist_lexer;
 
