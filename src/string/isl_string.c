@@ -7,29 +7,29 @@
 #include "isl_report.h"
 
 
-inline ist_string ist_string_consby_ref(char* _cstring, ist_usize _length) {
+inline ist_string ist_string_consby_ref(ist_cstring _cstring, ist_usize _length) {
     ist_string string = isl_calloc_list(ist_byte, _length + 1);
     memcpy(string, _cstring, _length);
     string[_length] = '\0';
     return string;
 }
-inline ist_string* ist_string_initby_ref(ist_string* this, char* _cstring, ist_usize _length) {
+inline ist_string* ist_string_initby_ref(ist_string* this, ist_cstring _cstring, ist_usize _length) {
     *this = ist_string_consby_ref(_cstring, _length);
     return this;
 }
-inline ist_string* ist_string_createby_ref(char* _cstring, ist_usize _length) {
+inline ist_string* ist_string_createby_ref(ist_cstring _cstring, ist_usize _length) {
     return ist_string_initby_ref(isl_malloc(ist_string), _cstring, _length);
 }
 
 
-inline ist_string ist_string_consby_raw(char* _cstring) {
+inline ist_string ist_string_consby_raw(ist_cstring _cstring) {
     return ist_string_consby_ref(_cstring, strlen(_cstring));
 }
-inline ist_string* ist_string_initby_raw(ist_string* this, char* _cstring) {
+inline ist_string* ist_string_initby_raw(ist_string* this, ist_cstring _cstring) {
     return ist_string_initby_ref(this, _cstring, strlen(_cstring));
 }
-inline ist_string* ist_string_createby_raw(const char* _cstring) {
-    return ist_string_createby_ref((char*)_cstring, strlen(_cstring));
+inline ist_string* ist_string_createby_raw(ist_cstring _cstring) {
+    return ist_string_createby_ref(_cstring, strlen(_cstring));
 }
 
 ist_string ist_string_cons_buffer(ist_usize _capacity) {
@@ -96,6 +96,6 @@ inline ist_string* ist_string_buffer_append_ref(
 
     return this;
 }
-inline ist_string* ist_string_buffer_append_raw(ist_string* this, ist_usize* _indexv, char* _string) {
+inline ist_string* ist_string_buffer_append_raw(ist_string* this, ist_usize* _indexv, ist_cstring _string) {
     return ist_string_buffer_append_ref(this, _indexv, (ist_string)_string, strlen(_string));
 }

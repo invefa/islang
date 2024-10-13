@@ -8,7 +8,7 @@
 
 #include "isl_string.h"
 
-ist_string isl_filename_catchby_filepath(ist_string _filepath);
+ist_string isl_filename_catchby_filepath(ist_cstring _filepath);
 
 /* strbuf type */
 typedef ist_u8 ist_sbtype;

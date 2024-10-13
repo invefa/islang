@@ -4,6 +4,7 @@
 #include "isl_types.h"
 #include "isl_string.h"
 #include "isl_value.h"
+#include "isl_module.h"
 
 typedef ist_u8 ist_token_type;
 enum ist_token_type {
@@ -16,17 +17,28 @@ extern const ist_string ist_token_reflects[];
 extern const ist_string ist_token_names[];
 
 //pre-declare for location
-struct ist_codepage;
+// struct ist_codepage;
 
 typedef struct ist_location {
-    struct ist_codepage* codepage;
-    ist_usize            line;
-    ist_usize            column;
+    // struct ist_codepage* codepage;
+    ist_module* module;
+    ist_string  pagename;
+    ist_usize   line;
+    ist_usize   column;
 } ist_location;
 
-#define ist_location_consby_codepage(_codepage) \
+#define ist_location_consby_pagename(_pagename) \
 ((ist_location){                \
-    .codepage = (_codepage),    \
+    .module   = NULL,           \
+    .pagename = (_pagename),    \
+    .line     = 1,              \
+    .column   = 1               \
+})
+
+#define ist_location_consby_full(_module, _pagename) \
+((ist_location){                \
+    .module   = (_module),      \
+    .pagename = (_pagename),    \
     .line     = 1,              \
     .column   = 1               \
 })
@@ -51,7 +63,7 @@ typedef struct ist_token {
     .extract  = NULL,               \
     .length   = 0,                  \
     .location = {                   \
-        .codepage = NULL,           \
+        .pagename = NULL,           \
         .line     = 1,              \
         .column   = 1               \
     }                               \

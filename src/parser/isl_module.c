@@ -3,7 +3,7 @@
 #include "isl_memgr.h"
 #include "isl_list.h"
 
-inline ist_string isl_filename_catchby_filepath(ist_string _filepath) {
+inline ist_string isl_filename_catchby_filepath(ist_cstring _filepath) {
 
     /* find the start of the filename, capable of both unix and windows */
     ist_string start_unix = strrchr(_filepath, '/');

@@ -111,8 +111,8 @@ inline void isl_report(isp_repid _rid, ...) {
                 level_colors[reploc.level],
                 domain_fmts[reploc.domain],
                 level_fmts[reploc.level],
-                location.codepage->module->name,
-                location.codepage->name ? location.codepage->name : (ist_string)"\b",
+                location.module->name,
+                location.pagename ? location.pagename : (ist_string)"\b",
                 location.line,
                 location.column,
                 isp_fmts[_rid]);

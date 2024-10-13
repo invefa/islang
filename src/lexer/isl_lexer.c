@@ -39,7 +39,7 @@ case _char:                                                        \
         analysis_token.type=_unary_tokent;break
 
 
-inline ist_string isl_read_file(ist_string _filepath) {
+inline ist_string isl_read_file(ist_cstring _filepath) {
     FILE* file = fopen(_filepath, "rb");
     isl_ifnreport(file, rid_open_file_failed, _filepath, isp_catch_coreloc);
     fseek(file, 0, SEEK_END);
@@ -64,8 +64,8 @@ ist_codepage* ist_codepage_createby_full(
     ist_codepage* this = isl_malloc(ist_codepage);
 
     /* initialize the basic information */
-    this->name = _name;
-    this->module = _module;
+    // this->name = _name;
+    // this->module = _module;
     this->source = _source;
     this->prev_page = _prev_page;
 
@@ -85,7 +85,7 @@ ist_codepage* ist_codepage_createby_full(
     this->next_sequence_index += this->decode_codepoint_length;
 
     /* initialize the location */
-    this->location = ist_location_consby_codepage(this);
+    this->location = ist_location_consby_full(_module, _name);
 
     return this;
 
@@ -369,14 +369,31 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
 
 inline void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage) {
     _codepage->prev_page = this->codepage;
-    this->codepage = _codepage;
-    /*
-        when the codepage created, the source and name will be registered,
-        so we don't need to register again.
-    */
-    // ist_module_register_source(this->module, _codepage->source);
-    // ist_module_register_strbuf(this->module, _codepage->name);
 
+    if (this->codepage->location.pagename) {
+        isl_report(rid_unknown);
+
+        ist_usize index = 0;
+        ist_string* buffer = ist_string_create_buffer(
+            isl_list_catch_length(this->codepage->location.pagename)
+            + isl_list_catch_length(_codepage->location.pagename) + 1);
+
+        ist_string_buffer_append_raw(buffer, &index, (char*)(this->codepage->location.pagename));
+        ist_string_buffer_append_raw(buffer, &index, "->");
+        ist_string_buffer_append_raw(buffer, &index, (char*)(_codepage->location.pagename));
+
+        // ist_string_clean(&_codepage->location.pagename);
+        _codepage->location.pagename = *buffer;
+
+        ist_module_register_strbuf(
+            this->codepage->location.module,
+            _codepage->location.pagename,
+            ISL_STRBUFT_NAME);
+
+        isl_freev(buffer);
+    }
+
+    this->codepage = _codepage;
 }
 
 

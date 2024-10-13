@@ -5,7 +5,7 @@
 #include "isl_utf8.h"
 #include "isl_module.h"
 
-ist_string isl_read_file(ist_string _filepath);
+ist_string isl_read_file(ist_cstring _filepath);
 
 /*
     Codepage is a tool for maintaining the source code file currently being read.
@@ -19,10 +19,10 @@ typedef struct ist_codepage {
         The name of this codepage, it will be used in reporting message.
         And if it was nullptr, indicate that it is the default codepage.
     */
-    ist_string name;
+    // ist_string name;
 
     /* the module which this codepage belongs to */
-    ist_module* module;
+    // ist_module* module;
 
     /* the source code read from the source code file */
     ist_string source;

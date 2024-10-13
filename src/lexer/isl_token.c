@@ -36,8 +36,8 @@ ist_token_dump_label_head:;
             "token<0x%zX> {module=<%s:%s>,location=<%zu:%zu>,type=%s,"
             "extract=\"%s\",length=%zu,value={int=%lld,real=%g}}",
             (ist_usize)this,
-            this->location.codepage->module->name,
-            this->location.codepage->name ? this->location.codepage->name : (ist_string)"\b",
+            this->location.module->name,
+            this->location.pagename ? this->location.pagename : (ist_string)"\b",
             this->location.line,
             this->location.column,
             ist_token_names[this->type],
