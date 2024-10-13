@@ -6,6 +6,8 @@
 #include <stdlib.h>
 
 ist_usize isl_allocated_length = 0;
+ist_usize isl_max_allocated_length = 0;
+
 
 inline void* isl_allocate(ist_usize _size, ist_bool _clean) {
     isl_assert(_size);
@@ -13,6 +15,9 @@ inline void* isl_allocate(ist_usize _size, ist_bool _clean) {
     isl_assert(ptr, "allocate failed.");
 
     isl_allocated_length += _size;
+
+    if (isl_allocated_length > isl_max_allocated_length)
+        isl_max_allocated_length = isl_allocated_length;
 
 #   ifdef ISL_ENABLE_INFORM_ALLOCATED
     isl_report(rid_inform_allocated, ptr, _size, isl_allocated_length);

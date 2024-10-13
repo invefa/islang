@@ -9,6 +9,7 @@
 
 // all we allocated memory will be recorded at this variable.
 extern ist_usize isl_allocated_length;
+extern ist_usize isl_max_allocated_length;
 
 // allocate a memory and record length of it.
 void* isl_allocate(ist_usize _size, ist_bool _clean);

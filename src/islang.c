@@ -51,12 +51,14 @@ int main(void) {
 
 void isl_test_lexer(void) {
 
-    isl_report(rid_unknown);
+    isl_report(rid_custom_core_warn, "start testing lexer...");
 
     /* init some basic information */
     ist_string  filepath = ist_string_consby_raw("./scripts/test.is");
     ist_string  macro_source = ist_string_consby_raw(
-        u8"起始 1 is a num;@\n中间//awa\n/*1\n2*/\n886结束");
+        u8"起始 1 is a num;@&\n中间//awa\n/*1\n2*/\n886结束");
+    ist_string  macroin_source = ist_string_consby_raw(
+        u8"cast!(1,string)");
 
     /* print file content */
     ist_string  file_contents = isl_read_file(filepath);
@@ -80,14 +82,21 @@ void isl_test_lexer(void) {
                 ist_codepage_createby_source(&module,
                     ist_string_consby_raw("wrap"), macro_source));
 
+        if (lexer.sec_token.type == ISL_TOKENT_AND)
+            ist_lexer_switch_codepage(&lexer,
+                ist_codepage_createby_source(&module,
+                    ist_string_consby_raw("wrapin"), macroin_source));
+
         if (lexer.sec_token.type == ISL_TOKENT_VL_INT) {
             ist_lexer_lookahead_start(&lexer);
+            isl_report(rid_custom_core_warn, "start lookahead.");
             while (lexer.sec_token.type != ISL_TOKENT_EOS
                 && lexer.sec_token.type != ISL_TOKENT_EOF) {
                 ist_lexer_advance(&lexer);
                 printf("%s\n", *ist_token_dump(&lexer.sec_token, dumpbuf));
             }
             ist_lexer_lookahead_end(&lexer);
+            isl_report(rid_custom_core_warn, "end lookahead.");
         }
 
         ist_lexer_advance(&lexer);
@@ -100,6 +109,7 @@ void isl_test_lexer(void) {
     ist_module_clean(&module);
     ist_string_delete(dumpbuf);
 
+    isl_report(rid_custom_core_info, "max allocated-length = %zu.", isl_max_allocated_length);
 }
 
 

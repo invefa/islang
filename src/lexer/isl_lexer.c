@@ -371,16 +371,16 @@ inline void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage) 
     _codepage->prev_page = this->codepage;
 
     if (this->codepage->location.pagename) {
-        isl_report(rid_unknown);
+        // isl_report(rid_custom_core_warn, "start switching codepage...");
 
         ist_usize index = 0;
         ist_string* buffer = ist_string_create_buffer(
             isl_list_catch_length(this->codepage->location.pagename)
-            + isl_list_catch_length(_codepage->location.pagename) + 1);
+            + isl_list_catch_length(_codepage->location.pagename));
 
-        ist_string_buffer_append_raw(buffer, &index, (char*)(this->codepage->location.pagename));
-        ist_string_buffer_append_raw(buffer, &index, "->");
-        ist_string_buffer_append_raw(buffer, &index, (char*)(_codepage->location.pagename));
+        ist_string_buffer_append_raw(buffer, &index, this->codepage->location.pagename);
+        ist_string_buffer_append_raw(buffer, &index, ".");
+        ist_string_buffer_append_raw(buffer, &index, _codepage->location.pagename);
 
         // ist_string_clean(&_codepage->location.pagename);
         _codepage->location.pagename = *buffer;
