@@ -318,12 +318,16 @@ inline ist_token ist_lexer_lex(ist_lexer* this) {
 }
 
 inline ist_token* ist_lexer_advance(ist_lexer* this) {
-#define lookahead_mode      (this->ahead_backup_count)
-#define has_ahead_token     (this->ahead_token_count)
-#define no_remain_token     (this->ahead_token_index==this->ahead_token_count)
-#define read_from_list()    this->sec_token=this->ahead_token_list[this->ahead_token_index++]
 
-    // isl_assert(this->ahead_token_index <= this->ahead_token_count);
+    /*
+        define some macro to make the logic of
+        following code more easy to digest.
+    */
+#   define lookaheading        (this->ahead_backup_count)
+#   define has_ahead_token     (this->ahead_token_count)
+#   define no_remain_token     (this->ahead_token_index==this->ahead_token_count)
+#   define read_from_list()    this->sec_token=this->ahead_token_list[this->ahead_token_index++]
+
     isl_ifnreport(
         this->ahead_token_index <= this->ahead_token_count,
         rid_catch_size_overflow, isp_catch_coreloc);
@@ -342,43 +346,39 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
             this->sec_token = ist_lexer_lex(this);
 
 
-            if (lookahead_mode) {
+            if (lookaheading) {
                 /*
                     at that case, the token will be stored to the ahead list,
                     and we advance the ahead_token_index to ensure it behind at sec_token.
                 */
                 ist_lexer_ahead_store_token(this->sec_token);
                 ++this->ahead_token_index;
-            } else
-                /*
-                    if we are not within ahead mode,
-                    and the token has been read, we should clean it all.
-                */
-                this->ahead_token_count = this->ahead_token_index = 0;
-        } else
-            /*
-                when we have ahead token,
-                and there has remains token of, read it
-            */
-            read_from_list();
 
+            } else this->ahead_token_count = this->ahead_token_index = 0;
+        } else read_from_list();
 
-    } else /* the common case if we have no ahead token */
+    } else /* the common case if we have no any ahead token */
         this->sec_token = ist_lexer_lex(this);
+
     return &this->pre_token;
 
-#undef lookahead_mode
-#undef has_ahead_token
-#undef has_remain_token
-#undef read_from_list
+    /* undef for macros */
+#   undef lookaheading
+#   undef has_ahead_token
+#   undef has_remain_token
+#   undef read_from_list
 }
 
 inline void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage) {
     _codepage->prev_page = this->codepage;
 
     if (this->codepage->location.pagename) {
-        // isl_report(rid_custom_core_warn, "start switching codepage...");
 
+        /*
+            interesting, when we catch the length of the pagename,
+            the both of last char '\0' also was claculated within the length,
+            so we don't need to add 2 to the length for the appending of '.' and '\0'.
+        */
         ist_usize index = 0;
         ist_string* buffer = ist_string_create_buffer(
             isl_list_catch_length(this->codepage->location.pagename)
@@ -388,12 +388,9 @@ inline void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage) 
         ist_string_buffer_append_raw(buffer, &index, ".");
         ist_string_buffer_append_raw(buffer, &index, _codepage->location.pagename);
 
-        // ist_string_clean(&_codepage->location.pagename);
-        _codepage->location.pagename = *buffer;
-
         ist_module_register_strbuf(
             this->codepage->location.module,
-            _codepage->location.pagename,
+            _codepage->location.pagename = *buffer,
             ISL_STRBUFT_NAME);
 
         isl_freev(buffer);
