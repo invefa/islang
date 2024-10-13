@@ -319,51 +319,57 @@ inline ist_token ist_lexer_lex(ist_lexer* this) {
 
 inline ist_token* ist_lexer_advance(ist_lexer* this) {
 #define lookahead_mode      (this->ahead_backup_count)
-#define has_ahead_tokens    (this->ahead_token_count)
-#define list_remaining      (this->ahead_token_index<this->ahead_token_count)
+#define has_ahead_token     (this->ahead_token_count)
+#define no_remain_token     (this->ahead_token_index==this->ahead_token_count)
 #define read_from_list()    this->sec_token=this->ahead_token_list[this->ahead_token_index++]
 
-    isl_assert(this->ahead_token_index <= this->ahead_token_count);
+    // isl_assert(this->ahead_token_index <= this->ahead_token_count);
+    isl_ifnreport(
+        this->ahead_token_index <= this->ahead_token_count,
+        rid_catch_size_overflow, isp_catch_coreloc);
 
     this->pre_token = this->cur_token;
     this->cur_token = this->nex_token;
     this->nex_token = this->sec_token;
 
-    if (has_ahead_tokens) {
-        if (list_remaining) read_from_list();
-        else {
+    if (has_ahead_token) {
+        if (no_remain_token) {
+
+            /*
+                when the remain token has been consumed,
+                we can only read the next token from the source.
+            */
             this->sec_token = ist_lexer_lex(this);
+
+
             if (lookahead_mode) {
+                /*
+                    at that case, the token will be stored to the ahead list,
+                    and we advance the ahead_token_index to ensure it behind at sec_token.
+                */
                 ist_lexer_ahead_store_token(this->sec_token);
                 ++this->ahead_token_index;
-            } else this->ahead_token_count = this->ahead_token_index = 0;
-        }
-    } else this->sec_token = ist_lexer_lex(this);
+            } else
+                /*
+                    if we are not within ahead mode,
+                    and the token has been read, we should clean it all.
+                */
+                this->ahead_token_count = this->ahead_token_index = 0;
+        } else
+            /*
+                when we have ahead token,
+                and there has remains token of, read it
+            */
+            read_from_list();
+
+
+    } else /* the common case if we have no ahead token */
+        this->sec_token = ist_lexer_lex(this);
     return &this->pre_token;
 
-    // /* when has ahead tokens */
-    // if (this->ahead_token_count) {
-    //     /* when not at the end of the list, use it */
-    //     if (this->ahead_token_index < this->ahead_token_count) {
-    //         this->sec_token = this->ahead_token_list[this->ahead_token_index++];
-    //         return &this->pre_token;
-
-    //         /* when at the end of the list */
-    //     } else if (this->ahead_token_index == this->ahead_token_count) {
-    //         /* when the process within lookahead-mode */
-    //         if (this->ahead_backup_count) {
-    //             this->sec_token = ist_lexer_lex(this);
-    //             ist_lexer_ahead_store_token(this->sec_token);
-    //             ++this->ahead_token_index;
-    //             return &this->pre_token;
-    //         } else this->ahead_backup_count = this->ahead_token_index = 0;
-    //     }
-    // }
-
-    // this->sec_token = ist_lexer_lex(this);
 #undef lookahead_mode
-#undef has_ahead_tokens
-#undef list_remaining
+#undef has_ahead_token
+#undef has_remain_token
 #undef read_from_list
 }
 
