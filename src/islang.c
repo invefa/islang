@@ -110,6 +110,7 @@ void isl_test_lexer(void) {
     ist_string_delete(dumpbuf);
 
     isl_report(rid_custom_core_info, "max allocated-length = %zu.", isl_max_allocated_length);
+    isl_report(rid_custom_core_warn, "end testing lexer.");
 }
 
 
