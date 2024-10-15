@@ -1,5 +1,5 @@
 /*
-    This c source file is the main source file for islang and it is the entrance of islang.
+    This c source file is the main source file for islang, and it is the entrance of islang.
     This project is compiled with -std=gnu11, because it will use some extension functions
     which are suplied by GNU standard extensions.
 
