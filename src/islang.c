@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <conio.h>
 
 #include "isl_xssert.h"
 #include "isl_overload.h"
@@ -37,6 +38,7 @@ void isl_test_lexer(void);
 
 int main(void) {
 
+    system("chcp 65001");
     // isl_test_overload();
     // isl_test_xssert();
     // isl_test_list();
@@ -44,6 +46,7 @@ int main(void) {
     // isl_test_string();
     // isl_test_report();
     isl_test_lexer();
+    getch();
 
     return 0;
 }
@@ -51,7 +54,7 @@ int main(void) {
 
 void isl_test_lexer(void) {
 
-    isl_report(rid_custom_core_warn, "start testing lexer...");
+    isl_report(rid_custom_core_warning, "start testing lexer...");
 
     /* init some basic information */
     ist_string  filepath = ist_string_consby_raw("./scripts/test.is");
@@ -88,15 +91,18 @@ void isl_test_lexer(void) {
                     ist_string_consby_raw("wrapin"), macroin_source));
 
         if (lexer.sec_token.type == ISL_TOKENT_VL_INT) {
+
             ist_lexer_lookahead_start(&lexer);
-            isl_report(rid_custom_core_warn, "start lookahead.");
+            isl_report(rid_custom_core_warning, "start lookahead.");
+
             while (lexer.sec_token.type != ISL_TOKENT_EOS
                 && lexer.sec_token.type != ISL_TOKENT_EOF) {
                 ist_lexer_advance(&lexer);
                 printf("%s\n", *ist_token_dump(&lexer.sec_token, dumpbuf));
             }
+
             ist_lexer_lookahead_end(&lexer);
-            isl_report(rid_custom_core_warn, "end lookahead.");
+            isl_report(rid_custom_core_warning, "end lookahead.");
         }
 
         ist_lexer_advance(&lexer);
@@ -110,7 +116,7 @@ void isl_test_lexer(void) {
     ist_string_delete(dumpbuf);
 
     isl_report(rid_custom_core_info, "max allocated-length = %zu.", isl_max_allocated_length);
-    isl_report(rid_custom_core_warn, "end testing lexer.");
+    isl_report(rid_custom_core_warning, "end testing lexer.");
 }
 
 
@@ -126,7 +132,7 @@ void isl_test_report(void) {
 
     isl_report(rid_unknown);
     isl_report(rid_custom_core_info, "the second arg was %d.", 123);
-    isl_report(rid_custom_core_warn, "the second arg was %d.", 345);
+    isl_report(rid_custom_core_warning, "the second arg was %d.", 345);
     isl_report(rid_custom_core_error, "the second arg was %d.", 789);
     isl_report(rid_custom_core_panic, "the second arg was %d.", 666);
     // isl_report(rid_custom_core_fatal, "the second arg was %d.", 123456);
