@@ -401,7 +401,7 @@ inline void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage) 
 
 
 inline ist_codepoint ist_lexer_skip_blanks(ist_lexer* this) {
-    while (isspace(ist_lexer_get_current_codepoint(this)))
+    while (isl_utf8_is_space_codepoint(ist_lexer_get_current_codepoint(this)))
         ist_lexer_advance_codepoint(this);
 
     /* when skip blanks was done, we should reset analysis_token again */

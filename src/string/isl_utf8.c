@@ -120,3 +120,11 @@ inline ist_bool isl_utf8_legal_identifier_codepoint(ist_codepoint _codepoint, is
 
 }
 
+inline ist_bool isl_utf8_is_space_codepoint(ist_codepoint _codepoint){
+    return _codepoint == 0x0020
+        || _codepoint == 0x0009
+        || _codepoint == 0x000A
+        || _codepoint == 0x000B
+        || _codepoint == 0x000C
+        || _codepoint == 0x000D;
+}
