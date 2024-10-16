@@ -36,9 +36,9 @@ void isl_test_string(void);
 void isl_test_report(void);
 void isl_test_lexer(void);
 
-int main(void) {
+int main(int argc, char* argv[]) {
 
-    system("chcp 65001");
+    if(argc <= 1) system("chcp 65001");
     // isl_test_overload();
     // isl_test_xssert();
     // isl_test_list();
@@ -46,7 +46,7 @@ int main(void) {
     // isl_test_string();
     // isl_test_report();
     isl_test_lexer();
-    getch();
+    if(argc <= 1) getch();
 
     return 0;
 }
