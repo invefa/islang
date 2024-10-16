@@ -27,7 +27,6 @@ enum ist_astnode_type {
     ISL_ASTNT_OP_ASSIGN,
 };
 
-
 typedef struct ist_astnode {
     ist_astnode_type    type;
     ist_value           value;
@@ -36,20 +35,23 @@ typedef struct ist_astnode {
 } ist_astnode;
 
 ist_astnode ist_astnode_consby_full(
-        ist_astnode_type    _type,
-        ist_value           _value,
-        struct ist_astnode* _left,
-        struct ist_astnode* _right);
+    ist_astnode_type    _type,
+    ist_value           _value,
+    struct ist_astnode* _left,
+    struct ist_astnode* _right
+);
 ist_astnode* ist_astnode_initby_full(
-        ist_astnode* this,
-        ist_astnode_type    _type,
-        ist_value           _value,
-        struct ist_astnode* _left,
-        struct ist_astnode* _right);
+    ist_astnode* this,
+    ist_astnode_type    _type,
+    ist_value           _value,
+    struct ist_astnode* _left,
+    struct ist_astnode* _right
+);
 ist_astnode* ist_astnode_createby_full(
-        ist_astnode_type    _type,
-        ist_value           _value,
-        struct ist_astnode* _left,
-        struct ist_astnode* _right);
+    ist_astnode_type    _type,
+    ist_value           _value,
+    struct ist_astnode* _left,
+    struct ist_astnode* _right
+);
 
 #endif // ISL_ASTNODE_H

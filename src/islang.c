@@ -16,16 +16,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "isl_xssert.h"
-#include "isl_overload.h"
 #include "isl_ansictrl.h"
-#include "isl_memgr.h"
+#include "isl_dbgutils.h"
+#include "isl_lexer.h"
 #include "isl_list.h"
+#include "isl_memgr.h"
+#include "isl_overload.h"
+#include "isl_report.h"
 #include "isl_string.h"
 #include "isl_utf8.h"
-#include "isl_dbgutils.h"
-#include "isl_report.h"
-#include "isl_lexer.h"
+#include "isl_xssert.h"
 
 void isl_test_overload(void);
 void isl_test_xssert(void);
@@ -37,7 +37,7 @@ void isl_test_lexer(void);
 
 int main(int argc, char* argv[]) {
 
-    if(argc <= 1) system("chcp 65001");
+    if (argc <= 1) system("chcp 65001");
     // isl_test_overload();
     // isl_test_xssert();
     // isl_test_list();
@@ -49,26 +49,24 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-
 void isl_test_lexer(void) {
 
     isl_report(rid_custom_core_warning, "start testing lexer...");
 
     /* init some basic information */
-    ist_string  filepath = ist_string_consby_raw("./scripts/test.is");
-    ist_string  macro_source = ist_string_consby_raw(
-        u8"起始 1 is a num;@&\n中间//awa\n/*1\n2*/\n886结束");
-    ist_string  macroin_source = ist_string_consby_raw(
-        u8"cast!(1,string)");
+    ist_string filepath = ist_string_consby_raw("./scripts/test.is");
+    ist_string macro_source =
+        ist_string_consby_raw(u8"起始 1 is a num;@&\n中间//awa\n/*1\n2*/\n886结束");
+    ist_string macroin_source = ist_string_consby_raw(u8"cast!(1,string)");
 
     /* print file content */
-    ist_string  file_contents = isl_read_file(filepath);
+    ist_string file_contents = isl_read_file(filepath);
     printf("file context:\n|\nv\n%s<--\n", file_contents);
     ist_string_clean(&file_contents);
 
     /* construct module and lexer, and create dump buffer */
-    ist_module  module = ist_module_consby_filepath(filepath);
-    ist_lexer   lexer = ist_lexer_consby_module(&module);
+    ist_module  module  = ist_module_consby_filepath(filepath);
+    ist_lexer   lexer   = ist_lexer_consby_module(&module);
     ist_string* dumpbuf = ist_string_create_buffer(32);
 
     /* make sure token dumping synchronized with fn:advance analysis */
@@ -77,24 +75,23 @@ void isl_test_lexer(void) {
     while (lexer.sec_token.type != ISL_TOKENT_EOF) {
         printf("%s\n", *ist_token_dump(&lexer.sec_token, dumpbuf));
 
-        /* switch codepage if the current token is a wrapper */
-        if (lexer.sec_token.type == ISL_TOKENT_WRAPPER)
-            ist_lexer_switch_codepage(&lexer,
-                ist_codepage_createby_source(&module,
-                    ist_string_consby_raw("wrap"), macro_source));
+#define lexer_switch_codepage(_pagename, _pagesrc)                                        \
+    ist_lexer_switch_codepage(                                                            \
+        &lexer,                                                                           \
+        ist_codepage_createby_source(&module, ist_string_consby_raw(_pagename), _pagesrc) \
+    )
 
-        if (lexer.sec_token.type == ISL_TOKENT_AND)
-            ist_lexer_switch_codepage(&lexer,
-                ist_codepage_createby_source(&module,
-                    ist_string_consby_raw("wrapin"), macroin_source));
+        /* switch codepage if the current token is a wrapper */
+        if (lexer.sec_token.type == ISL_TOKENT_WRAPPER) lexer_switch_codepage("wrap", macro_source);
+        if (lexer.sec_token.type == ISL_TOKENT_AND) lexer_switch_codepage("wrapin", macroin_source);
 
         if (lexer.sec_token.type == ISL_TOKENT_VL_INT) {
 
             ist_lexer_lookahead_start(&lexer);
             isl_report(rid_custom_core_warning, "start lookahead.");
 
-            while (lexer.sec_token.type != ISL_TOKENT_EOS
-                && lexer.sec_token.type != ISL_TOKENT_EOF) {
+            while (lexer.sec_token.type != ISL_TOKENT_EOS && lexer.sec_token.type != ISL_TOKENT_EOF)
+            {
                 ist_lexer_advance(&lexer);
                 printf("%s\n", *ist_token_dump(&lexer.sec_token, dumpbuf));
             }
@@ -117,8 +114,6 @@ void isl_test_lexer(void) {
     isl_report(rid_custom_core_warning, "end testing lexer.");
 }
 
-
-
 void isl_test_report(void) {
     // #define pal() printf("allocated length = %u\n", isl_allocated_length)
 
@@ -140,7 +135,6 @@ void isl_test_report(void) {
     isl_report(rid_unknown);
     // isl_ifnreport(NULL, rid_catch_nullptr, isp_catch_coreloc);
 
-
     isl_wssert(0);
 }
 
@@ -156,7 +150,7 @@ void isl_test_string(void) {
     printf("str3 = %s\n", str3);
 
     ist_string* buffer = ist_string_create_buffer(0);
-    ist_usize index = 0;
+    ist_usize   index  = 0;
     for (ist_usize i = 0; i < 128; ++i) {
         index += isl_utf8_encode(0x6C49, buffer, index);
     }
@@ -168,7 +162,7 @@ void isl_test_string(void) {
 
     ist_string* tmp_buffer = ist_string_create_buffer(1);
 
-    for (ist_usize i = 0;i < isl_list_catch_length(*buffer);++i) {
+    for (ist_usize i = 0; i < isl_list_catch_length(*buffer); ++i) {
         u8_to_string((*buffer)[i], tmp_buffer, 16);
         if (i == 0) printf("encoded_utf8_sequence = {");
         printf("0x%s,", *tmp_buffer);
@@ -177,7 +171,7 @@ void isl_test_string(void) {
 
     ist_u8 decode_length;
     index = 0;
-    for (ist_usize i = 0;i < 132;++i) {
+    for (ist_usize i = 0; i < 132; ++i) {
         u32_to_string(isl_utf8_decode(buffer, index, &decode_length), tmp_buffer, 16);
         index += decode_length;
         if (i == 0) printf("decoded_utf8_codepoints = {");
@@ -193,11 +187,10 @@ void isl_test_string(void) {
     printf("str4 codepoint = 0x%s\n", *tmp_buffer);
 
     ist_string* str5 = ist_string_createby_raw("just");
-    index = 4;
+    index            = 4;
 
     ist_string_buffer_append_raw(str5, &index, "udio");
     ist_string_buffer_append_raw(str5, &index, " awa");
-
 
     printf("str5 = %s\n", *str5);
     printf("index = %zu\n", index);
@@ -211,9 +204,8 @@ void isl_test_string(void) {
     ist_string_delete(tmp_buffer);
 }
 
-
 typedef struct ist_i32_list {
-    ist_i32* data;
+    ist_i32*  data;
     ist_usize size;
 } ist_i32_list;
 
@@ -230,14 +222,16 @@ void isl_test_memgr(void) {
     list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5;
     list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
     ist_i32_list* list2 = isl_calloc(ist_i32_list);
-    list2->data = isl_calloc_list(ist_i32, 10);
-    list2->data[0] = 1, list2->data[1] = 2, list2->data[2] = 3, list2->data[3] = 4, list2->data[4] = 5;
-    list2->data[5] = 6, list2->data[6] = 7, list2->data[7] = 8, list2->data[8] = 9, list2->data[9] = 10;
-    list2->size = 10;
+    list2->data         = isl_calloc_list(ist_i32, 10);
+    list2->data[0] = 1, list2->data[1] = 2, list2->data[2] = 3, list2->data[3] = 4,
+    list2->data[4] = 5;
+    list2->data[5] = 6, list2->data[6] = 7, list2->data[7] = 8, list2->data[8] = 9,
+    list2->data[9] = 10;
+    list2->size    = 10;
     isl_freev_list(list);
     isl_freev_list(list2->data);
     isl_free(list2);
-    list = isl_emit_i32_list();
+    list  = isl_emit_i32_list();
     list2 = isl_calloc(ist_i32_list);
     isl_list_resizec(isl_emit_i32_list(), 20, list2->data);
     isl_list_resizec(list, 20);
@@ -247,7 +241,6 @@ void isl_test_memgr(void) {
     isl_list_resizec(isl_emit_i32_list(), 100, list);
     isl_free_list(list);
 }
-
 
 void isl_test_list(void) {
 
@@ -289,16 +282,15 @@ void isl_test_list(void) {
         printf("list[%zu] = %d\n", i, list[i]);
 
     isl_freev_list(list);
-
 }
-
 
 void isl_test_xssert(void) {
     /*
         __ISL_XSSERT(w, num != 1);
         __ISL_XSSERT(w, num != 1, "num should not be 1.");
         __ISL_XSSERT(w, num != 1, "num should not be 1.", "this is just a test.");
-        __ISL_XSSERT(a, num != 1, "num should not be 1.", "num = %d, num + 1 = %d.", (num, num + 1));
+        __ISL_XSSERT(a, num != 1, "num should not be 1.", "num = %d, num + 1 = %d.", (num, num +
+       1));
     */
 
     int num = 1;
@@ -306,21 +298,18 @@ void isl_test_xssert(void) {
     isl_wssert(num != 1, "num should not be 1.");
     isl_wssert(num != 1, "num should not be 1.", "this is just a test.");
     isl_wssert(num != 1, "num should not be 1.", "num = %d, num + 1 = %d.", (num, num + 1));
-
 }
-
 
 void isl_test_overload(void) {
 
-#define test_overload(_vargs...) _isl_overload(test_overload,##_vargs)
+#define test_overload(_vargs...) _isl_overload(test_overload, ##_vargs)
 
-#define test_overload_0()       printf("test overload: 0 args\n")
-#define test_overload_1(_1)     printf("test overload: 1 args\nfirst arg = %d\n", _1)
-#define test_overload_2(_1, _2) printf("test overload: 2 args\nfirst arg = %d, and second arg = %d\n", _1, _2)
+#define test_overload_0()   printf("test overload: 0 args\n")
+#define test_overload_1(_1) printf("test overload: 1 args\nfirst arg = %d\n", _1)
+#define test_overload_2(_1, _2) \
+    printf("test overload: 2 args\nfirst arg = %d, and second arg = %d\n", _1, _2)
 
     test_overload();
     test_overload(123456);
     test_overload(123, 456);
-
 }
-
