@@ -15,7 +15,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>
 
 #include "isl_xssert.h"
 #include "isl_overload.h"
@@ -46,7 +45,6 @@ int main(int argc, char* argv[]) {
     // isl_test_string();
     // isl_test_report();
     isl_test_lexer();
-    if(argc <= 1) getch();
 
     return 0;
 }
