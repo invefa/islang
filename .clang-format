@@ -110,6 +110,7 @@ EmptyLineBeforeAccessModifier: LogicalBlock
 ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: true
 ForEachMacros:
+  - isl_list_foreach
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
@@ -158,7 +159,7 @@ LambdaBodyIndentation: Signature
 LineEnding: DeriveLF
 MacroBlockBegin: ""
 MacroBlockEnd: ""
-MaxEmptyLinesToKeep: 1
+MaxEmptyLinesToKeep: 3
 NamespaceIndentation: None
 ObjCBinPackProtocolList: Auto
 ObjCBlockIndentWidth: 4
@@ -237,6 +238,7 @@ StatementAttributeLikeMacros:
 StatementMacros:
   - Q_UNUSED
   - QT_REQUIRE_VERSION
+  - manifest
 TabWidth: 4
 UseTab: Never
 VerilogBreakBetweenInstancePorts: true

@@ -45,17 +45,17 @@ int main(int argc, char* argv[]) {
     // isl_test_xssert();
     // isl_test_list();
     // isl_test_memgr();
-    // isl_test_string();
+    isl_test_string();
     // isl_test_report();
-    isl_test_lexer();
-    isl_test_astnode();
+    // isl_test_lexer();
+    // isl_test_astnode();
 
     return 0;
 }
 
 
 void isl_test_astnode(void) {
-    ist_astnode node = ist_astnode_consby_null();
+    // ist_astnode node = ist_astnode_consby_null();
 }
 
 
@@ -171,9 +171,18 @@ void isl_test_string(void) {
 
     ist_string* tmp_buffer = ist_string_create_buffer(1);
 
+    isl_report(rid_custom_core_error, "for loop.");
     for (ist_usize i = 0; i < isl_list_catch_length(*buffer); ++i) {
         u8_to_string((*buffer)[i], tmp_buffer, 16);
         if (i == 0) printf("encoded_utf8_sequence = {");
+        printf("0x%s,", *tmp_buffer);
+    }
+    printf("\b}\n\n");
+
+    isl_report(rid_custom_core_error, "isl_list_foreach loop.");
+    isl_list_foreach (iterator, *buffer, idx, cap) {
+        u8_to_string(iterator, tmp_buffer, 16);
+        if (!idx) printf("encoded_utf8_sequence[%zu] = {", cap);
         printf("0x%s,", *tmp_buffer);
     }
     printf("\b}\n\n");
