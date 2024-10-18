@@ -9,8 +9,9 @@
 
 #include "isl_types.h"
 #include "isl_string.h"
+#include "isl_xssert.h"
 
-char digit_table[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+const char* digit_table = "0123456789ABCDEF";
 
 void u64_to_string(ist_u64 _val, ist_string* _buffer, ist_u8 _base) {
 

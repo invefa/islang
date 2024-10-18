@@ -21,11 +21,18 @@ ist_string  ist_string_cons_buffer(ist_usize _capacity);
 ist_string* ist_string_init_buffer(ist_string* this, ist_usize _capacity);
 ist_string* ist_string_create_buffer(ist_usize _capacity);
 
-void        ist_string_clean(ist_string* this);
-void        ist_string_delete(ist_string* this);
+void ist_string_clean(ist_string* this);
+void ist_string_delete(ist_string* this);
 
-void        ist_string_buffer_ensure(ist_string* this, ist_usize _buffer_size, ist_usize _required_length);
-ist_string* ist_string_buffer_append_ref(ist_string* this, ist_usize* _indexv, ist_string _string, ist_usize _length);
+
+void ist_string_buffer_ensure(ist_string* this, ist_usize _buffer_size, ist_usize _required_length);
+
 ist_string* ist_string_buffer_append_raw(ist_string* this, ist_usize* _indexv, ist_cstring _string);
+ist_string* ist_string_buffer_append_ref(
+    ist_string* this,
+    ist_usize*  _indexv,
+    ist_cstring _string,
+    ist_usize   _length
+);
 
 #endif
