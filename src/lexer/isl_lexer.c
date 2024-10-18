@@ -10,7 +10,6 @@
 #include "isl_report.h"
 #include "isl_utf8.h"
 
-
 #define analysis_token (this->ana_token)
 
 #define CHECK_SINCHAR_TOKENT(_char, _tokent) \
@@ -113,10 +112,7 @@ ist_codepage* ist_codepage_createby_string(
     ist_usize   _length
 ) {
     return ist_codepage_createby_full(
-        _name,
-        _module,
-        ist_string_consby_ref(_string, _length),
-        NULL
+        _name, _module, ist_string_consby_ref(_string, _length), NULL
     );
 }
 
@@ -159,8 +155,7 @@ ist_lexer ist_lexer_consby_full(ist_module* _module, ist_codepage* _codepage) {
 
 ist_lexer ist_lexer_consby_module(ist_module* _module) {
     return ist_lexer_consby_full(
-        _module,
-        ist_codepage_createby_filepath(_module, _module->filepath)
+        _module, ist_codepage_createby_filepath(_module, _module->filepath)
     );
 }
 
@@ -291,8 +286,7 @@ inline ist_token ist_lexer_lex(ist_lexer* this) {
                 if (isdigit(ist_lexer_get_current_codepoint(this))) {
                     ist_lexer_parse_number(this);
                 } else if (isl_utf8_legal_identifier_codepoint(
-                               ist_lexer_get_current_codepoint(this),
-                               true
+                               ist_lexer_get_current_codepoint(this), true
                            ))
                 {
                     ist_lexer_parse_identifier(this);
@@ -309,8 +303,8 @@ inline ist_token ist_lexer_lex(ist_lexer* this) {
                 return analysis_token;
         }
 
-        analysis_token.length =
-            (this->codepage->source + this->codepage->next_sequence_index) - analysis_token.extract;
+        analysis_token.length = (this->codepage->source + this->codepage->next_sequence_index)
+                              - analysis_token.extract;
 
         ist_lexer_advance_codepoint(this);
         break;

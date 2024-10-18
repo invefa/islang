@@ -54,9 +54,9 @@ void isl_test_lexer(void) {
     isl_report(rid_custom_core_warning, "start testing lexer...");
 
     /* init some basic information */
-    ist_string filepath = ist_string_consby_raw("./scripts/test.is");
-    ist_string macro_source =
-        ist_string_consby_raw(u8"起始 1 is a num;@&\n中间//awa\n/*1\n2*/\n886结束");
+    ist_string filepath       = ist_string_consby_raw("./scripts/test.is");
+    ist_string macro_source   = ist_string_consby_raw(u8"起始 1 is a "
+                                                    u8"num;@&\n中间//awa\n/*1\n2*/\n886结束");
     ist_string macroin_source = ist_string_consby_raw(u8"cast!(1,string)");
 
     /* print file content */
@@ -75,10 +75,9 @@ void isl_test_lexer(void) {
     while (lexer.sec_token.type != ISL_TOKENT_EOF) {
         printf("%s\n", *ist_token_dump(&lexer.sec_token, dumpbuf));
 
-#define lexer_switch_codepage(_pagename, _pagesrc)                                        \
-    ist_lexer_switch_codepage(                                                            \
-        &lexer,                                                                           \
-        ist_codepage_createby_source(&module, ist_string_consby_raw(_pagename), _pagesrc) \
+#define lexer_switch_codepage(_pagename, _pagesrc)                                                \
+    ist_lexer_switch_codepage(                                                                    \
+        &lexer, ist_codepage_createby_source(&module, ist_string_consby_raw(_pagename), _pagesrc) \
     )
 
         /* switch codepage if the current token is a wrapper */
