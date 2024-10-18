@@ -78,7 +78,6 @@ void ist_codepage_delete_chain(ist_codepage* this);
 
 
 //TODO: add an error signal.
-//TODO: support lookahead.
 typedef struct ist_lexer {
 
     ist_module* module;     /*  the module which this lexer belongs to               */
