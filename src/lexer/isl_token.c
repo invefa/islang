@@ -9,13 +9,13 @@
 
 
 const ist_string ist_token_reflects[] = {
-#define manifest(_name, _reflect) _reflect,
+#define manifest(_name, _reflect) [ISL_TOKENT_##_name] = _reflect,
 #include "isl_tokens.h"
 #undef manifest
 };
 
 const ist_string ist_token_names[] = {
-#define manifest(_name, _reflect) #_name,
+#define manifest(_name, _reflect) [ISL_TOKENT_##_name] = #_name,
 #include "isl_tokens.h"
 #undef manifest
 };

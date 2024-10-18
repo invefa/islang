@@ -9,19 +9,19 @@
 
 
 const ist_string isp_fmts[] = {
-#define manifest(_name, _reploc, _fmt) _fmt,
+#define manifest(_name, _reploc, _fmt) [rid_##_name]=_fmt,
 #include "isl_repids.h"
 #undef manifest
 };
 
 const ist_string isp_repid_names[] = {
-#define manifest(_name, _reploc, _fmt) #_name,
+#define manifest(_name, _reploc, _fmt) [rid_##_name]=#_name,
 #include "isl_repids.h"
 #undef manifest
 };
 
 const isp_replocation isp_replocs[] = {
-#define manifest(_name, _reploc, _fmt) isp_gen_reploc _reploc,
+#define manifest(_name, _reploc, _fmt) [rid_##_name]=isp_gen_reploc _reploc,
 #include "isl_repids.h"
 #undef manifest
 };
