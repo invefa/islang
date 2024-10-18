@@ -14,6 +14,7 @@ typedef union ist_value {
     ist_string* strbuf;
 } ist_value;
 
+#define ist_value_consby_null()          ((ist_value){.int_value = 0})
 #define ist_value_consby_i64(_i64)       ((ist_value){.int_value = (_i64)})
 #define ist_value_consby_u64(_u64)       ((ist_value){.uint_value = (_u64)})
 #define ist_value_consby_double(_double) ((ist_value){.real_value = (_double)})

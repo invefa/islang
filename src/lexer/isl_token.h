@@ -27,13 +27,6 @@ typedef struct ist_location {
     ist_usize   column;
 } ist_location;
 
-#define ist_location_consby_pagename(_pagename) \
-((ist_location){                \
-    .module   = NULL,           \
-    .pagename = (_pagename),    \
-    .line     = 1,              \
-    .column   = 1               \
-})
 
 #define ist_location_consby_full(_module, _pagename) \
 ((ist_location){                \
@@ -42,6 +35,12 @@ typedef struct ist_location {
     .line     = 1,              \
     .column   = 1               \
 })
+
+#define ist_location_consby_null() \
+ist_location_consby_full(NULL, NULL)
+
+#define ist_location_consby_pagename(_pagename) \
+ist_location_consby_full(NULL, _pagename)
 
 
 /*
@@ -56,7 +55,7 @@ typedef struct ist_token {
     ist_value       value;
 } ist_token;
 
-#define ist_token_cons_empty()      \
+#define ist_token_consby_null()     \
 ((ist_token){                       \
     .value.int_value = 0,           \
     .type     = ISL_TOKENT_UNKNOWN, \

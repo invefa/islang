@@ -17,6 +17,7 @@
 #include <stdlib.h>
 
 #include "isl_ansictrl.h"
+#include "isl_astnode.h"
 #include "isl_dbgutils.h"
 #include "isl_lexer.h"
 #include "isl_list.h"
@@ -27,6 +28,7 @@
 #include "isl_utf8.h"
 #include "isl_xssert.h"
 
+
 void isl_test_overload(void);
 void isl_test_xssert(void);
 void isl_test_list(void);
@@ -34,6 +36,7 @@ void isl_test_memgr(void);
 void isl_test_string(void);
 void isl_test_report(void);
 void isl_test_lexer(void);
+void isl_test_astnode(void);
 
 int main(int argc, char* argv[]) {
 
@@ -45,9 +48,16 @@ int main(int argc, char* argv[]) {
     // isl_test_string();
     // isl_test_report();
     isl_test_lexer();
+    isl_test_astnode();
 
     return 0;
 }
+
+
+void isl_test_astnode(void) {
+    ist_astnode node = ist_astnode_consby_null();
+}
+
 
 void isl_test_lexer(void) {
 
