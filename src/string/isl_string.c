@@ -1,6 +1,8 @@
 #include "isl_string.h"
 
+#include <stdarg.h>
 #include <string.h>
+
 
 #include "isl_list.h"
 #include "isl_memgr.h"
@@ -110,4 +112,17 @@ inline ist_string* ist_string_buffer_append_raw(
     ist_cstring _string
 ) {
     return ist_string_buffer_append_ref(this, _indexv, (ist_string)_string, strlen(_string));
+}
+inline ist_string* ist_string_buffer_append_raws(
+    ist_string* this,
+    ist_usize*  _indexv,
+    ist_cstring _string,
+    ...
+) {
+    va_list args;
+    va_start(args, _string);
+    for (ist_string cat_string = _string; cat_string; cat_string = va_arg(args, ist_string))
+        ist_string_buffer_append_raw(this, _indexv, cat_string);
+    va_end(args);
+    return this;
 }

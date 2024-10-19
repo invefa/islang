@@ -381,9 +381,18 @@ inline void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage) 
             + isl_list_catch_length(_codepage->location.pagename)
         );
 
-        ist_string_buffer_append_raw(buffer, &index, this->codepage->location.pagename);
-        ist_string_buffer_append_raw(buffer, &index, ".");
-        ist_string_buffer_append_raw(buffer, &index, _codepage->location.pagename);
+        // ist_string_buffer_append_raw(buffer, &index, this->codepage->location.pagename);
+        // ist_string_buffer_append_raw(buffer, &index, ".");
+        // ist_string_buffer_append_raw(buffer, &index, _codepage->location.pagename);
+
+        ist_string_buffer_append_raws(
+            buffer,
+            &index,
+            this->codepage->location.pagename,
+            ".",
+            _codepage->location.pagename,
+            NULL
+        );
 
         ist_module_register_strbuf(
             this->codepage->location.module,

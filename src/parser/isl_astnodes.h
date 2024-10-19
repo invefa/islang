@@ -1,30 +1,49 @@
 
 /* unknown */
-manifest(UNKNOWN, (struct {}))
+manifest(UNKNOWN, (struct { ist_astnode base; }))
 
-// manifest(NODE_LIST, (struct {
-//              ist_astnode_type type;
-//              ist_location     location;
-//              ist_value        value;
-//              ist_astnode*     node_list;
-//              ist_usize        node_count;
-//          }))
+manifest(MODULE, (struct {
+             ist_astnode  base;
+             ist_astnode* node_list;
+             ist_usize    node_count;
+         }))
+manifest(SCOPE, (struct {
+             ist_astnode  base;
+             ist_astnode* node_list;
+             ist_usize    node_count;
+         }))
+manifest(NODE_LIST, (struct {
+             ist_astnode  base;
+             ist_astnode* node_list;
+             ist_usize    node_count;
+         }))
+manifest(ARG_LIST, (struct {
+             ist_astnode  base;
+             ist_astnode* node_list;
+             ist_usize    node_count;
+         }))
+manifest(PARAM_LIST, (struct {
+             ist_astnode  base;
+             ist_astnode* node_list;
+             ist_usize    node_count;
+         }))
 
-// manifest(BINARY_OPT, (struct {
-//              ist_astnode_type type;
-//              ist_location     location;
-//              ist_value_uint   opt_type;
-//              ist_astnode*     left_node;
-//              ist_astnode*     right_node;
-//          }))
-// manifest(LITERAL_ENT, (struct {
-//              ist_astnode_type type;
-//              ist_location     location;
-//              ist_value        value;
-//              ist_usize        literal_type;
-//              ist_astnode*     right;
-//          }))
+manifest(BINARY_OPT, (struct {
+             ist_astnode    base;
+             ist_token_type operator_type;
+             ist_astnode*   left_node;
+             ist_astnode*   right_node;
+         }))
 
+manifest(LITERAL_ENT, (struct {
+             ist_astnode    base;
+             ist_token_type literal_type;
+             ist_value      value;
+         }))
+manifest(REFERENCE_ENT, (struct {
+             ist_astnode  base;
+             ist_astnode* node_list;
+         }))
 /*  unknown
 manifest(UNKNOWN)
 

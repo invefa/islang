@@ -1,11 +1,22 @@
 #include "isl_astnode.h"
 #include "isl_memgr.h"
 
-// const ist_string ist_astnode_type_names[] = {
-// #define manifest(_name, _protocol) [ISL_ASTNT_##_name] = #_name,
-// #include "isl_astnodes.h"
-// #undef manifest
-// };
+const ist_string ist_astnode_type_names[] = {
+#define manifest(_name, _struct) [ISL_ASTNT_##_name] = #_name,
+#include "isl_astnodes.h"
+#undef manifest
+};
+
+void ist_astnode_delete(void* this) {
+    switch (*(ist_astnode_type*)this) {
+#define manifest(_name, _struct)              \
+    case ISL_ASTNT_##_name:                   \
+        isl_free((IST_ASTNODE_##_name*)this); \
+        break;
+#include "isl_astnodes.h"
+#undef manifest
+    }
+}
 
 
 // inline ist_astnode* ist_astnode_initby_full(
