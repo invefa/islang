@@ -2,28 +2,28 @@
 /* unknown */
 manifest(UNKNOWN, (struct {}))
 
-manifest(NODE_LIST, (struct {
-             ist_astnode_type type;
-             ist_location     location;
-             ist_value        value;
-             ist_astnode*     node_list;
-             ist_usize        node_count;
-         }))
+// manifest(NODE_LIST, (struct {
+//              ist_astnode_type type;
+//              ist_location     location;
+//              ist_value        value;
+//              ist_astnode*     node_list;
+//              ist_usize        node_count;
+//          }))
 
-manifest(BINARY_OPT, (struct {
-             ist_astnode_type type;
-             ist_location     location;
-             ist_value_uint   opt_type;
-             ist_astnode*     left_node;
-             ist_astnode*     right_node;
-         }))
-manifest(LITERAL_ENT, (struct {
-             ist_astnode_type type;
-             ist_location     location;
-             ist_value        value;
-             ist_usize        literal_type;
-             ist_astnode*     right;
-         }))
+// manifest(BINARY_OPT, (struct {
+//              ist_astnode_type type;
+//              ist_location     location;
+//              ist_value_uint   opt_type;
+//              ist_astnode*     left_node;
+//              ist_astnode*     right_node;
+//          }))
+// manifest(LITERAL_ENT, (struct {
+//              ist_astnode_type type;
+//              ist_location     location;
+//              ist_value        value;
+//              ist_usize        literal_type;
+//              ist_astnode*     right;
+//          }))
 
 /*  unknown
 manifest(UNKNOWN)
