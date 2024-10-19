@@ -1,5 +1,5 @@
-#ifndef ISL_DBGUTILS_H
-#define ISL_DBGUTILS_H
+#ifndef ISC_DBGUTILS_H
+#define ISC_DBGUTILS_H
 
 /*
     include this header and use at islnag.c only.
@@ -137,4 +137,4 @@ void print_u64_binary_aline(ist_u32 _val) {
     printf("%s\n", buffer);
 }
 
-#endif
+#endif // ISC_DBGUTILS_H

@@ -1,5 +1,5 @@
-#ifndef ISL_XSSERT_H
-#define ISL_XSSERT_H
+#ifndef ISC_XSSERT_H
+#define ISC_XSSERT_H
 /*
     This header suplies macro isl_assert(...) and isl_wssert(...),
     which are used in debug mode to detect the error of the core code of islang.
@@ -95,4 +95,4 @@ do{                                                                         \
 #define isl_wssert(_expr, _exts...)
 
 #endif
-#endif
+#endif // ISC_XSSERT_H

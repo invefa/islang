@@ -1,5 +1,5 @@
-#ifndef ISL_MACROS_H
-#define ISL_MACROS_H
+#ifndef ISC_MACROS_H
+#define ISC_MACROS_H
 /*
     This header suplies some macros that can make the implementation of overload and xssert
     simplify. Written by invefa.
@@ -28,4 +28,4 @@
 */
 #define __ISL_MACRO_UNPACKAGER(_args_series...) _args_series
 
-#endif
+#endif // ISC_MACROS_H

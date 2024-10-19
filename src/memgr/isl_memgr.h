@@ -1,5 +1,5 @@
-#ifndef ISL_MEMGR_H
-#define ISL_MEMGR_H
+#ifndef ISC_MEMGR_H
+#define ISC_MEMGR_H
 
 #include <string.h>
 
@@ -45,4 +45,4 @@ do{                                 \
 }while(0)
 
 
-#endif
+#endif // ISC_MEMGR_H

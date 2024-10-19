@@ -1,5 +1,5 @@
-#ifndef ISL_OVERLOAD_H
-#define ISL_OVERLOAD_H
+#ifndef ISC_OVERLOAD_H
+#define ISC_OVERLOAD_H
 /*
     This header suplies some overloading macros.
     It will be used in the implementation of isl_assert and isl_wssert...
@@ -84,4 +84,4 @@
 */
 
 
-#endif
+#endif // ISC_OVERLOAD_H

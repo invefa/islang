@@ -1,5 +1,5 @@
-#ifndef ISL_LEXER_H
-#define ISL_LEXER_H
+#ifndef ISC_LEXER_H
+#define ISC_LEXER_H
 
 #include "isl_token.h"
 #include "isl_utf8.h"
@@ -125,4 +125,4 @@ void ist_lexer_parse_identifier(ist_lexer* this);
 void ist_lexer_parse_number(ist_lexer* this);
 void ist_lexer_parse_string(ist_lexer* this);
 
-#endif
+#endif // ISC_LEXER_H

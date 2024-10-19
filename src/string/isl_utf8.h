@@ -1,5 +1,5 @@
-#ifndef ISL_UTF8_H
-#define ISL_UTF8_H
+#ifndef ISC_UTF8_H
+#define ISC_UTF8_H
 
 #include "isl_string.h"
 #include "isl_types.h"
@@ -24,4 +24,4 @@ ist_codepoint isl_utf8_decode(ist_string* _buffer, ist_usize _index, ist_u8* _de
 ist_bool      isl_utf8_legal_identifier_codepoint(ist_codepoint _codepoint, ist_bool _as_first);
 ist_bool      isl_utf8_is_space_codepoint(ist_codepoint _codepoint);
 
-#endif
+#endif // ISC_UTF8_H

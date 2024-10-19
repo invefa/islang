@@ -1,5 +1,5 @@
-#ifndef ISL_ASTNODE_H
-#define ISL_ASTNODE_H
+#ifndef ISC_ASTNODE_H
+#define ISC_ASTNODE_H
 
 #include "isl_token.h"
 #include "isl_types.h"
@@ -38,6 +38,7 @@ enum ist_astnode_type {
 
 // pre-declaration for ist_astnode_side
 struct ist_astnode;
+typedef struct ist_astnode ist_astnode;
 
 typedef union ist_astnode_side {
     struct ist_astnode* node;
@@ -52,13 +53,13 @@ typedef union ist_astnode_side {
 #define ist_astnode_side_consby_type(_type)   ((ist_astnode_side){.type = (_type)})
 #define ist_astnode_side_consby_index(_index) ((ist_astnode_side){.index = (_index)})
 
-typedef struct ist_astnode {
+struct ist_astnode {
     ist_astnode_type type;
     ist_value        value;
     ist_astnode_side left;
     ist_astnode_side right;
     ist_location     location;
-} ist_astnode;
+};
 
 
 #define ist_astnode_consby_full(_type, _value, _left, _right, _location) \
@@ -81,4 +82,4 @@ typedef struct ist_astnode {
 ist_string* ist_astnode_dump(ist_astnode* this, ist_string* _buffer, ist_bool _dump_children);
 
 
-#endif
+#endif // ISC_ASTNODE_H

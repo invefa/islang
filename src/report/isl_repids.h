@@ -15,10 +15,10 @@ manifest(custom_core_panic, (CORE, PANIC, CUSTOM), NULL)
 manifest(custom_core_fatal, (CORE, FATAL, CUSTOM), NULL)
 
 manifest(utf8_negative_codepoint, (CORE, ERROR, CORELOC), "cannot encode negative codepoint.")
-manifest(catch_size_overflow, (CORE, FATAL, CORELOC), "catched an overflow size.")
 manifest(open_file_failed, (CORE, FATAL, CORELOC), "failed to open file '%s', does it exist?")
-manifest(illegal_utf8_codepoint, (CORE, FATAL, CORELOC), "cannot encode illegal UTF-8 codepoint.")
 manifest(unreachable_brench, (CORE, FATAL, CORELOC), "the program entered an unreachable branch...")
+manifest(catch_size_overflow, (CORE, FATAL, CORELOC), "catched an overflow size.")
+manifest(illegal_utf8_codepoint, (CORE, FATAL, CORELOC), "cannot encode illegal UTF-8 codepoint.")
 manifest(
     catch_nullptr,
     (CORE, FATAL, CORELOC),
@@ -34,6 +34,7 @@ manifest(
     (CORE, FATAL, CORELOC),
     "cannot decode incomplete UTF-8 sequence, the buffer is not long enough."
 )
+
 
 manifest(
     inform_allocated,
@@ -56,6 +57,7 @@ manifest(
     "list<0x%zX> {capacity=%zu, remaining=%zu} ->require(%zu) ->resize(%zu)."
 )
 
+
 manifest(
     catch_zero_string_length,
     (CORE, WARNING, CORELOC),
@@ -71,6 +73,7 @@ manifest(
     (CORE, WARNING, CORELOC),
     "there is a zero-capacity buffer<0x%zX>, please note its existence."
 )
+
 
 manifest(
     advance_codepoint_when_eof,

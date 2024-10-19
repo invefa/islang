@@ -1,5 +1,5 @@
-#ifndef ISL_REPORT_H
-#define ISL_REPORT_H
+#ifndef ISC_REPORT_H
+#define ISC_REPORT_H
 
 /*
     report system was the important part of islang.
@@ -135,4 +135,4 @@ void isl_report(isp_repid _rid, ...);
 /* catch the core location for attribute:CORELOC of report */
 #define isp_catch_coreloc __FILE__, __func__, (ist_usize)__LINE__
 
-#endif
+#endif // ISC_REPORT_H

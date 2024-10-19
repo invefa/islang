@@ -1,5 +1,5 @@
-#ifndef ISL_MODULE_H
-#define ISL_MODULE_H
+#ifndef ISC_MODULE_H
+#define ISC_MODULE_H
 
 /*
     A module is an extract of source code.
@@ -61,4 +61,4 @@ void        ist_module_delete(ist_module* this);
 ist_usize   ist_module_register_strbuf(ist_module* this, ist_string _strbuf, ist_sbtype _type);
 
 
-#endif
+#endif // ISC_MODULE_H

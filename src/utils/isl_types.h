@@ -1,5 +1,5 @@
-#ifndef ISL_TYPES_H
-#define ISL_TYPES_H
+#ifndef ISC_TYPES_H
+#define ISC_TYPES_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -27,4 +27,4 @@ typedef ist_i8      ist_bool;
 #define true  1
 #define false 0
 
-#endif
+#endif // ISC_TYPES_H

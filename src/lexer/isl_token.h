@@ -1,5 +1,5 @@
-#ifndef ISL_TOKEN_H
-#define ISL_TOKEN_H
+#ifndef ISC_TOKEN_H
+#define ISC_TOKEN_H
 
 #include "isl_types.h"
 #include "isl_string.h"
@@ -93,4 +93,4 @@ ist_string* ist_token_dump(ist_token* this, ist_string* _buffer);
 */
 ist_token_type ist_string_is_keyword(ist_string this, ist_usize _length);
 
-#endif
+#endif // ISC_TOKEN_H

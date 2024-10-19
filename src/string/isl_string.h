@@ -1,5 +1,5 @@
-#ifndef ISL_STRING_H
-#define ISL_STRING_H
+#ifndef ISC_STRING_H
+#define ISC_STRING_H
 
 #include "isl_types.h"
 
@@ -35,4 +35,4 @@ ist_string* ist_string_buffer_append_ref(
     ist_usize   _length
 );
 
-#endif
+#endif // ISC_STRING_H

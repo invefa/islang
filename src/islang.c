@@ -1,17 +1,17 @@
-/*
-    This c source file is the main source file for islang, and it is the entrance of islang.
-    This project is compiled with -std=gnu11, because it will use some extension functions
-    which are suplied by GNU standard extensions.
-
-    There are a list of extensions are used:
-        1. typeof keyword.
-        2. u8 prefix for string literal.
-    And some features are used:
-        1. special macro expansion.
-
-    Anyway, you had better compile this project with gcc -std=gnu11.
-    Written by invefa.
-*/
+/**
+ *  This c source file is the main source file for islang, and it is the entrance of islang.
+ *  This project is compiled with -std=gnu11, because it will use some extension functions
+ *  which are suplied by GNU standard extensions.
+ *
+ *  There are a list of extensions are used:
+ *      1. typeof keyword.
+ *      2. u8 prefix for string literal.
+ *  And some features are used:
+ *      1. special macro expansion.
+ *
+ *  Anyway, you had better compile this project with gcc -std=gnu11.
+ *  Written by invefa.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,19 +45,21 @@ int main(int argc, char* argv[]) {
     // isl_test_xssert();
     // isl_test_list();
     // isl_test_memgr();
-    isl_test_string();
+    // isl_test_string();
     // isl_test_report();
-    // isl_test_lexer();
-    // isl_test_astnode();
+    isl_test_lexer();
+    isl_test_astnode();
 
     return 0;
 }
 
 
 void isl_test_astnode(void) {
+    isl_report(rid_custom_core_warning, "start testing astnode...");
     // ist_astnode node = ist_astnode_consby_null();
-}
 
+    isl_report(rid_custom_core_warning, "end testing astnode.");
+}
 
 void isl_test_lexer(void) {
 
@@ -180,19 +182,17 @@ void isl_test_string(void) {
     printf("\b}\n\n");
 
     isl_report(rid_custom_core_error, "isl_list_foreach loop.");
-    isl_list_foreach (iterator, *buffer, idx, cap) {
-        u8_to_string(iterator, tmp_buffer, 16);
+    isl_list_foreach (iterp, *buffer, idx, cap) {
+        u8_to_string(*iterp, tmp_buffer, 16);
         if (!idx) printf("encoded_utf8_sequence[%zu] = {", cap);
         printf("0x%s,", *tmp_buffer);
     }
     printf("\b}\n\n");
 
     ist_u8 decode_length;
-    index = 0;
-    for (ist_usize i = 0; i < 132; ++i) {
-        u32_to_string(isl_utf8_decode(buffer, index, &decode_length), tmp_buffer, 16);
-        index += decode_length;
-        if (i == 0) printf("decoded_utf8_codepoints = {");
+    for (ist_usize i = 0; i < isl_list_catch_length(*buffer); i += decode_length) {
+        u32_to_string(isl_utf8_decode(buffer, i, &decode_length), tmp_buffer, 16);
+        if (!i) printf("decoded_utf8_codepoints = {");
         printf("0x%s,", *tmp_buffer);
     }
     printf("\b}\n\n");

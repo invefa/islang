@@ -1,5 +1,5 @@
-#ifndef ISL_LIST_H
-#define ISL_LIST_H
+#ifndef ISC_LIST_H
+#define ISC_LIST_H
 
 #include "isl_memgr.h"
 #include "isl_overload.h"
@@ -197,18 +197,18 @@
 #define _ISL_LIST_FOREACH_CAPVNAME(_vargs...) _isl_overload(__ISL_LIST_FOREACH_CAPVNAME, ##_vargs)
 
 /*
-    iterid stand for iterator identifier, indicate you must provide a legal identifier there.
+    iterpid stand for iterator ptr identifier, indicate you must provide a legal identifier there.
     vargs reserved for the optional index and capacity variable name,
     and the first for index, second for capacity.
 */
-#define isl_list_foreach(_iterid, _list_variable, _vargs...)                                       \
+#define isl_list_foreach(_iterpid, _list_variable, _vargs...)                                      \
     for (ist_usize _ISL_LIST_FOREACH_IDXVNAME(_vargs) = 0,                                         \
                    _ISL_LIST_FOREACH_CAPVNAME(_vargs) = isl_list_ptr_get_capacity(_list_variable); \
          _ISL_LIST_FOREACH_IDXVNAME(_vargs) < _ISL_LIST_FOREACH_CAPVNAME(_vargs);                  \
          ++_ISL_LIST_FOREACH_IDXVNAME(_vargs))                                                     \
         for (ist_bool isl_list_foreach_flag = 1; isl_list_foreach_flag;)                           \
-            for (typeof(*(_list_variable)) _iterid =                                               \
-                     (_list_variable)[_ISL_LIST_FOREACH_IDXVNAME(_vargs)];                         \
+            for (typeof((_list_variable)[0])* _iterpid =                                           \
+                     ((_list_variable) + _ISL_LIST_FOREACH_IDXVNAME(_vargs));                      \
                  isl_list_foreach_flag;                                                            \
                  isl_list_foreach_flag = 0)
 
@@ -220,4 +220,4 @@
 */
 ist_usize ceil_upon_powertwo(ist_usize _value);
 
-#endif
+#endif // ISC_LIST_H

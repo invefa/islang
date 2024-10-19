@@ -1,5 +1,5 @@
-#ifndef ISL_VALUE_H
-#define ISL_VALUE_H
+#ifndef ISC_VALUE_H
+#define ISC_VALUE_H
 
 #include "isl_string.h"
 #include "isl_types.h"
@@ -22,4 +22,4 @@ typedef union ist_value {
 #define ist_value_consby_byte(_byte)     ((ist_value){.byte_value = (_byte)})
 #define ist_value_consby_strbuf(_strbuf) ((ist_value){.strbuf = (_strbuf)})
 
-#endif
+#endif // ISC_VALUE_H

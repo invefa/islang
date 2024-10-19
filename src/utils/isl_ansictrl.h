@@ -105,4 +105,4 @@
 #define ANSI_BWHI_SET(_cstring) ANSI_ESC "47m"   _cstring ANSI_RST
 #define ANSI_BHIW_SET(_cstring) ANSI_ESC "1;47m" _cstring ANSI_RST
 
-#endif
+#endif // ISC_ANSICTRL_H

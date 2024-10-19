@@ -1,5 +1,5 @@
-#ifndef ISL_OPTIONS_H
-#define ISL_OPTIONS_H
+#ifndef ISC_OPTIONS_H
+#define ISC_OPTIONS_H
 /*
     This header is used to control some options of islang core.
     If you want to disable some options, just comment out the corresponding macro.
@@ -41,4 +41,4 @@
 
 #define ISL_DEFAULT_BUFFER_LENGTH 256
 
-#endif
+#endif // ISC_OPTIONS_H
