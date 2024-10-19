@@ -58,6 +58,44 @@ void isl_test_astnode(void) {
     isl_report(rid_custom_core_warning, "start testing astnode...");
     // ist_astnode node = ist_astnode_consby_null();
 
+    // ({
+    //     struct {
+    //         ist_string name;
+    //     } a = {"hello"};
+    //     a;
+    // }).name;
+
+    ist_astnode* node = ist_astnode_createby_full(
+        ISL_ASTNT_BINARY_OPT,
+        ist_value_consby_u64(ISL_TOKENT_ADD),
+        ist_astnode_side_consby_node(ist_astnode_createby_full(
+            ISL_ASTNT_LITERAL_ENT,
+            ist_value_consby_u64(123),
+            ist_astnode_side_consby_type(ISL_TOKENT_VL_INT),
+            ist_astnode_side_consby_null(),
+            ist_location_consby_null()
+        )),
+        ist_astnode_side_consby_node(ist_astnode_createby_full(
+            ISL_ASTNT_BINARY_OPT,
+            ist_value_consby_u64(123),
+            ist_astnode_side_consby_type(ISL_TOKENT_VL_INT),
+            ist_astnode_side_consby_null(),
+            ist_location_consby_null()
+        )),
+        ist_location_consby_null()
+    );
+
+    struct IST_ASTNT_BINARY_OPT_EXTRACTOR {
+        ist_token_type optype;
+        ist_astnode*   left;
+        ist_astnode*   right;
+    };
+
+    struct IST_ASTNT_BINARY_OPT_EXTRACTOR extractor = (struct IST_ASTNT_BINARY_OPT_EXTRACTOR
+    ){.optype = node->value.uint_value, .left = node->left.node, .right = node->right.node};
+
+    printf("node type = %s\n", ist_astnode_type_names[node->type]);
+
     isl_report(rid_custom_core_warning, "end testing astnode.");
 }
 

@@ -8,33 +8,12 @@
 
 typedef ist_u8 ist_astnode_type;
 enum ist_astnode_type {
-    ISL_ASTNT_UNKNOWN,
-
-    /* basic components */
-    ISL_ASTNT_NODE_LIST,
-    ISL_ASTNT_ARG_LIST,
-    ISL_ASTNT_PARAM_LIST,
-
-    /* code structures */
-    ISL_ASTNT_MODULE,
-    ISL_ASTNT_SCOPE,
-
-    /* comptime entities */
-    ISL_ASTNT_REFEERENCE_ENT,
-    ISL_ASTNT_NAME_ENT,
-    ISL_ASTNT_LITERAL_ENT,
-    ISL_ASTNT_FN_ENT,
-    ISL_ASTNT_VAR_ENT,
-    ISL_ASTNT_REGIST_ENT,
-    ISL_ASTNT_TYPE_ENT,
-
-    /* operations */
-    ISL_ASTNT_TERNARY_OPT,
-    ISL_ASTNT_BINARY_OPT,
-    ISL_ASTNT_LUNARY_OPT,
-    ISL_ASTNT_RUNARY_OPT,
-
+#define manifest(_name) ISL_ASTNT_##_name,
+#include "isl_astnodes.h"
+#undef manifest
 };
+
+extern const ist_string ist_astnode_type_names[];
 
 // pre-declaration for ist_astnode_side
 struct ist_astnode;
@@ -79,7 +58,24 @@ struct ist_astnode {
         ist_location_consby_null()      \
     )
 
-ist_string* ist_astnode_dump(ist_astnode* this, ist_string* _buffer, ist_bool _dump_children);
+ist_astnode* ist_astnode_initby_full(
+    ist_astnode* this,
+    ist_astnode_type _type,
+    ist_value        _value,
+    ist_astnode_side _left,
+    ist_astnode_side _right,
+    ist_location     _location
+);
+ist_astnode* ist_astnode_createby_full(
+    ist_astnode_type _type,
+    ist_value        _value,
+    ist_astnode_side _left,
+    ist_astnode_side _right,
+    ist_location     _location
+);
+
+
+ist_string* ist_astnode_dump(ist_astnode* this, ist_string* _buffer, ist_bool _deep);
 
 
 #endif // ISC_ASTNODE_H
