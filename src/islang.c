@@ -67,28 +67,51 @@ void isl_test_astnode(void) {
 
     ist_astnode* node = ist_astnode_createby_full(
         ISL_ASTNT_BINARY_OPT,
+        ist_location_consby_null(),
         ist_value_consby_u64(ISL_TOKENT_ADD),
         ist_astnode_side_consby_node(ist_astnode_createby_full(
             ISL_ASTNT_LITERAL_ENT,
+            ist_location_consby_null(),
             ist_value_consby_u64(123),
             ist_astnode_side_consby_type(ISL_TOKENT_VL_INT),
-            ist_astnode_side_consby_null(),
-            ist_location_consby_null()
+            ist_astnode_side_consby_null()
         )),
         ist_astnode_side_consby_node(ist_astnode_createby_full(
-            ISL_ASTNT_BINARY_OPT,
+            ISL_ASTNT_LITERAL_ENT,
+            ist_location_consby_null(),
             ist_value_consby_u64(123),
             ist_astnode_side_consby_type(ISL_TOKENT_VL_INT),
-            ist_astnode_side_consby_null(),
-            ist_location_consby_null()
-        )),
-        ist_location_consby_null()
+            ist_astnode_side_consby_null()
+        ))
     );
 
+    // struct IST_ASTNT_UNKNOWN_SHADOW {
+    //     ist_astnode_type type;
+    //     ist_location     location;
+    //     ist_value        value;
+    //     ist_astnode_side left;
+    //     ist_astnode_side right;
+    // };
 
-    IST_BINARY_OPT_EXTRACTOR extractor = IST_BINARY_OPT_EXTRACT(node);
-    printf("extractor.optype = %s\n", ist_token_names[extractor.optype]);
+    // struct IST_ASTNT_BINARY_OPT_SHADOW {
+    //     ist_astnode_type type;
+    //     ist_location     location;
+    //     ist_value_uint   opt_type;
+    //     ist_astnode*     left_node;
+    //     ist_astnode*     right_node;
+    // };
 
+    isl_report(rid_custom_core_warning, "sizeof(ist_astnode)      = %zu", sizeof(ist_astnode));
+    isl_report(rid_custom_core_warning, "sizeof(ist_astnode_type) = %zu", sizeof(ist_astnode_type));
+    isl_report(rid_custom_core_warning, "sizeof(ist_value)        = %zu", sizeof(ist_value));
+    isl_report(rid_custom_core_warning, "sizeof(ist_astnode_side) = %zu", sizeof(ist_astnode_side));
+    isl_report(rid_custom_core_warning, "sizeof(ist_location)     = %zu", sizeof(ist_location));
+
+    // IST_BINARY_OPT_EXTRACTOR extractor = IST_BINARY_OPT_EXTRACT(node);
+
+    IST_ASTNT_BINARY_OPT_PROTOCOL* shadow = (IST_ASTNT_BINARY_OPT_PROTOCOL*)node;
+    printf("shadow.op_type = %s\n", ist_token_names[shadow->opt_type]);
+    // printf("extractor.optype = %s\n", ist_token_names[*extractor.optype]);
     printf("node type = %s\n", ist_astnode_type_names[node->type]);
 
     isl_report(rid_custom_core_warning, "end testing astnode.");

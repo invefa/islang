@@ -16,11 +16,8 @@ enum ist_token_type {
 extern const ist_string ist_token_reflects[];
 extern const ist_string ist_token_names[];
 
-//pre-declare for location
-// struct ist_codepage;
 
 typedef struct ist_location {
-    // struct ist_codepage* codepage;
     ist_module* module;
     ist_string  pagename;
     ist_usize   line;

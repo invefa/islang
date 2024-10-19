@@ -2,40 +2,32 @@
 #include "isl_memgr.h"
 
 const ist_string ist_astnode_type_names[] = {
-#define manifest(_name, _extor_body, _extor_rule) [ISL_ASTNT_##_name] = #_name,
+#define manifest(_name, _protocol) [ISL_ASTNT_##_name] = #_name,
 #include "isl_astnodes.h"
 #undef manifest
 };
 
-#define manifest(_name, _extor_body, _extor_rule)                             \
-    inline IST_##_name##_EXTRACTOR IST_##_name##_EXTRACT(ist_astnode* node) { \
-        IST_##_name##_EXTRACTOR extractor;                                    \
-        __ISL_MACRO_UNPACKAGER  _extor_rule;                                  \
-        return extractor;                                                     \
-    }
-#include "isl_astnodes.h"
-#undef manifest
 
-ist_astnode* ist_astnode_initby_full(
+inline ist_astnode* ist_astnode_initby_full(
     ist_astnode* this,
     ist_astnode_type _type,
+    ist_location     _location,
     ist_value        _value,
     ist_astnode_side _left,
-    ist_astnode_side _right,
-    ist_location     _location
+    ist_astnode_side _right
 ) {
-    *this = ist_astnode_consby_full(_type, _value, _left, _right, _location);
+    *this = ist_astnode_consby_full(_type, _location, _value, _left, _right);
     return this;
 }
-ist_astnode* ist_astnode_createby_full(
+inline ist_astnode* ist_astnode_createby_full(
     ist_astnode_type _type,
+    ist_location     _location,
     ist_value        _value,
     ist_astnode_side _left,
-    ist_astnode_side _right,
-    ist_location     _location
+    ist_astnode_side _right
 ) {
     return ist_astnode_initby_full(
-        isl_malloc(ist_astnode), _type, _value, _left, _right, _location
+        isl_malloc(ist_astnode), _type, _location, _value, _left, _right
     );
 }
 

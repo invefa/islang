@@ -1,47 +1,29 @@
-#define node      node
-#define extractor extractor
-#define protocol
-
 
 /* unknown */
-manifest(UNKNOWN, (struct {}), (protocol{}))
+manifest(UNKNOWN, (struct {}))
 
-manifest(
-    NODE_LIST,
-    (struct {
-        ist_astnode* node_list;
-        ist_usize    node_count;
-    }),
-    (protocol {
-        extractor.node_list  = node->left.node;
-        extractor.node_count = node->value.uint_value;
-    })
-)
+manifest(NODE_LIST, (struct {
+             ist_astnode_type type;
+             ist_location     location;
+             ist_value        value;
+             ist_astnode*     node_list;
+             ist_usize        node_count;
+         }))
 
-manifest(
-    BINARY_OPT,
-    (struct {
-        ist_token_type optype;
-        ist_astnode*   left;
-        ist_astnode*   right;
-    }),
-    (protocol {
-        extractor.optype = node->value.uint_value;
-        extractor.left   = node->left.node;
-        extractor.right  = node->right.node;
-    })
-)
-manifest(
-    LITERAL_ENT,
-    (struct {
-        ist_token_type type;
-        ist_value      value;
-    }),
-    (protocol {
-        extractor.type  = node->left.type;
-        extractor.value = node->value;
-    })
-)
+manifest(BINARY_OPT, (struct {
+             ist_astnode_type type;
+             ist_location     location;
+             ist_value_uint   opt_type;
+             ist_astnode*     left_node;
+             ist_astnode*     right_node;
+         }))
+manifest(LITERAL_ENT, (struct {
+             ist_astnode_type type;
+             ist_location     location;
+             ist_value        value;
+             ist_usize        literal_type;
+             ist_astnode*     right;
+         }))
 
 /*  unknown
 manifest(UNKNOWN)
@@ -70,7 +52,3 @@ manifest(BINARY_OPT)
 manifest(LUNARY_OPT)
 manifest(RUNARY_OPT)
 */
-
-#undef node
-#undef extractor
-#undef protocol
