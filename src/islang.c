@@ -85,14 +85,9 @@ void isl_test_astnode(void) {
         ist_location_consby_null()
     );
 
-    struct IST_ASTNT_BINARY_OPT_EXTRACTOR {
-        ist_token_type optype;
-        ist_astnode*   left;
-        ist_astnode*   right;
-    };
 
-    struct IST_ASTNT_BINARY_OPT_EXTRACTOR extractor = (struct IST_ASTNT_BINARY_OPT_EXTRACTOR
-    ){.optype = node->value.uint_value, .left = node->left.node, .right = node->right.node};
+    IST_BINARY_OPT_EXTRACTOR extractor = IST_BINARY_OPT_EXTRACT(node);
+    printf("extractor.optype = %s\n", ist_token_names[extractor.optype]);
 
     printf("node type = %s\n", ist_astnode_type_names[node->type]);
 

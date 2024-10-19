@@ -1,6 +1,7 @@
 #ifndef ISC_ASTNODE_H
 #define ISC_ASTNODE_H
 
+#include "isl_macros.h"
 #include "isl_token.h"
 #include "isl_types.h"
 #include "isl_value.h"
@@ -8,7 +9,7 @@
 
 typedef ist_u8 ist_astnode_type;
 enum ist_astnode_type {
-#define manifest(_name) ISL_ASTNT_##_name,
+#define manifest(_name, _extor_body, _extor_rule) ISL_ASTNT_##_name,
 #include "isl_astnodes.h"
 #undef manifest
 };
@@ -74,6 +75,15 @@ ist_astnode* ist_astnode_createby_full(
     ist_location     _location
 );
 
+#define manifest(_name, _extor_body, _extor_rule) \
+    typedef __ISL_MACRO_UNPACKAGER _extor_body IST_##_name##_EXTRACTOR;
+#include "isl_astnodes.h"
+#undef manifest
+
+#define manifest(_name, _extor_body, _extor_rule) \
+    IST_##_name##_EXTRACTOR IST_##_name##_EXTRACT(ist_astnode* node);
+#include "isl_astnodes.h"
+#undef manifest
 
 ist_string* ist_astnode_dump(ist_astnode* this, ist_string* _buffer, ist_bool _deep);
 

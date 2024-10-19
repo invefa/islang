@@ -2,10 +2,19 @@
 #include "isl_memgr.h"
 
 const ist_string ist_astnode_type_names[] = {
-#define manifest(_name) [ISL_ASTNT_##_name] = #_name,
+#define manifest(_name, _extor_body, _extor_rule) [ISL_ASTNT_##_name] = #_name,
 #include "isl_astnodes.h"
 #undef manifest
 };
+
+#define manifest(_name, _extor_body, _extor_rule)                             \
+    inline IST_##_name##_EXTRACTOR IST_##_name##_EXTRACT(ist_astnode* node) { \
+        IST_##_name##_EXTRACTOR extractor;                                    \
+        __ISL_MACRO_UNPACKAGER  _extor_rule;                                  \
+        return extractor;                                                     \
+    }
+#include "isl_astnodes.h"
+#undef manifest
 
 ist_astnode* ist_astnode_initby_full(
     ist_astnode* this,
