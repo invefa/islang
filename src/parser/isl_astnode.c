@@ -82,23 +82,92 @@ void ist_ast_delete(void* this) {
     ist_astnode_delete(this);
 }
 
-ist_string* ist_ast_dump_json(void* this, ist_string* buffer) {
+ist_string ist_ast_dump_json(void* this, ist_string* buffer) {
 
-    ist_astnode* node = this;
-    // ist_string*  sub_buffer = ist_string_create_buffer(64);
-    ist_string* location_buffer =
-        ist_location_dump_json(&node->location, ist_string_create_buffer(64));
+    isl_report(rid_custom_core_warning, "dumping node<0x%zX>.", (ist_usize)this);
 
+    ist_string* tmp_buffer = ist_string_create_buffer(64);
 
-    snprintf(
-        *buffer,
-        isl_list_catch_length(*buffer),
-        "{\"type\":\"%s\",\"location\":%s,",
+    ist_astnode* node  = this;
+    ist_usize    index = 0;
+
+    ist_strbuf_sprintf(
+        buffer,
+        &index,
+        "{\"type:\":\"%s\",%s,",
         ist_astnode_type_names[node->type],
-        *location_buffer
+        ist_location_dump_json(&node->location, tmp_buffer)
     );
 
+    switch (node->type) {
+        case ISL_ASTNT_UNKNOWN:
+            ist_strbuf_append_raw(buffer, &index, "\b");
+            break;
 
-    ist_string_delete(location_buffer);
-    return buffer;
+        case ISL_ASTNT_SCOPE:
+        case ISL_ASTNT_MODULE:
+        case ISL_ASTNT_ARG_LIST:
+        case ISL_ASTNT_PARAM_LIST:
+        case ISL_ASTNT_NODE_LIST: {
+            IST_ASTNODE_NODE_LIST* node_list = this;
+
+            ist_strbuf_append_raw(buffer, &index, "\"nodeptr_list\":[");
+            isl_list_foreach_to (nodepp, node_list->nodeptr_list, node_list->nodeptr_count)
+                ist_strbuf_append_raws(
+                    buffer, &index, ist_ast_dump_json(*nodepp, tmp_buffer), ",", NULL
+                );
+
+            ist_strbuf_append_raw(buffer, &index, "\b]");
+            break;
+        }
+
+        case ISL_ASTNT_LITERAL_ENT: {
+            IST_ASTNODE_LITERAL_ENT* literal_ent = this;
+            ist_strbuf_sprintf(
+                buffer,
+                &index,
+                "\"literal_type\":\"%s\",\"value\":%s",
+                ist_token_names[literal_ent->literal_type],
+                ist_value_dump_json(&literal_ent->value, literal_ent->literal_type, tmp_buffer)
+            );
+            break;
+        }
+
+        case ISL_ASTNT_BINARY_OPT: {
+            IST_ASTNODE_BINARY_OPT* binary_opt = this;
+            ist_strbuf_sprintf(
+                buffer,
+                &index,
+                "\"operator_type\":\"%s\",\"left_node\":%s,\"right_node\":",
+                ist_token_names[binary_opt->operator_type],
+                ist_ast_dump_json(binary_opt->left_node, tmp_buffer)
+            );
+            ist_strbuf_append_raw(
+                buffer, &index, ist_ast_dump_json(binary_opt->right_node, tmp_buffer)
+            );
+            break;
+        }
+
+        case ISL_ASTNT_UNARY_OPT: {
+            IST_ASTNODE_UNARY_OPT* unary_opt = this;
+            ist_strbuf_sprintf(
+                buffer,
+                &index,
+                "\"operator_type\":\"%s\",\"on_left\":%s,\"sub_node\":%s",
+                ist_token_names[unary_opt->operator_type],
+                unary_opt->on_left ? "true" : "false",
+                ist_ast_dump_json(unary_opt->sub_node, tmp_buffer)
+            );
+            break;
+        }
+
+        default:
+            ist_strbuf_append_raw(buffer, &index, "\b");
+            break;
+    }
+
+    ist_strbuf_append_raw(buffer, &index, "}");
+
+    ist_string_delete(tmp_buffer);
+    return *buffer;
 }

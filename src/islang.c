@@ -84,13 +84,19 @@ void isl_test_astnode(void) {
     binopt_node->right_node    = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
     ISL_AS_LITERAL_ENT(binopt_node->left_node)->literal_type    = ISL_TOKENT_VL_INT;
     ISL_AS_LITERAL_ENT(binopt_node->left_node)->value.int_value = -123;
-
+    ISL_AS_LITERAL_ENT(binopt_node->right_node)->literal_type    = ISL_TOKENT_VL_INT;
+    ISL_AS_LITERAL_ENT(binopt_node->right_node)->value.int_value = -456;
 
     IST_ASTNODE_MODULE* module_node = ist_astnode_createby_full(MODULE, ist_location_consby_null());
     module_node->nodeptr_list       = isl_list_malloc(ist_astnode*, 2);
     isl_list_addc(module_node->nodeptr_list, module_node->nodeptr_count, isl_asvp(binopt_node));
     isl_list_addc(module_node->nodeptr_list, module_node->nodeptr_count, isl_asvp(unopt_node));
 
+    ist_string* buffer = ist_string_create_buffer(32);
+
+    printf("dump result: %s\n", ist_ast_dump_json(module_node, buffer));
+
+    ist_string_delete(buffer);
     ist_ast_delete(module_node);
 
     isl_report(rid_custom_core_warning, "end testing astnode.");
@@ -117,10 +123,10 @@ void isl_test_lexer(void) {
     ist_string* dumpbuf = ist_string_create_buffer(32);
 
     /* make sure token dumping synchronized with fn:advance analysis */
-    printf("%s\n", *ist_token_dump(&lexer.cur_token, dumpbuf));
-    printf("%s\n", *ist_token_dump(&lexer.nex_token, dumpbuf));
+    printf("%s\n", ist_token_dump(&lexer.cur_token, dumpbuf));
+    printf("%s\n", ist_token_dump(&lexer.nex_token, dumpbuf));
     while (lexer.sec_token.type != ISL_TOKENT_EOF) {
-        printf("%s\n", *ist_token_dump(&lexer.sec_token, dumpbuf));
+        printf("%s\n", ist_token_dump(&lexer.sec_token, dumpbuf));
 
 #define lexer_switch_codepage(_pagename, _pagesrc)                                                \
     ist_lexer_switch_codepage(                                                                    \
@@ -139,7 +145,7 @@ void isl_test_lexer(void) {
             while (lexer.sec_token.type != ISL_TOKENT_EOS && lexer.sec_token.type != ISL_TOKENT_EOF)
             {
                 ist_lexer_advance(&lexer);
-                printf("%s\n", *ist_token_dump(&lexer.sec_token, dumpbuf));
+                printf("%s\n", ist_token_dump(&lexer.sec_token, dumpbuf));
             }
 
             ist_lexer_lookahead_end(&lexer);
@@ -149,7 +155,7 @@ void isl_test_lexer(void) {
         ist_lexer_advance(&lexer);
     }
     /* print the last token:EOF */
-    printf("%s\n", *ist_token_dump(&lexer.sec_token, dumpbuf));
+    printf("%s\n", ist_token_dump(&lexer.sec_token, dumpbuf));
 
     /* clean up */
     ist_lexer_clean(&lexer);

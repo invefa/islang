@@ -144,7 +144,7 @@ inline ist_string* ist_strbuf_append_raws(
     return this;
 }
 
-ist_string* ist_strbuf_sprintf(ist_string* this, ist_usize* idxptr, ist_cstring _format, ...) {
+ist_string ist_strbuf_sprintf(ist_string* this, ist_usize* idxptr, ist_cstring _format, ...) {
     va_list args;
 
     /**
@@ -163,5 +163,5 @@ ist_string* ist_strbuf_sprintf(ist_string* this, ist_usize* idxptr, ist_cstring 
     /* update the index if it was exist */
     if (idxptr) *idxptr += length;
 
-    return this;
+    return *this;
 }

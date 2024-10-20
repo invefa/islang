@@ -89,7 +89,11 @@ void ist_astnode_delete(void* this);
  */
 void ist_ast_delete(void* this);
 
-ist_string* ist_ast_dump_json(void* this, ist_string* buffer);
+/**
+ * Dump the whole AST to the json format string.
+ * Store the result to the buffer.
+ */
+ist_string ist_ast_dump_json(void* this, ist_string* buffer);
 
 
 #endif // ISC_ASTNODE_H

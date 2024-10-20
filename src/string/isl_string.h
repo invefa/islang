@@ -31,7 +31,7 @@ void ist_strbuf_ensure(ist_string* this, ist_usize size, ist_usize _reqlen);
 /* append c raw string to buffer */
 ist_string* ist_strbuf_append_raw(ist_string* this, ist_usize* idxptr, ist_cstring _string);
 
-/* va_args must be end with NULL or 0 */
+/* va_args must be end with NULL */
 ist_string* ist_strbuf_append_raws(ist_string* this, ist_usize* idxptr, ist_cstring _string, ...);
 
 /* append reference string to buffer, must supply the length of it */
@@ -42,7 +42,7 @@ ist_string* ist_strbuf_append_ref(
     ist_usize   _length
 );
 
-ist_string* ist_strbuf_sprintf(ist_string* this, ist_usize* idxptr, ist_cstring _format, ...);
+ist_string ist_strbuf_sprintf(ist_string* this, ist_usize* idxptr, ist_cstring _format, ...);
 
 // ist_string* ist_string_sprintf(ist_string* this, ist_cstring _format, ...);
 

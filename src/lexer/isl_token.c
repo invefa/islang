@@ -20,13 +20,13 @@ const ist_string ist_token_names[] = {
 #undef manifest
 };
 
-ist_string* ist_location_dump_json(ist_location* this, ist_string* buffer) {
+ist_string ist_location_dump_json(ist_location* this, ist_string* buffer) {
 
     return ist_strbuf_sprintf(
         buffer,
         NULL,
-        "{\"module\":\"%s\",\"pagename\":\"%s\",\"line\":%zu,\"column\":%zu}",
-        this->module->name,
+        "\"module\":\"%s\",\"pagename\":\"%s\",\"line\":%zu,\"column\":%zu",
+        this->module ? this->module->name : (ist_string) "",
         this->pagename ? this->pagename : (ist_string) "",
         this->line,
         this->column
@@ -34,7 +34,7 @@ ist_string* ist_location_dump_json(ist_location* this, ist_string* buffer) {
 }
 
 
-inline ist_string* ist_token_dump(ist_token* this, ist_string* buffer) {
+inline ist_string ist_token_dump(ist_token* this, ist_string* buffer) {
 
     /* save the last character of extract, and set it to 0 temporarily */
     ist_byte storager = this->extract[this->length];
@@ -61,7 +61,7 @@ inline ist_string* ist_token_dump(ist_token* this, ist_string* buffer) {
     /* restore the last character */
     if (this->extract) this->extract[this->length] = storager;
 
-    return buffer;
+    return *buffer;
 }
 
 ist_token_type ist_string_is_keyword(ist_string this, ist_usize _length) {
