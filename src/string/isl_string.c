@@ -8,6 +8,7 @@
 #include "isl_memgr.h"
 #include "isl_report.h"
 
+
 inline ist_string ist_string_consby_ref(ist_cstring _cstring, ist_usize _length) {
     ist_string string = isl_list_calloc(ist_byte, _length + 1);
     memcpy(string, _cstring, _length);
@@ -26,6 +27,7 @@ inline ist_string* ist_string_createby_ref(ist_cstring _cstring, ist_usize _leng
     return ist_string_initby_ref(isl_malloc(ist_string), _cstring, _length);
 }
 
+
 inline ist_string ist_string_consby_raw(ist_cstring _cstring) {
     return ist_string_consby_ref(_cstring, strlen(_cstring));
 }
@@ -35,6 +37,7 @@ inline ist_string* ist_string_initby_raw(ist_string* this, ist_cstring _cstring)
 inline ist_string* ist_string_createby_raw(ist_cstring _cstring) {
     return ist_string_createby_ref(_cstring, strlen(_cstring));
 }
+
 
 ist_string ist_string_cons_buffer(ist_usize _capacity) {
     ist_string buffer = isl_list_calloc(ist_byte, _capacity);
@@ -49,6 +52,7 @@ inline ist_string* ist_string_create_buffer(ist_usize _capacity) {
     return ist_string_init_buffer(isl_malloc(ist_string), _capacity);
 }
 
+
 inline void ist_string_clean(ist_string* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
     if (*this) isl_list_freev(*this);
@@ -59,6 +63,7 @@ inline void ist_string_delete(ist_string* this) {
     ist_string_clean(this);
     isl_free(this);
 }
+
 
 inline void ist_string_buffer_ensure(
     ist_string* this,
@@ -85,6 +90,7 @@ inline void ist_string_buffer_ensure(
     /* resize buffer */
     isl_list_resizec(*this, ceil_upon_powertwo(_buffer_size + _required_length));
 }
+
 
 inline ist_string* ist_string_buffer_append_ref(
     ist_string* this,
