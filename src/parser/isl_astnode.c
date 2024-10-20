@@ -171,3 +171,7 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer) {
     ist_string_delete(tmp_buffer);
     return *buffer;
 }
+
+inline void IST_ASTNODE_NODE_LIST_ADD(IST_ASTNODE_NODE_LIST* this, void* node) {
+    isl_list_addc(this->nodeptr_list, this->nodeptr_count, node);
+}

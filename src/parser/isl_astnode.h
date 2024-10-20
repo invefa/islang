@@ -79,7 +79,6 @@ typedef struct ist_astnode {
 #include "isl_astnodes.h"
 #undef manifest
 
-
 /* just delete the astnode */
 void ist_astnode_delete(void* this);
 
@@ -91,9 +90,17 @@ void ist_ast_delete(void* this);
 
 /**
  * Dump the whole AST to the json format string.
- * Store the result to the buffer.
+ * Store the result to the buffer, and return the context of buffer.
  */
 ist_string ist_ast_dump_json(void* this, ist_string* buffer);
+
+
+/**
+ * Declares for special nodes.
+ */
+
+
+void IST_ASTNODE_NODE_LIST_ADD(IST_ASTNODE_NODE_LIST* this, void* node);
 
 
 #endif // ISC_ASTNODE_H

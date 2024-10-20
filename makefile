@@ -6,43 +6,43 @@
 ###########################
 
 #compiler relevants
-compiler_name		:= gcc
-compiler_flags		:= -fdiagnostics-color=always -std=gnu11
-build_version_flags	:= -g -m64 #-static -o3
-enable_warnings		:= all shadow no-pointer-sign inline unreachable-code
-optional_macros		:= _DEBUG ISL_BWMF #islang build with makefile
+compiler_name       := gcc
+compiler_flags      := -fdiagnostics-color=always -std=gnu11
+build_version_flags := -g -m64 #-static -o3
+enable_warnings     := all shadow no-pointer-sign inline unreachable-code
+optional_macros     := _DEBUG ISL_BWMF #islang build with makefile
 
 #debugger relevants
-debugger_name	:= gdb
-debugger_flags	:=
+debugger_name   := gdb
+debugger_flags  :=
 
 #source files relevants
-source_dir		:= src
-source_subdirs	:= \
+source_dir      := src
+source_subdirs  := \
 	utils memgr string report lexer parser compiler vm collections
 
 #depend files relevants
-depend_flags	:=
+depend_flags    :=
 
 #build relevants
-build_target	:= is.exe
+build_target    := is.exe
 build_target_dir:= build/target
-build_dir		:= build
+build_dir       := build
 
 #run relevants
-run_args		:=
+run_args        :=
 
 #symbols
-symbol_empty	:=
-symbol_space	:= $(symbol_empty) $(symbol_empty)
-symbol_comma	:= ,
+symbol_empty    :=
+symbol_space    := $(symbol_empty) $(symbol_empty)
+symbol_comma    := ,
 
 #others for Compatibility (different from OS, now for Windows)
-rmfile_cmd		:= del /Q
-rmdir_cmd		:= rmdir /Q /S
-mkdir_cmd		:= mkdir
-echo_cmd		:= echo
-dir_slash		:= $(symbol_empty)\$(symbol_empty)
+rmfile_cmd      := del /Q
+rmdir_cmd       := rmdir /Q /S
+mkdir_cmd       := mkdir
+echo_cmd        := echo
+dir_slash       := $(symbol_empty)\$(symbol_empty)
 
 
 ###################################
@@ -51,22 +51,22 @@ dir_slash		:= $(symbol_empty)\$(symbol_empty)
 
 #full expanding and redirecting for variables
 
-source_subdirs	:= $(foreach _dir,$(source_subdirs),$(source_dir)/$(_dir))
-source_dirs		:= $(source_dir) $(source_subdirs)
+source_subdirs  := $(foreach _dir,$(source_subdirs),$(source_dir)/$(_dir))
+source_dirs     := $(source_dir) $(source_subdirs)
 
-compile_header	:= $(compiler_name) $(compiler_flags) $(build_version_flags)
-compile_header	+= $(foreach _waring,$(enable_warnings),-W$(_waring))
-compile_header	+= $(foreach _dir,$(source_dirs),-I$(_dir))
-compile_header	+= $(foreach _macro,$(optional_macros),-D$(_macro))
+compile_header  := $(compiler_name) $(compiler_flags) $(build_version_flags)
+compile_header  += $(foreach _waring,$(enable_warnings),-W$(_waring))
+compile_header  += $(foreach _dir,$(source_dirs),-I$(_dir))
+compile_header  += $(foreach _macro,$(optional_macros),-D$(_macro))
 
-build_dirs		:= $(foreach _dir,$(source_dirs),$(build_dir)/$(_dir)) $(build_target_dir)
-build_target	:= $(build_target_dir)/$(build_target)
+build_dirs      := $(foreach _dir,$(source_dirs),$(build_dir)/$(_dir)) $(build_target_dir)
+build_target    := $(build_target_dir)/$(build_target)
 
-source_files	:= $(foreach _dir,$(source_dirs),$(wildcard $(_dir)/*.c))
-object_files	:= $(foreach _file,$(source_files),$(build_dir)/$(_file:.c=.o))
-depend_files	:= $(object_files:.o=.d)
+source_files    := $(foreach _dir,$(source_dirs),$(wildcard $(_dir)/*.c))
+object_files    := $(foreach _file,$(source_files),$(build_dir)/$(_file:.c=.o))
+depend_files    := $(object_files:.o=.d)
 
-phony_depend_files	:= $(foreach _file,$(depend_files),phony$(_file))
+phony_depend_files  := $(foreach _file,$(depend_files),phony$(_file))
 existed_depend_files:= $(wildcard $(depend_files))
 
 ###############
@@ -78,8 +78,8 @@ existed_depend_files:= $(wildcard $(depend_files))
 #######################
 
 #default target for this makefile
-build-run: 		build run
-build-debug: 	build debug
+build-run:   build run
+build-debug: build debug
 
 run:
 	$(build_target) $(run_args)

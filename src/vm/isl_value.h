@@ -33,6 +33,6 @@ typedef union ist_value {
 #define ist_value_consby_byte(_byte)     ((ist_value){.byte_value = (_byte)})
 #define ist_value_consby_strbuf(_string) ((ist_value){.string_value = (_string)})
 
-ist_string ist_value_dump_json(ist_value* this, ist_u8 type, ist_string* buffer);
+ist_string ist_value_dump_json(ist_value* this, ist_u32 type, ist_string* buffer);
 
 #endif // ISC_VALUE_H
