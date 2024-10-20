@@ -24,28 +24,30 @@ void ist_astnode_delete(void* this) {
 
     ist_astnode_type type = ((ist_astnode_type*)this)[0];
 
+    /* delete the sub nodes of the astnode by the type */
     switch (type) {
         case ISL_ASTNT_SCOPE:
         case ISL_ASTNT_MODULE:
         case ISL_ASTNT_ARG_LIST:
         case ISL_ASTNT_PARAM_LIST:
         case ISL_ASTNT_NODE_LIST: {
-            IST_ASTNODE_NODE_LIST* node_list = (IST_ASTNODE_NODE_LIST*)this;
+            IST_ASTNODE_NODE_LIST* node_list = this;
             isl_list_foreach (nodepp, node_list->nodeptr_list) ist_astnode_delete(*nodepp);
             isl_freev_list(node_list->nodeptr_list);
             break;
         }
-        case ISL_ASTNT_UNARY_OPT:
-            ist_astnode_delete(((IST_ASTNODE_UNARY_OPT*)this)->sub_node);
+        case ISL_ASTNT_UNARY_OPT: {
+            ist_astnode_delete(ISL_AS_UNARY_OPT(this)->sub_node);
             break;
+        }
         case ISL_ASTNT_BINARY_OPT: {
-            IST_ASTNODE_BINARY_OPT* binary_opt = (IST_ASTNODE_BINARY_OPT*)this;
+            IST_ASTNODE_BINARY_OPT* binary_opt = this;
             ist_astnode_delete(binary_opt->left_node);
             ist_astnode_delete(binary_opt->right_node);
             break;
         }
         case ISL_ASTNT_TERNARY_OPT: {
-            IST_ASTNODE_TERNARY_OPT* ternary_opt = (IST_ASTNODE_TERNARY_OPT*)this;
+            IST_ASTNODE_TERNARY_OPT* ternary_opt = this;
             ist_astnode_delete(ternary_opt->first_node);
             ist_astnode_delete(ternary_opt->second_node);
             ist_astnode_delete(ternary_opt->third_node);
@@ -53,6 +55,10 @@ void ist_astnode_delete(void* this) {
         }
     }
 
+    /**
+     * Delete the astnode by the type. It serves for the counting of the memory.
+     * Because the astnode have no constant length, we can not use the free function directly.
+     */
     switch (type) {
 
 #define manifest(_name, _struct)              \

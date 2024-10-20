@@ -68,6 +68,9 @@ typedef struct ist_astnode {
  */
 #define ist_astnode_as(_node, _raw_type) ((IST_ASTNODE_##_raw_type*)_node)
 
+/* just as void ptr to make it more easy to pass */
+#define isl_asvp(_adr) ((void*)_adr)
+
 /**
  * Make the address as pointer of the specific type of astnode.
  * for all the astnode, you can use the fn to convert the address to the specific type.
