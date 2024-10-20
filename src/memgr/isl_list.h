@@ -195,26 +195,37 @@
 #define __ISL_LIST_FOREACH_CAPVNAME_1(_idxv_name)             __ISL_LIST_FOREACH_CAPVNAME_0()
 #define __ISL_LIST_FOREACH_CAPVNAME_2(_idxv_name, _capv_name) _capv_name
 
-#define _ISL_LIST_FOREACH_IDXVNAME(_vargs...) _isl_overload(__ISL_LIST_FOREACH_IDXVNAME, ##_vargs)
-#define _ISL_LIST_FOREACH_CAPVNAME(_vargs...) _isl_overload(__ISL_LIST_FOREACH_CAPVNAME, ##_vargs)
+#define _ISL_LIST_FOREACH_IDXVNAME(_names...) _isl_overload(__ISL_LIST_FOREACH_IDXVNAME, ##_names)
+#define _ISL_LIST_FOREACH_CAPVNAME(_names...) _isl_overload(__ISL_LIST_FOREACH_CAPVNAME, ##_names)
 
 /*
     iterpid stand for iterator ptr identifier, indicate you must provide a legal identifier there.
     vargs reserved for the optional index and capacity variable name,
     and the first for index, second for capacity.
 */
-#define isl_list_foreach(_iterpid, _list_variable, _vargs...)                                      \
-    for (ist_usize _ISL_LIST_FOREACH_IDXVNAME(_vargs) = 0,                                         \
-                   _ISL_LIST_FOREACH_CAPVNAME(_vargs) = isl_list_ptr_get_capacity(_list_variable); \
-         _ISL_LIST_FOREACH_IDXVNAME(_vargs) < _ISL_LIST_FOREACH_CAPVNAME(_vargs);                  \
-         ++_ISL_LIST_FOREACH_IDXVNAME(_vargs))                                                     \
-        for (ist_bool isl_list_foreach_flag = 1; isl_list_foreach_flag;)                           \
-            for (typeof((_list_variable)[0])* _iterpid =                                           \
-                     ((_list_variable) + _ISL_LIST_FOREACH_IDXVNAME(_vargs));                      \
-                 isl_list_foreach_flag;                                                            \
+#define isl_list_foreach_from_to(_iterpid, _list_variable, _index, _capacity, _names...) \
+    for (ist_usize _ISL_LIST_FOREACH_IDXVNAME(_names) = _index,                          \
+                   _ISL_LIST_FOREACH_CAPVNAME(_names) = _capacity;                       \
+         _ISL_LIST_FOREACH_IDXVNAME(_names) < _ISL_LIST_FOREACH_CAPVNAME(_names);        \
+         ++_ISL_LIST_FOREACH_IDXVNAME(_names))                                           \
+        for (ist_bool isl_list_foreach_flag = 1; isl_list_foreach_flag;)                 \
+            for (typeof((_list_variable)[0])* _iterpid =                                 \
+                     ((_list_variable) + _ISL_LIST_FOREACH_IDXVNAME(_names));            \
+                 isl_list_foreach_flag;                                                  \
                  isl_list_foreach_flag = 0)
 
+#define isl_list_foreach_from(_iterpid, _list_variable, _index, _names...)                    \
+    isl_list_foreach_from_to (                                                                \
+        _iterpid, _list_variable, _index, isl_list_ptr_get_capacity(_list_variable), ##_names \
+    )
 
+#define isl_list_foreach_to(_iterpid, _list_variable, _capacity, _names...) \
+    isl_list_foreach_from_to (_iterpid, _list_variable, 0, _capacity, ##_names)
+
+#define isl_list_foreach(_iterpid, _list_variable, _names...)                            \
+    isl_list_foreach_from_to (                                                           \
+        _iterpid, _list_variable, 0, isl_list_ptr_get_capacity(_list_variable), ##_names \
+    )
 
 /*
     this function will obtain a value, and return the nearest power of two,

@@ -1,16 +1,16 @@
 /**
- *  This c source file is the main source file for islang, and it is the entrance of islang.
- *  This project is compiled with -std=gnu11, because it will use some extension functions
- *  which are suplied by GNU standard extensions.
+ * This c source file is the main source file for islang, and it is the entrance of islang.
+ * This project is compiled with -std=gnu11, because it will use some extension functions
+ * which are suplied by GNU standard extensions.
  *
- *  There are a list of extensions are used:
- *      1. typeof keyword.
- *      2. u8 prefix for string literal.
- *  And some features are used:
- *      1. special macro expansion.
+ * There are a list of extensions are used:
+ *     1. typeof keyword.
+ *     2. u8 prefix for string literal.
+ * And some features are used:
+ *     1. special macro expansion.
  *
- *  Anyway, you had better compile this project with gcc -std=gnu11.
- *  Written by invefa.
+ * Anyway, you had better compile this project with gcc -std=gnu11.
+ * Written by invefa.
  */
 
 #include <stdio.h>
@@ -73,7 +73,7 @@ void isl_test_astnode(void) {
     ISL_AS_LITERAL_ENT(node->left_node)->literal_type    = ISL_TOKENT_VL_INT;
     ISL_AS_LITERAL_ENT(node->left_node)->value.int_value = -123;
 
-    ist_astnode_delete(node);
+    ist_ast_delete(node);
 
     isl_report(rid_custom_core_warning, "end testing astnode.");
 }

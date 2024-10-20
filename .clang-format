@@ -110,6 +110,9 @@ EmptyLineBeforeAccessModifier: LogicalBlock
 ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: true
 ForEachMacros:
+  - isl_list_foreach_from_to
+  - isl_list_foreach_from
+  - isl_list_foreach_to
   - isl_list_foreach
   - foreach
   - Q_FOREACH

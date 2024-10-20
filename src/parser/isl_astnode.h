@@ -80,7 +80,15 @@ typedef struct ist_astnode {
 #undef manifest
 
 
+/* just delete the astnode */
 void ist_astnode_delete(void* this);
+
+/**
+ * Delete the AST by the astnode.
+ * And if the astnode has sub nodes, it will delete them recursively.
+ */
+void ist_ast_delete(void* this);
+
 
 ist_string* ist_astnode_dump(ist_astnode* this, ist_string* _buffer, ist_bool _deep);
 
