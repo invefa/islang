@@ -23,12 +23,14 @@ manifest(UNARY_OPT, (struct {
              ist_bool       on_left;
              ist_astnode*   sub_node;
          }))
+
 manifest(BINARY_OPT, (struct {
              ist_astnode    base;
              ist_token_type operator_type;
              ist_astnode*   left_node;
              ist_astnode*   right_node;
          }))
+
 manifest(TERNARY_OPT, (struct {
              ist_astnode    base;
              ist_token_type operator_type;
@@ -43,14 +45,17 @@ manifest(LITERAL_ENT, (struct {
              ist_token_type literal_type;
              ist_value      value;
          }))
+
 manifest(NAME_ENT, (struct {
              ist_astnode base;
              ist_string  name;
          }))
+
 manifest(REFERENCE_ENT, (struct {
              ist_astnode base;
              ist_usize   index;
          }))
+
 manifest(FN_ENT, (IST_ASTNODE_REFERENCE_ENT))
 manifest(VAR_ENT, (IST_ASTNODE_REFERENCE_ENT))
 manifest(REGIST_ENT, (IST_ASTNODE_REFERENCE_ENT))
