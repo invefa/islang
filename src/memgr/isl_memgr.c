@@ -1,11 +1,12 @@
 #include "isl_memgr.h"
-#include "isl_xssert.h"
-#include "isl_report.h"
 #include "isl_options.h"
+#include "isl_report.h"
+#include "isl_xssert.h"
+
 
 #include <stdlib.h>
 
-ist_usize isl_allocated_length = 0;
+ist_usize isl_allocated_length     = 0;
 ist_usize isl_max_allocated_length = 0;
 
 
@@ -19,9 +20,9 @@ inline void* isl_allocate(ist_usize _size, ist_bool _clean) {
     if (isl_allocated_length > isl_max_allocated_length)
         isl_max_allocated_length = isl_allocated_length;
 
-#   ifdef ISL_ENABLE_INFORM_ALLOCATED
+#ifdef ISL_ENABLE_INFORM_ALLOCATED
     isl_report(rid_inform_allocated, ptr, _size, isl_allocated_length);
-#   endif
+#endif
 
     return ptr;
 }
@@ -30,9 +31,9 @@ inline void isl_release(void* _ptr, ist_usize _size) {
     isl_assert(_ptr);
     free(_ptr);
     isl_allocated_length -= _size;
-#   ifdef ISL_ENABLE_INFORM_RELEASED
+#ifdef ISL_ENABLE_INFORM_RELEASED
     isl_report(rid_inform_released, (size_t)_ptr, _size, isl_allocated_length);
-#   endif
+#endif
 }
 
 inline void* _isl_set_adr_usize_value(void* _adr, ist_usize _value) {

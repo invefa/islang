@@ -100,6 +100,7 @@ void isl_test_astnode(void) {
     ist_string_delete(buffer);
     ist_ast_delete(module_node);
 
+    isl_report(rid_custom_core_info, "max allocated-length = %zu.", isl_max_allocated_length);
     isl_report(rid_custom_core_warning, "end testing astnode.");
 }
 
