@@ -33,7 +33,7 @@ void ist_astnode_delete(void* this) {
         case ISL_ASTNT_NODE_LIST: {
             IST_ASTNODE_NODE_LIST* node_list = this;
             isl_list_foreach (nodepp, node_list->nodeptr_list) ist_astnode_delete(*nodepp);
-            isl_freev_list(node_list->nodeptr_list);
+            isl_list_freev(node_list->nodeptr_list);
             break;
         }
         case ISL_ASTNT_UNARY_OPT: {

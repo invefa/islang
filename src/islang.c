@@ -245,7 +245,7 @@ typedef struct ist_i32_list {
 } ist_i32_list;
 
 ist_i32* isl_emit_i32_list() {
-    ist_i32* list = isl_malloc_list(ist_i32, 10);
+    ist_i32* list = isl_list_malloc(ist_i32, 10);
     list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5;
     list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
     return list;
@@ -253,33 +253,33 @@ ist_i32* isl_emit_i32_list() {
 
 void isl_test_memgr(void) {
     printf("test for memgr\n");
-    ist_i32* list = isl_calloc_list(ist_i32, 10);
+    ist_i32* list = isl_list_calloc(ist_i32, 10);
     list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5;
     list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
     ist_i32_list* list2 = isl_calloc(ist_i32_list);
-    list2->data         = isl_calloc_list(ist_i32, 10);
+    list2->data         = isl_list_calloc(ist_i32, 10);
     list2->data[0] = 1, list2->data[1] = 2, list2->data[2] = 3, list2->data[3] = 4,
     list2->data[4] = 5;
     list2->data[5] = 6, list2->data[6] = 7, list2->data[7] = 8, list2->data[8] = 9,
     list2->data[9] = 10;
     list2->size    = 10;
-    isl_freev_list(list);
-    isl_freev_list(list2->data);
+    isl_list_freev(list);
+    isl_list_freev(list2->data);
     isl_free(list2);
     list  = isl_emit_i32_list();
     list2 = isl_calloc(ist_i32_list);
     isl_list_resizec(isl_emit_i32_list(), 20, list2->data);
     isl_list_resizec(list, 20);
-    isl_free_list(list);
-    isl_free_list(list2->data);
+    isl_list_free(list);
+    isl_list_free(list2->data);
     isl_free(list2);
     isl_list_resizec(isl_emit_i32_list(), 100, list);
-    isl_free_list(list);
+    isl_list_free(list);
 }
 
 void isl_test_list(void) {
 
-    ist_i32* list = isl_calloc_list(ist_i32, 10);
+    ist_i32* list = isl_list_calloc(ist_i32, 10);
     // ist_i32* new_list = NULL;
     printf("list = 0x%zX\n", (ist_usize)list);
     printf("length of list = %zu\n", isl_list_catch_length(list));
@@ -295,7 +295,7 @@ void isl_test_list(void) {
     isl_list_resizec(list, 30);
     isl_list_resizec(list, 6);
 
-    isl_freev_list(list);
+    isl_list_freev(list);
     isl_wssert(0);
     isl_list_ensurec(isl_emit_i32_list(), 9, 1, list);
     size = 10;
@@ -316,7 +316,7 @@ void isl_test_list(void) {
     for (ist_usize i = 0; i < isl_list_ptr_get_capacity(list); ++i)
         printf("list[%zu] = %d\n", i, list[i]);
 
-    isl_freev_list(list);
+    isl_list_freev(list);
 }
 
 void isl_test_xssert(void) {

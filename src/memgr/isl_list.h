@@ -52,24 +52,26 @@
     isl_list_base_regress_head_ptr(_list_base_adr, void)
 
 
-// components for __ISL_XALLOC_LIST
-#define __ISL_XALLOC_FLAG_m 0
-#define __ISL_XALLOC_FLAG_c 1
+// components for __ISL_LIST_XALLOC
+#define __ISL_LIST_XALLOC_FLAG_m 0
+#define __ISL_LIST_XALLOC_FLAG_c 1
 
-#define __ISL_XALLOC_LIST(_x, _type, _count)                                                    \
-    isl_list_base_regress_head_ptr(                                                             \
-        _isl_set_adr_usize_value(                                                               \
-            isl_allocate(sizeof(ist_usize) + sizeof(_type) * (_count), __ISL_XALLOC_FLAG_##_x), \
-            sizeof(_type) * (_count)                                                            \
-        ),                                                                                      \
-        _type                                                                                   \
+#define __ISL_LIST_XALLOC(_x, _type, _count)                                              \
+    isl_list_base_regress_head_ptr(                                                       \
+        _isl_set_adr_usize_value(                                                         \
+            isl_allocate(                                                                 \
+                sizeof(ist_usize) + sizeof(_type) * (_count), __ISL_LIST_XALLOC_FLAG_##_x \
+            ),                                                                            \
+            sizeof(_type) * (_count)                                                      \
+        ),                                                                                \
+        _type                                                                             \
     )
 
-#define isl_malloc_list(_type, _count) __ISL_XALLOC_LIST(m, _type, _count)
-#define isl_calloc_list(_type, _count) __ISL_XALLOC_LIST(c, _type, _count)
+#define isl_list_malloc(_type, _count) __ISL_LIST_XALLOC(m, _type, _count)
+#define isl_list_calloc(_type, _count) __ISL_LIST_XALLOC(c, _type, _count)
 
 // freev list means free the list and set the ptr variable to NULL.
-#define isl_freev_list(_list_ptrv)                                \
+#define isl_list_freev(_list_ptrv)                                \
     do {                                                          \
         isl_assert(_list_ptrv);                                   \
         isl_release(                                              \
@@ -80,7 +82,7 @@
     } while (0)
 
 // just free the list.
-#define isl_free_list(_list_adr)                                    \
+#define isl_list_free(_list_adr)                                    \
     do {                                                            \
         void* _list_adr_ = _list_adr; /*to eliminate side effects*/ \
         isl_assert(_list_adr_);                                     \
@@ -107,12 +109,12 @@
         ist_usize             _new_capcaity_ = _new_capcaity; /*to eliminate side effects*/     \
         isl_assert(_ptr_ &&_new_capcaity_);                                                     \
         ist_usize       _capacity_ = isl_list_ptr_get_capacity(_ptr_);                          \
-        _element_type_* _new_list_ = __ISL_XALLOC_LIST(_x, _element_type_, _new_capcaity_);     \
+        _element_type_* _new_list_ = __ISL_LIST_XALLOC(_x, _element_type_, _new_capcaity_);     \
         memcpy(                                                                                 \
             _new_list_, _ptr_, isl_minimum(_new_capcaity_, _capacity_) * sizeof(_element_type_) \
         );                                                                                      \
         isl_list_catch_length(_new_list_) = sizeof(_element_type_) * _new_capcaity_;            \
-        isl_free_list(_ptr_);                                                                   \
+        isl_list_free(_ptr_);                                                                   \
         _isl_overload(__ISL_LIST_RESIZE_STORAGE, _ptr, _new_list_, ##_stv);                     \
     } while (0)
 

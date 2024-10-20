@@ -28,8 +28,8 @@ inline ist_module ist_module_consby_full(ist_string _name, ist_string _filepath)
     ist_module module = (ist_module){
         .name = _name,
         .filepath = _filepath,
-        .strbuf_list = isl_malloc_list(ist_string, 4),
-        .strbuf_types = isl_malloc_list(ist_sbtype, 4),
+        .strbuf_list = isl_list_malloc(ist_string, 4),
+        .strbuf_types = isl_list_malloc(ist_sbtype, 4),
         .strbuf_count = 0,
     };
     ist_module_register_strbuf(&module, _name, ISL_STRBUFT_NAME);
@@ -66,8 +66,8 @@ inline void ist_module_clean(ist_module* this) {
             } else continue;
     }
 
-    isl_freev_list(this->strbuf_list);
-    isl_freev_list(this->strbuf_types);
+    isl_list_freev(this->strbuf_list);
+    isl_list_freev(this->strbuf_types);
 
     this->name = NULL;
     this->filepath = NULL;

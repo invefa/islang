@@ -9,7 +9,7 @@
 #include "isl_report.h"
 
 inline ist_string ist_string_consby_ref(ist_cstring _cstring, ist_usize _length) {
-    ist_string string = isl_calloc_list(ist_byte, _length + 1);
+    ist_string string = isl_list_calloc(ist_byte, _length + 1);
     memcpy(string, _cstring, _length);
     string[_length] = '\0';
     return string;
@@ -37,7 +37,7 @@ inline ist_string* ist_string_createby_raw(ist_cstring _cstring) {
 }
 
 ist_string ist_string_cons_buffer(ist_usize _capacity) {
-    ist_string buffer = isl_calloc_list(ist_byte, _capacity);
+    ist_string buffer = isl_list_calloc(ist_byte, _capacity);
     isl_ifnreport(_capacity, rid_catch_zero_capacity_buffer, isp_catch_coreloc, buffer);
     return buffer;
 }
@@ -51,7 +51,7 @@ inline ist_string* ist_string_create_buffer(ist_usize _capacity) {
 
 inline void ist_string_clean(ist_string* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
-    if (*this) isl_freev_list(*this);
+    if (*this) isl_list_freev(*this);
     *this = NULL;
 }
 inline void ist_string_delete(ist_string* this) {

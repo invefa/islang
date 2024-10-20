@@ -52,7 +52,7 @@ inline ist_string isl_read_file(ist_cstring _filepath) {
     fseek(file, 0, SEEK_END);
     ist_usize length = ftell(file);
     fseek(file, 0, SEEK_SET);
-    ist_string source = isl_malloc_list(ist_byte, length + 1);
+    ist_string source = isl_list_malloc(ist_byte, length + 1);
     fread(source, 1, length, file);
     source[length] = '\0';
     fclose(file);
@@ -163,8 +163,8 @@ inline void ist_lexer_clean(ist_lexer* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
     ist_codepage_delete_chain(this->codepage);
 
-    if (this->ahead_token_list) isl_freev_list(this->ahead_token_list);
-    if (this->ahead_backup_stack) isl_freev_list(this->ahead_backup_stack);
+    if (this->ahead_token_list) isl_list_freev(this->ahead_token_list);
+    if (this->ahead_backup_stack) isl_list_freev(this->ahead_backup_stack);
 }
 inline void ist_lexer_delete(ist_lexer* this) {
     ist_lexer_clean(this);
@@ -180,12 +180,12 @@ inline void ist_lexer_delete(ist_lexer* this) {
 void ist_lexer_lookahead_start(ist_lexer* this) {
 
     if (!this->ahead_token_list) {
-        this->ahead_token_list = isl_malloc_list(ist_token, 8);
+        this->ahead_token_list = isl_list_malloc(ist_token, 8);
         isl_assert(!this->ahead_token_count);
     }
 
     if (!this->ahead_backup_stack) {
-        this->ahead_backup_stack = isl_malloc_list(ist_usize, 4);
+        this->ahead_backup_stack = isl_list_malloc(ist_usize, 4);
         isl_assert(!this->ahead_backup_count);
     }
 
