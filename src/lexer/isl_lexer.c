@@ -283,7 +283,7 @@ inline ist_token ist_lexer_lex(ist_lexer* this) {
                 return analysis_token;
 
             default:
-                if (isdigit(ist_lexer_get_current_codepoint(this))) {
+                if (isl_utf8_is_digit_codepoint(ist_lexer_get_current_codepoint(this))) {
                     ist_lexer_parse_number(this);
                 } else if (isl_utf8_legal_identifier_codepoint(
                                ist_lexer_get_current_codepoint(this), true
@@ -441,7 +441,7 @@ inline void ist_lexer_parse_identifier(ist_lexer* this) {
 
 inline void ist_lexer_parse_number(ist_lexer* this) {
     ist_usize dot_count = 0;
-    while (isdigit(ist_lexer_get_current_codepoint(this))
+    while (isl_utf8_is_digit_codepoint(ist_lexer_get_current_codepoint(this))
            || ist_lexer_get_current_codepoint(this) == '.')
     {
         if (ist_lexer_get_current_codepoint(this) == '.') ++dot_count;
