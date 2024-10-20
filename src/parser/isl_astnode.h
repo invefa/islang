@@ -2,10 +2,21 @@
 #define ISC_ASTNODE_H
 
 #include "isl_macros.h"
+#include "isl_memgr.h"
 #include "isl_token.h"
 #include "isl_types.h"
 #include "isl_value.h"
 
+
+/**
+ * This enum only for hightlight the type of the astnode.
+ * You can ignore it, it is unnecessary, and if there occurs some name conflict, remove it.
+ */
+enum {
+#define manifest(_name, _struct) _name,
+#include "isl_astnodes.h"
+#undef manifest
+};
 
 typedef ist_usize ist_astnode_type;
 enum ist_astnode_type {
@@ -24,6 +35,35 @@ typedef struct ist_astnode {
 #define manifest(_name, _struct) typedef __ISL_MACRO_UNPACKAGER _struct IST_ASTNODE_##_name;
 #include "isl_astnodes.h"
 #undef manifest
+
+/**
+ * Make the address as pointer of the specific type of astnode.
+ */
+#define manifest(_name, _struct) IST_ASTNODE_##_name* ISL_AS_##_name(void* adr);
+#include "isl_astnodes.h"
+#undef manifest
+
+#define ist_astnode_consby_full(_type, _location) \
+    ((ist_astnode){.type = (_type), .location = (_location)})
+
+/**
+ * Create an sub of astnode by the raw type and the location and optional cons.
+ * Raw type means the suffix of the type enum, for example, if you want to create IST_ASTNODE_SCOPE,
+ * you should provide the raw type as SCOPE.
+ *
+ * Optionally, you can provide the constructor argument to initialize the astnode,
+ * just pass the argument in the form of a tuple to varg:cons.
+ */
+#define ist_astnode_createby_full(_raw_type, _location, _cons...)                              \
+    ({                                                                                         \
+        IST_ASTNODE_##_raw_type* __result__ = isl_calloc(IST_ASTNODE_##_raw_type);             \
+        *(ist_astnode*)__result__ = ist_astnode_consby_full(ISL_ASTNT_##_raw_type, _location); \
+        _cons;                                                                                 \
+        (void*)__result__;                                                                     \
+    })
+
+#define ist_astnode_as(_node, _raw_type) ((IST_ASTNODE_##_raw_type*)_node)
+
 
 void ist_astnode_delete(void* this);
 

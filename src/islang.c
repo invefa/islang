@@ -107,14 +107,28 @@ void isl_test_astnode(void) {
         sizeof(IST_ASTNODE_BINARY_OPT)
     );
 
-    IST_ASTNODE_BINARY_OPT* node = isl_calloc(IST_ASTNODE_BINARY_OPT);
+    IST_ASTNODE_BINARY_OPT* node =
+        ist_astnode_createby_full(BINARY_OPT, ist_location_consby_null());
 
-    *node = (IST_ASTNODE_BINARY_OPT
-    ){.base.type     = ISL_ASTNT_BINARY_OPT,
-      .base.location = ist_location_consby_null(),
-      .operator_type = ISL_TOKENT_ADD,
-      .left_node     = NULL,
-      .right_node    = NULL};
+    node->operator_type = ISL_TOKENT_ADD;
+    node->left_node     = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
+    node->right_node    = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
+
+    // ist_astnode_as(node, BINARY_OPT)->operator_type = ISL_TOKENT_ADD;
+    // ist_astnode_as(node, BINARY_OPT)->left_node =
+    //     ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
+    // ist_astnode_as(node, BINARY_OPT)->right_node =
+    //     ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
+    // *node = (IST_ASTNODE_BINARY_OPT
+    // ){.base.type     = ISL_ASTNT_BINARY_OPT,
+    //   .base.location = ist_location_consby_null(),
+    //   .operator_type = ISL_TOKENT_ADD,
+    //   .left_node     = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null()),
+    //   .right_node    = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null())};
+
+    // AS_LITERAL_ENT(node->left_node)
+    ISL_AS_LITERAL_ENT(node->left_node)->literal_type    = ISL_TOKENT_VL_INT;
+    ISL_AS_LITERAL_ENT(node->left_node)->value.int_value = -123;
 
     ist_astnode_delete(node);
 

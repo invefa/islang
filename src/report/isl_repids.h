@@ -25,6 +25,11 @@ manifest(
     "catched a nullptr, the address should not be null."
 )
 manifest(
+    unknown_enum_value,
+    (CORE, FATAL, CORELOC),
+    "unknown enumeration value: <0x%zX>, please check the code."
+)
+manifest(
     illegal_utf8_sequence,
     (CORE, FATAL, CORELOC),
     "cannot decode illegal UTF-8 sequence, did you get the index wrong?"
