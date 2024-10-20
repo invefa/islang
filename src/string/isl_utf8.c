@@ -20,7 +20,7 @@ inline ist_u8 isl_utf8_encode(ist_codepoint _codepoint, ist_string* _buffer, ist
 
     ist_u8 codepoint_encode_length = isl_utf8_encode_length(_codepoint);
 
-    ist_string_buffer_ensure(_buffer, _index, codepoint_encode_length);
+    ist_strbuf_ensure(_buffer, _index, codepoint_encode_length);
 
     ist_byte* buffer = *_buffer + _index;
     switch (codepoint_encode_length) {

@@ -20,17 +20,30 @@ const ist_string ist_token_names[] = {
 #undef manifest
 };
 
-inline ist_string* ist_token_dump(ist_token* this, ist_string* _buffer) {
+ist_string* ist_location_dump_json(ist_location* this, ist_string* buffer) {
+
+    return ist_strbuf_sprintf(
+        buffer,
+        NULL,
+        "{\"module\":\"%s\",\"pagename\":\"%s\",\"line\":%zu,\"column\":%zu}",
+        this->module->name,
+        this->pagename ? this->pagename : (ist_string) "",
+        this->line,
+        this->column
+    );
+}
+
+
+inline ist_string* ist_token_dump(ist_token* this, ist_string* buffer) {
 
     /* save the last character of extract, and set it to 0 temporarily */
     ist_byte storager = this->extract[this->length];
     if (this->extract) this->extract[this->length] = '\0';
 
-ist_token_dump_label_head:;
 
-    ist_usize length = snprintf(
-        *_buffer,
-        isl_list_catch_length(*_buffer),
+    ist_strbuf_sprintf(
+        buffer,
+        NULL,
         "token<0x%zX> {module=<%s:%s>,location=<%zu:%zu>,type=%s,"
         "extract=\"%s\",length=%zu,value={int=%lld,real=%g}}",
         (ist_usize)this,
@@ -45,16 +58,10 @@ ist_token_dump_label_head:;
         this->value.real_value
     );
 
-    /* ensure buffer length if it is not enough */
-    if (length >= isl_list_catch_length(*_buffer)) {
-        ist_string_buffer_ensure(_buffer, 0, length + 1);
-        goto ist_token_dump_label_head;
-    }
-
     /* restore the last character */
     if (this->extract) this->extract[this->length] = storager;
 
-    return _buffer;
+    return buffer;
 }
 
 ist_token_type ist_string_is_keyword(ist_string this, ist_usize _length) {

@@ -19,7 +19,7 @@ void u64_to_string(ist_u64 _val, ist_string* _buffer, ist_u8 _base) {
     isl_assert(_buffer[0]);
     isl_assert(_base >= 2 && _base <= 16);
 
-    ist_string_buffer_ensure(_buffer, 0, 65);
+    ist_strbuf_ensure(_buffer, 0, 65);
 
     char buffer[65] = {0};
     ist_u8 index = 0;
@@ -41,7 +41,7 @@ void u32_to_string(ist_u32 _val, ist_string* _buffer, ist_u8 _base) {
     isl_assert(_buffer[0]);
     isl_assert(_base >= 2 && _base <= 16);
 
-    ist_string_buffer_ensure(_buffer, 0, 33);
+    ist_strbuf_ensure(_buffer, 0, 33);
 
     char buffer[33] = {0};
     ist_u8 index = 0;
@@ -63,7 +63,7 @@ void u16_to_string(ist_u16 _val, ist_string* _buffer, ist_u8 _base) {
     isl_assert(_buffer[0]);
     isl_assert(_base >= 2 && _base <= 16);
 
-    ist_string_buffer_ensure(_buffer, 0, 17);
+    ist_strbuf_ensure(_buffer, 0, 17);
 
     char buffer[17] = {0};
     ist_u8 index = 0;
@@ -85,7 +85,7 @@ void u8_to_string(ist_u8 _val, ist_string* _buffer, ist_u8 _base) {
     isl_assert(_buffer[0]);
     isl_assert(_base >= 2 && _base <= 16);
 
-    ist_string_buffer_ensure(_buffer, 0, 9);
+    ist_strbuf_ensure(_buffer, 0, 9);
 
     char buffer[9] = {0};
     ist_u8 index = 0;

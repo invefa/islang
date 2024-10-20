@@ -82,8 +82,23 @@ void ist_ast_delete(void* this) {
     ist_astnode_delete(this);
 }
 
+ist_string* ist_ast_dump_json(void* this, ist_string* buffer) {
+
+    ist_astnode* node = this;
+    // ist_string*  sub_buffer = ist_string_create_buffer(64);
+    ist_string* location_buffer =
+        ist_location_dump_json(&node->location, ist_string_create_buffer(64));
 
 
-// ist_string* ist_astnode_dump(ist_astnode* this, ist_string* _buffer, ist_bool _deep) {
-//     return NULL;
-// }
+    snprintf(
+        *buffer,
+        isl_list_catch_length(*buffer),
+        "{\"type\":\"%s\",\"location\":%s,",
+        ist_astnode_type_names[node->type],
+        *location_buffer
+    );
+
+
+    ist_string_delete(location_buffer);
+    return buffer;
+}

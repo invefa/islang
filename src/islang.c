@@ -91,117 +91,6 @@ void isl_test_astnode(void) {
     isl_list_addc(module_node->nodeptr_list, module_node->nodeptr_count, isl_asvp(binopt_node));
     isl_list_addc(module_node->nodeptr_list, module_node->nodeptr_count, isl_asvp(unopt_node));
 
-    // do {
-    //     do {
-    //         typeof(module_node->nodeptr_list) __ptr_    = module_node->nodeptr_list;
-    //         ist_usize                         _size_    = module_node->nodeptr_count;
-    //         ist_usize                         _require_ = 1;
-    //         ist_usize __capacity_ = ((((ist_usize*)(__ptr_))[-1]) / sizeof(typeof(*__ptr_)));
-    //         do {
-    //             if (__capacity_ < _size_)
-    //                 isl_report(
-    //                     rid_catch_size_overflow,
-    //                     "D:\\Projects\\invefa\\islang\\src\\islang.c",
-    //                     __func__,
-    //                     (ist_usize)92
-    //                 );
-    //         } while (0);
-    //         if (__capacity_ - _size_ < _require_) {
-    //             isl_report(
-    //                 rid_inform_list_reisze,
-    //                 __ptr_,
-    //                 __capacity_,
-    //                 __capacity_ - _size_,
-    //                 _require_,
-    //                 ceil_upon_powertwo(__capacity_ + _require_)
-    //             );
-    //             do {
-    //                 typedef typeof(*module_node->nodeptr_list) _element_type_;
-    //                 _element_type_*                            _ptr_ = module_node->nodeptr_list;
-    //                 ist_usize _new_capcaity_ = ceil_upon_powertwo(__capacity_ + _require_);
-    //                 do {
-    //                     if (!(_ptr_ && _new_capcaity_)) {
-    //                         fprintf(
-    //                             (__acrt_iob_func(2)),
-    //                             "\033["
-    //                             "1;31m"
-    //                             "a"
-    //                             "ssert failure:"
-    //                             "\033["
-    //                             "0m"
-    //                             "\n\tin file '"
-    //                             "D:\\Projects\\invefa\\islang\\src\\islang.c"
-    //                             "':\n\tat fn %s(...): expression: "
-    //                             "\033["
-    //                             "1m"
-    //                             "_ptr_ &&_new_capcaity_"
-    //                             "\033["
-    //                             "0m"
-    //                             " <line:%d>.\n",
-    //                             __func__,
-    //                             92
-    //                         );
-    //                         exit(0x24AD6F05);
-    //                     }
-    //                 } while (0);
-    //                 ist_usize _capacity_ = ((((ist_usize*)(_ptr_))[-1]) /
-    //                 sizeof(typeof(*_ptr_))); _element_type_* _new_list_ =
-    //                     ((_element_type_*)(((ist_usize*)(_isl_set_adr_usize_value(
-    //                                            isl_allocate(
-    //                                                sizeof(ist_usize)
-    //                                                    + sizeof(_element_type_) *
-    //                                                    (_new_capcaity_),
-    //                                                1
-    //                                            ),
-    //                                            sizeof(_element_type_) * (_new_capcaity_)
-    //                                        )))
-    //                                        + 1));
-    //                 memcpy(
-    //                     _new_list_,
-    //                     _ptr_,
-    //                     ((_new_capcaity_) < (_capacity_) ? (_new_capcaity_) : (_capacity_))
-    //                         * sizeof(_element_type_)
-    //                 );
-    //                 (((ist_usize*)(_new_list_))[-1]) = sizeof(_element_type_) * _new_capcaity_;
-    //                 do {
-    //                     void* _list_adr_ = _ptr_;
-    //                     do {
-    //                         if (!(_list_adr_)) {
-    //                             fprintf(
-    //                                 (__acrt_iob_func(2)),
-    //                                 "\033["
-    //                                 "1;31m"
-    //                                 "a"
-    //                                 "ssert failure:"
-    //                                 "\033["
-    //                                 "0m"
-    //                                 "\n\tin file '"
-    //                                 "D:\\Projects\\invefa\\islang\\src\\islang.c"
-    //                                 "':\n\tat fn %s(...): expression: "
-    //                                 "\033["
-    //                                 "1m"
-    //                                 "_list_adr_"
-    //                                 "\033["
-    //                                 "0m"
-    //                                 " <line:%d>.\n",
-    //                                 __func__,
-    //                                 92
-    //                             );
-    //                             exit(0x24AD6F05);
-    //                         }
-    //                     } while (0);
-    //                     isl_release(
-    //                         (((ist_usize*)(_list_adr_)) - 1),
-    //                         sizeof(ist_usize) + (((ist_usize*)(_list_adr_))[-1])
-    //                     );
-    //                 } while (0);
-    //                 module_node->nodeptr_list = _new_list_;
-    //             } while (0);
-    //         } else module_node->nodeptr_list = __ptr_;
-    //     } while (0);
-    //     (module_node->nodeptr_list)[module_node->nodeptr_count++] = ((void*)unopt_node);
-    // } while (0);
-
     ist_ast_delete(module_node);
 
     isl_report(rid_custom_core_warning, "end testing astnode.");
@@ -353,8 +242,8 @@ void isl_test_string(void) {
     ist_string* str5 = ist_string_createby_raw("just");
     index            = 4;
 
-    ist_string_buffer_append_raw(str5, &index, "udio");
-    ist_string_buffer_append_raw(str5, &index, " awa");
+    ist_strbuf_append_raw(str5, &index, "udio");
+    ist_strbuf_append_raw(str5, &index, " awa");
 
     printf("str5 = %s\n", *str5);
     printf("index = %zu\n", index);

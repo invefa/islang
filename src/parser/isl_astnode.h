@@ -89,8 +89,7 @@ void ist_astnode_delete(void* this);
  */
 void ist_ast_delete(void* this);
 
-
-ist_string* ist_astnode_dump(ist_astnode* this, ist_string* _buffer, ist_bool _deep);
+ist_string* ist_ast_dump_json(void* this, ist_string* buffer);
 
 
 #endif // ISC_ASTNODE_H

@@ -24,6 +24,7 @@ typedef struct ist_location {
     ist_usize   column;
 } ist_location;
 
+ist_string* ist_location_dump_json(ist_location* this, ist_string* buffer);
 
 #define ist_location_consby_full(_module, _pagename) \
 ((ist_location){                \
@@ -82,7 +83,7 @@ typedef struct ist_token {
 })
 
 
-ist_string* ist_token_dump(ist_token* this, ist_string* _buffer);
+ist_string* ist_token_dump(ist_token* this, ist_string* buffer);
 
 /*
     if the string is a keyword, return the keyword type.
