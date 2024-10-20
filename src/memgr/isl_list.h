@@ -198,11 +198,13 @@
 #define _ISL_LIST_FOREACH_IDXVNAME(_names...) _isl_overload(__ISL_LIST_FOREACH_IDXVNAME, ##_names)
 #define _ISL_LIST_FOREACH_CAPVNAME(_names...) _isl_overload(__ISL_LIST_FOREACH_CAPVNAME, ##_names)
 
-/*
-    iterpid stand for iterator ptr identifier, indicate you must provide a legal identifier there.
-    vargs reserved for the optional index and capacity variable name,
-    and the first for index, second for capacity.
-*/
+/**
+ * from index to capacity.
+ *
+ * iterpid stand for iterator ptr identifier, indicate you must provide a legal identifier there.
+ * vargs reserved for the optional index and capacity variable name,
+ * and the first for index, second for capacity.
+ */
 #define isl_list_foreach_from_to(_iterpid, _list_variable, _index, _capacity, _names...) \
     for (ist_usize _ISL_LIST_FOREACH_IDXVNAME(_names) = _index,                          \
                    _ISL_LIST_FOREACH_CAPVNAME(_names) = _capacity;                       \
@@ -214,14 +216,35 @@
                  isl_list_foreach_flag;                                                  \
                  isl_list_foreach_flag = 0)
 
+/**
+ * form index to the end of the list.
+ *
+ * iterpid stand for iterator ptr identifier, indicate you must provide a legal identifier there.
+ * vargs reserved for the optional index and capacity variable name,
+ * and the first for index, second for capacity.
+ */
 #define isl_list_foreach_from(_iterpid, _list_variable, _index, _names...)                    \
     isl_list_foreach_from_to (                                                                \
         _iterpid, _list_variable, _index, isl_list_ptr_get_capacity(_list_variable), ##_names \
     )
 
+/**
+ * form 0 to capacity.
+ *
+ * iterpid stand for iterator ptr identifier, indicate you must provide a legal identifier there.
+ * vargs reserved for the optional index and capacity variable name,
+ * and the first for index, second for capacity.
+ */
 #define isl_list_foreach_to(_iterpid, _list_variable, _capacity, _names...) \
     isl_list_foreach_from_to (_iterpid, _list_variable, 0, _capacity, ##_names)
 
+/**
+ * form 0 to the end of the list.
+ *
+ * iterpid stand for iterator ptr identifier, indicate you must provide a legal identifier there.
+ * vargs reserved for the optional index and capacity variable name,
+ * and the first for index, second for capacity.
+ */
 #define isl_list_foreach(_iterpid, _list_variable, _names...)                            \
     isl_list_foreach_from_to (                                                           \
         _iterpid, _list_variable, 0, isl_list_ptr_get_capacity(_list_variable), ##_names \
