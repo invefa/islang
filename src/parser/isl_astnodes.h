@@ -10,17 +10,17 @@ manifest(NODE_LIST, (struct {
              ist_usize     nodeptr_count;
          }))
 
-manifest(ARG_LIST, (IST_ASTNODE_NODE_LIST))
-manifest(PARAM_LIST, (IST_ASTNODE_NODE_LIST))
-
 /* basic components */
 manifest(SCOPE, (IST_ASTNODE_NODE_LIST))
 manifest(MODULE, (IST_ASTNODE_NODE_LIST))
+manifest(ARG_LIST, (IST_ASTNODE_NODE_LIST))
+manifest(PARAM_LIST, (IST_ASTNODE_NODE_LIST))
 
 /* operations */
 manifest(UNARY_OPT, (struct {
              ist_astnode    base;
              ist_token_type operator_type;
+             ist_bool       on_left;
              ist_astnode*   sub_node;
          }))
 manifest(BINARY_OPT, (struct {
