@@ -36,6 +36,7 @@ void isl_test_memgr(void);
 void isl_test_string(void);
 void isl_test_report(void);
 void isl_test_lexer(void);
+void isl_test_generic(void);
 void isl_test_astnode(void);
 
 int main(int argc, char* argv[]) {
@@ -48,6 +49,7 @@ int main(int argc, char* argv[]) {
     // isl_test_string();
     // isl_test_report();
     isl_test_lexer();
+    isl_test_generic();
     isl_test_astnode();
 
     return 0;
@@ -102,6 +104,76 @@ void isl_test_astnode(void) {
 
     isl_report(rid_custom_core_info, "max allocated-length = %zu.", isl_max_allocated_length);
     isl_report(rid_custom_core_warning, "end testing astnode.");
+}
+
+void isl_test_generic(void) {
+    ist_value_list* value_list = ist_value_list_create(10, 1);
+    ist_value_list_addc(value_list, ist_value_consby_i64(123));
+    ist_value_list_addc(value_list, ist_value_consby_i64(456));
+    ist_value_list_addc(value_list, ist_value_consby_i64(789));
+    ist_value_list_addc(value_list, ist_value_consby_i64(101112));
+    ist_value_list_addc(value_list, ist_value_consby_i64(131415));
+    ist_value_list_addc(value_list, ist_value_consby_i64(161718));
+    ist_value_list_addc(value_list, ist_value_consby_i64(192021));
+    ist_value_list_addc(value_list, ist_value_consby_i64(222324));
+    ist_value_list_addc(value_list, ist_value_consby_i64(252627));
+    ist_value_list_addc(value_list, ist_value_consby_i64(282930));
+    ist_value_list_addc(value_list, ist_value_consby_i64(313233));
+    ist_value_list_addc(value_list, ist_value_consby_i64(343536));
+    ist_value_list_addc(value_list, ist_value_consby_i64(373839));
+    ist_value_list_addc(value_list, ist_value_consby_i64(404142));
+    ist_value_list_addc(value_list, ist_value_consby_i64(434445));
+    ist_value_list_addc(value_list, ist_value_consby_i64(464748));
+    ist_value_list_addc(value_list, ist_value_consby_i64(495051));
+    ist_value_list_addc(value_list, ist_value_consby_i64(525354));
+
+    isg_list_foreach(iterp, *value_list, idx) {
+        printf("value[%zu] = %lld\n", idx, iterp->int_value);
+    }
+
+    ist_module_list* module_list = ist_module_list_calloc(10);
+    ist_module_list_addc(
+        module_list, ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is"))
+    );
+    ist_module_list_addc(
+        module_list, ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is"))
+    );
+    ist_module_list_addc(
+        module_list, ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is"))
+    );
+
+    isg_list_foreach(iterp, *module_list, idx) {
+        printf("module[%zu].name = %s\n", idx, iterp->name);
+    }
+
+    // ist_value_int_list* int_list = ist_value_int_list_create(10, 1);
+    // ist_value_int_list_addc(int_list, 123);
+    // ist_value_int_list_addc(int_list, 456);
+    // ist_value_int_list_addc(int_list, 789);
+    // ist_value_int_list_addc(int_list, 101112);
+    // ist_value_int_list_addc(int_list, 131415);
+    // ist_value_int_list_addc(int_list, 161718);
+    // ist_value_int_list_addc(int_list, 192021);
+    // ist_value_int_list_addc(int_list, 222324);
+    // ist_value_int_list_addc(int_list, 252627);
+    // ist_value_int_list_addc(int_list, 282930);
+    // ist_value_int_list_addc(int_list, 313233);
+    // ist_value_int_list_addc(int_list, 343536);
+    // ist_value_int_list_addc(int_list, 373839);
+    // ist_value_int_list_addc(int_list, 404142);
+    // ist_value_int_list_addc(int_list, 434445);
+    // ist_value_int_list_addc(int_list, 464748);
+    // ist_value_int_list_addc(int_list, 495051);
+    // ist_value_int_list_addc(int_list, 525354);
+
+
+    // isl_list_foreach (iterp, int_list->data, idx) {
+    //     printf("int_value[%zu] = %lld\n", idx, *iterp);
+    // }
+
+    // ist_value_int_list_delete(int_list);
+    ist_module_list_delete(module_list);
+    ist_value_list_delete(value_list);
 }
 
 void isl_test_lexer(void) {
@@ -294,12 +366,12 @@ void isl_test_memgr(void) {
     isl_free(list2);
     list  = isl_emit_i32_list();
     list2 = isl_calloc(ist_i32_list);
-    isl_list_resizec(isl_emit_i32_list(), 20, list2->data);
-    isl_list_resizec(list, 20);
+    isl_list_resizc(isl_emit_i32_list(), 20, list2->data);
+    isl_list_resizc(list, 20);
     isl_list_free(list);
     isl_list_free(list2->data);
     isl_free(list2);
-    isl_list_resizec(isl_emit_i32_list(), 100, list);
+    isl_list_resizc(isl_emit_i32_list(), 100, list);
     isl_list_free(list);
 }
 
@@ -317,9 +389,9 @@ void isl_test_list(void) {
 
     isl_list_ensurec(list, size, 5);
 
-    isl_list_resizec(list, 20);
-    isl_list_resizec(list, 30);
-    isl_list_resizec(list, 6);
+    isl_list_resizc(list, 20);
+    isl_list_resizc(list, 30);
+    isl_list_resizc(list, 6);
 
     isl_list_freev(list);
     isl_wssert(0);

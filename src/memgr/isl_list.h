@@ -98,9 +98,9 @@
     } while (0)
 
 /**
- * components for __ISL_LIST_RESIZEX, this provide an alernative
+ * components for __ISL_LIST_RESIZX, this provide an alernative
  * option to storage the result of resize.
-*/
+ */
 #define __ISL_LIST_RESIZE_STORAGE_2(_ptrv, _list)            _ptrv = _list
 #define __ISL_LIST_RESIZE_STORAGE_3(_ptr, _list, _stv)       _stv = _list
 #define __ISL_LIST_RESIZE_STORAGE_4(_ptr, _list, _stv, _wtf) isl_assert(0)
@@ -109,7 +109,7 @@
  * stv: storager variable, if there are some reason cause
  * that you can't provide ptrv but ptr, it was an alternative option.
  */
-#define __ISL_LIST_RESIZEX(_x, _ptr, _new_capcaity, _stv...)                                    \
+#define __ISL_LIST_RESIZX(_x, _ptr, _new_capcaity, _stv...)                                     \
     do {                                                                                        \
         typedef typeof(*_ptr)         isl_list_resize_element_type;                             \
         isl_list_resize_element_type* isl_list_resize_ptr = _ptr; /*to eliminate side effects*/ \
@@ -130,10 +130,10 @@
         _isl_overload(__ISL_LIST_RESIZE_STORAGE, _ptr, isl_list_resize_new_list, ##_stv);       \
     } while (0)
 
-#define isl_list_resizec(_ptr, _new_capcaity, _stv...) \
-    __ISL_LIST_RESIZEX(c, _ptr, _new_capcaity, ##_stv)
-#define isl_list_resizem(_ptr, _new_capcaity, _stv...) \
-    __ISL_LIST_RESIZEX(m, _ptr, _new_capcaity, ##_stv)
+#define isl_list_resizc(_ptr, _new_capcaity, _stv...) \
+    __ISL_LIST_RESIZX(c, _ptr, _new_capcaity, ##_stv)
+#define isl_list_resizm(_ptr, _new_capcaity, _stv...) \
+    __ISL_LIST_RESIZX(m, _ptr, _new_capcaity, ##_stv)
 
 /**
  * components for __ISL_LIST_ENSUREX, used to fix the problem when the ptr is a side effect
@@ -169,7 +169,7 @@
                 isl_list_ensure_require,                                                        \
                 ceil_upon_powertwo(isl_list_ensure_capacity + isl_list_ensure_require)          \
             );                                                                                  \
-            __ISL_LIST_RESIZEX(                                                                 \
+            __ISL_LIST_RESIZX(                                                                  \
                 _x,                                                                             \
                 _isl_overload(__ISL_LIST_ENSURE_STORAGE, _ptr, isl_list_ensure_ptr, ##_stv),    \
                 ceil_upon_powertwo(isl_list_ensure_capacity + isl_list_ensure_require),         \
@@ -220,9 +220,9 @@
  * vargs reserved for the optional index and capacity variable name,
  * and the first for index, second for capacity.
  */
-#define isl_list_foreach_from_to(_iterpid, _listv, _index, _capacity, _names...)                  \
-    for (ist_usize _ISL_LIST_FOREACH_IDXVNAME(_names) = _index,                                   \
-                   _ISL_LIST_FOREACH_CAPVNAME(_names) = _capacity;                                \
+#define isl_list_foreach_from_to(_iterpid, _listv, _from, _to, _names...)                         \
+    for (ist_usize _ISL_LIST_FOREACH_IDXVNAME(_names) = _from,                                    \
+                   _ISL_LIST_FOREACH_CAPVNAME(_names) = _to;                                      \
          _ISL_LIST_FOREACH_IDXVNAME(_names) < _ISL_LIST_FOREACH_CAPVNAME(_names);                 \
          ++_ISL_LIST_FOREACH_IDXVNAME(_names))                                                    \
         for (ist_bool isl_list_foreach_flag = 1; isl_list_foreach_flag;)                          \
@@ -237,8 +237,8 @@
  * vargs reserved for the optional index and capacity variable name,
  * and the first for index, second for capacity.
  */
-#define isl_list_foreach_from(_iterpid, _listv, _index, _names...) \
-    isl_list_foreach_from_to (_iterpid, _listv, _index, isl_list_ptr_get_capacity(_listv), ##_names)
+#define isl_list_foreach_from(_iterpid, _listv, _from, _names...) \
+    isl_list_foreach_from_to (_iterpid, _listv, _from, isl_list_ptr_get_capacity(_listv), ##_names)
 
 /**
  * form 0 to capacity.
@@ -247,8 +247,8 @@
  * vargs reserved for the optional index and capacity variable name,
  * and the first for index, second for capacity.
  */
-#define isl_list_foreach_to(_iterpid, _listv, _capacity, _names...) \
-    isl_list_foreach_from_to (_iterpid, _listv, 0, _capacity, ##_names)
+#define isl_list_foreach_to(_iterpid, _listv, _to, _names...) \
+    isl_list_foreach_from_to (_iterpid, _listv, 0, _to, ##_names)
 
 /**
  * form 0 to the end of the list.

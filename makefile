@@ -19,7 +19,7 @@ debugger_flags  :=
 #source files relevants
 source_dir      := src
 source_subdirs  := \
-	utils memgr string report lexer parser compiler vm collections
+	utils memgr string report lexer parser compiler vm generic
 
 #depend files relevants
 depend_flags    :=

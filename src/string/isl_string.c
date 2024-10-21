@@ -103,7 +103,7 @@ inline void ist_strbuf_ensure(ist_string* this, ist_usize size, ist_usize _reqle
     );
 
     /* resize buffer */
-    isl_list_resizec(*this, ceil_upon_powertwo(size + _reqlen));
+    isl_list_resizc(*this, ceil_upon_powertwo(size + _reqlen));
 }
 
 
