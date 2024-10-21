@@ -9,19 +9,19 @@
 
 
 const ist_string isp_fmts[] = {
-#define manifest(_name, _reploc, _fmt) [rid_##_name]=_fmt,
+#define manifest(_name, _reploc, _fmt) [rid_##_name] = _fmt,
 #include "isl_repids.h"
 #undef manifest
 };
 
 const ist_string isp_repid_names[] = {
-#define manifest(_name, _reploc, _fmt) [rid_##_name]=#_name,
+#define manifest(_name, _reploc, _fmt) [rid_##_name] = #_name,
 #include "isl_repids.h"
 #undef manifest
 };
 
 const isp_replocation isp_replocs[] = {
-#define manifest(_name, _reploc, _fmt) [rid_##_name]=isp_gen_reploc _reploc,
+#define manifest(_name, _reploc, _fmt) [rid_##_name] = isp_gen_reploc _reploc,
 #include "isl_repids.h"
 #undef manifest
 };
@@ -57,23 +57,26 @@ ist_string domain_fmts[] = {
 };
 
 
-inline void isl_report(isp_repid _rid, ...) {
+#define ISP_BUFFER_SIZE 4096
+
+inline void isl_report(isp_repid rid, ...) {
     typedef FILE* isp_ostream;
 
-    isp_replocation reploc  = isp_replocs[_rid];
+    isp_replocation reploc  = isp_replocs[rid];
     isp_ostream     ostream = reploc.level >= ISP_LEVEL_ERROR ? stderr : stdout;
 
     va_list vargs;
-    va_start(vargs, _rid);
+    va_start(vargs, rid);
 
-    char buffer[4096] = {0};
+    char buffer[ISP_BUFFER_SIZE] = {0};
 
     /* if reploc.attribute == ISP_ATTR_CUSTOM, then the fmt will be provided by user */
     if (reploc.attribute == ISP_ATTR_CUSTOM) {
         ist_string custom_fmt = va_arg(vargs, ist_string);
 
-        sprintf(
+        snprintf(
             buffer,
+            ISP_BUFFER_SIZE,
             "%s%s %s: %s\n" ANSI_RST,
             level_colors[reploc.level],
             domain_fmts[reploc.domain],
@@ -90,8 +93,9 @@ inline void isl_report(isp_repid _rid, ...) {
         ist_string func_name = va_arg(vargs, ist_string);
         ist_usize  line      = va_arg(vargs, ist_usize);
 
-        sprintf(
+        snprintf(
             buffer,
+            ISP_BUFFER_SIZE,
             "%s%s %s:\n"
             "\tin file '%s':\n"
             "\tat fn %s(...) <line:%zu>:\n"
@@ -102,7 +106,7 @@ inline void isl_report(isp_repid _rid, ...) {
             file_name,
             func_name,
             line,
-            isp_fmts[_rid]
+            isp_fmts[rid]
         );
 
     }
@@ -113,8 +117,9 @@ inline void isl_report(isp_repid _rid, ...) {
     {
         ist_location location = va_arg(vargs, ist_location);
 
-        sprintf(
+        snprintf(
             buffer,
+            ISP_BUFFER_SIZE,
             "%s%s %s:\n"
             "\tin module <%s:%s>:<%zu:%zu>\n"
             "%s\n" ANSI_RST,
@@ -125,7 +130,7 @@ inline void isl_report(isp_repid _rid, ...) {
             location.pagename ? location.pagename : (ist_string) "\b",
             location.line,
             location.column,
-            isp_fmts[_rid]
+            isp_fmts[rid]
         );
 
     }
@@ -133,13 +138,14 @@ inline void isl_report(isp_repid _rid, ...) {
     /* default method for fmts concatenation */
     else
     {
-        sprintf(
+        snprintf(
             buffer,
+            ISP_BUFFER_SIZE,
             "%s%s %s: %s\n" ANSI_RST,
             level_colors[reploc.level],
             domain_fmts[reploc.domain],
             level_fmts[reploc.level],
-            isp_fmts[_rid]
+            isp_fmts[rid]
         );
     }
 
@@ -147,5 +153,5 @@ inline void isl_report(isp_repid _rid, ...) {
     vfprintf(ostream, buffer, vargs);
 
     va_end(vargs);
-    if (reploc.level >= ISP_LEVEL_FATAL) exit(_rid);
+    if (reploc.level >= ISP_LEVEL_FATAL) exit(rid);
 }
