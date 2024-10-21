@@ -370,11 +370,11 @@ inline void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage) 
 
     if (this->codepage->location.pagename) {
 
-        /*
-            interesting, when we catch the length of the pagename,
-            the both of last char '\0' also was claculated within the length,
-            so we don't need to add 2 to the length for the appending of '.' and '\0'.
-        */
+        /**
+         * interesting, when we catch the length of the pagename,
+         * the both of last char '\0' also was claculated within the length,
+         * so we don't need to add 2 to the length for the appending of '.' and '\0'.
+         */
         ist_usize   index  = 0;
         ist_string* buffer = ist_string_create_buffer(
             isl_list_catch_length(this->codepage->location.pagename)

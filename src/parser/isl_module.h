@@ -65,6 +65,6 @@ ist_usize ist_module_register_strbuf(ist_module* this, ist_string _strbuf, ist_s
  * It will store all modules in the compilation.
  */
 #define ISG_VALUE_TYPE ist_module
-#include "isg_list_header.h"
+#include "isg_list_head.h"
 
 #endif // ISC_MODULE_H
