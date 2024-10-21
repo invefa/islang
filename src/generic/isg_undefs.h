@@ -11,8 +11,8 @@
 
 /* inner implement generate option macros */
 
-#undef STRUCT_NAME
-#undef STRUCT_KIND
+#undef ISG_STRUCT_NAME
+#undef ISG_STRUCT_KIND
 
 /* methods */
 

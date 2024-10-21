@@ -5,21 +5,21 @@
 #include "isl_types.h"
 
 
-typedef struct STRUCT_NAME {
+typedef struct ISG_STRUCT_NAME {
     ISG_VALUE_TYPE* data;
     ist_usize       size;
-} STRUCT_NAME;
+} ISG_STRUCT_NAME;
 
-STRUCT_NAME*    ISG_FN_NAME(calloc)(ist_usize _capacity);
-STRUCT_NAME*    ISG_FN_NAME(malloc)(ist_usize _capacity);
-STRUCT_NAME*    ISG_FN_NAME(create)(ist_usize _capacity, ist_bool _doclean);
-void            ISG_FN_NAME(resizm)(STRUCT_NAME* this, ist_usize _newcap);
-void            ISG_FN_NAME(resizc)(STRUCT_NAME* this, ist_usize _newcap);
-void            ISG_FN_NAME(addm)(STRUCT_NAME* this, ISG_VALUE_TYPE _value);
-void            ISG_FN_NAME(addc)(STRUCT_NAME* this, ISG_VALUE_TYPE _value);
-void            ISG_FN_NAME(delete)(STRUCT_NAME* this);
-ISG_VALUE_TYPE* ISG_FN_NAME(data)(STRUCT_NAME* this);
-ist_usize       ISG_FN_NAME(size)(STRUCT_NAME* this);
+ISG_STRUCT_NAME* ISG_FN_NAME(calloc)(ist_usize _capacity);
+ISG_STRUCT_NAME* ISG_FN_NAME(malloc)(ist_usize _capacity);
+ISG_STRUCT_NAME* ISG_FN_NAME(create)(ist_usize _capacity, ist_bool _doclean);
+void             ISG_FN_NAME(resizm)(ISG_STRUCT_NAME* this, ist_usize _newcap);
+void             ISG_FN_NAME(resizc)(ISG_STRUCT_NAME* this, ist_usize _newcap);
+void             ISG_FN_NAME(addm)(ISG_STRUCT_NAME* this, ISG_VALUE_TYPE _value);
+void             ISG_FN_NAME(addc)(ISG_STRUCT_NAME* this, ISG_VALUE_TYPE _value);
+void             ISG_FN_NAME(delete)(ISG_STRUCT_NAME* this);
+ISG_VALUE_TYPE*  ISG_FN_NAME(data)(ISG_STRUCT_NAME* this);
+ist_usize        ISG_FN_NAME(size)(ISG_STRUCT_NAME* this);
 
 #ifndef ISG_LIST_HEADER_FOREACH_DEFINED
 #define ISG_LIST_HEADER_FOREACH_DEFINED
