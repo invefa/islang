@@ -57,7 +57,7 @@
     isl_list_base_regress_head_ptr(_list_base_adr, void)
 
 
-// components for __ISL_LIST_XALLOC
+/* components for __ISL_LIST_XALLOC */
 #define __ISL_LIST_XALLOC_FLAG_m 0
 #define __ISL_LIST_XALLOC_FLAG_c 1
 
@@ -75,7 +75,7 @@
 #define isl_list_malloc(_type, _count) __ISL_LIST_XALLOC(m, _type, _count)
 #define isl_list_calloc(_type, _count) __ISL_LIST_XALLOC(c, _type, _count)
 
-// freev list means free the list and set the ptr variable to NULL.
+/* freev list means free the list and set the ptr variable to NULL */
 #define isl_list_freev(_list_ptrv)                                \
     do {                                                          \
         isl_assert(_list_ptrv);                                   \
@@ -97,8 +97,10 @@
         );                                                          \
     } while (0)
 
-// components for __ISL_LIST_RESIZEX, this provide an alernative option to storage the result of
-// resize.
+/**
+ * components for __ISL_LIST_RESIZEX, this provide an alernative
+ * option to storage the result of resize.
+*/
 #define __ISL_LIST_RESIZE_STORAGE_2(_ptrv, _list)            _ptrv = _list
 #define __ISL_LIST_RESIZE_STORAGE_3(_ptr, _list, _stv)       _stv = _list
 #define __ISL_LIST_RESIZE_STORAGE_4(_ptr, _list, _stv, _wtf) isl_assert(0)
@@ -133,20 +135,20 @@
 #define isl_list_resizem(_ptr, _new_capcaity, _stv...) \
     __ISL_LIST_RESIZEX(m, _ptr, _new_capcaity, ##_stv)
 
-/*
-    components for __ISL_LIST_ENSUREX, used to fix the problem when the ptr is a side effect
-   expression. when there exist the stv, indicate the ptr might not be a variable, and it might has
-   side effects, in this case, we can't provide it to __ISL_LIST_ENSUREX directly, so we use
-   __ISL_LIST_ENSURE_STORAGE to forward it.
-*/
+/**
+ * components for __ISL_LIST_ENSUREX, used to fix the problem when the ptr is a side effect
+ * expression. when there exist the stv, indicate the ptr might not be a variable, and it might has
+ * side effects, in this case, we can't provide it to __ISL_LIST_ENSUREX directly, so we use
+ * __ISL_LIST_ENSURE_STORAGE to forward it.
+ */
 #define __ISL_LIST_ENSURE_STORAGE_2(_ptr, __ptr)             _ptr
 #define __ISL_LIST_ENSURE_STORAGE_3(_ptr, __ptr, _stv)       __ptr
 #define __ISL_LIST_ENSURE_STORAGE_4(_ptr, __ptr, _stv, _wtf) isl_assert(0)
 
-/*
-    why there has double underline suffix variable here?
-    because there will occur _ptr_=_ptr_ in macro:resize when it has sigle underline suffix.
-*/
+/**
+ * why there has double underline suffix variable here?
+ * because there will occur _ptr_=_ptr_ in macro:resize when it has sigle underline suffix.
+ */
 #define __ISL_LIST_ENSUREX(_x, _ptr, _size, _require, _stv...)                                  \
     do {                                                                                        \
         typeof(_ptr) isl_list_ensure_ptr      = _ptr;     /*to eliminate side effects*/         \
@@ -181,11 +183,11 @@
 #define isl_list_ensurem(_ptr, _size, _require, _stv...) \
     __ISL_LIST_ENSUREX(m, _ptr, _size, _require, ##_stv)
 
-// components for __ISL_LIST_ADDX
+/* components for __ISL_LIST_ADDX */
 #define __ISL_LIST_ADD_STORAGE_3(_ptr, _sizev, _value)       (_ptr)[(_sizev)++] = _value
 #define __ISL_LIST_ADD_STORAGE_4(_ptr, _sizev, _value, _stv) (_stv)[(_sizev)++] = _value
 
-// ensure slot and add element value to the last unused slot of the list then advance sizev
+/* ensure slot and add element value to the last unused slot of the list then advance sizev */
 #define __ISL_LIST_ADDX(_x, _ptr, _sizev, _value, _stv...)                   \
     do {                                                                     \
         __ISL_LIST_ENSUREX(_x, _ptr, _sizev, 1, ##_stv);                     \
@@ -258,10 +260,10 @@
 #define isl_list_foreach(_iterpid, _listv, _names...) \
     isl_list_foreach_from_to (_iterpid, _listv, 0, isl_list_ptr_get_capacity(_listv), ##_names)
 
-/*
-    this function will obtain a value, and return the nearest power of two,
-    and if you submit a number that was power of two, the function will return itself.
-*/
+/**
+ * this function will obtain a value, and return the nearest power of two,
+ * and if you submit a number that was power of two, the function will return itself.
+ */
 ist_usize ceil_upon_powertwo(ist_usize _value);
 
 #endif // ISC_LIST_H
