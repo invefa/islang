@@ -57,6 +57,7 @@
     isl_list_base_regress_head_ptr(_list_base_adr, void)
 
 
+
 /* components for __ISL_LIST_XALLOC */
 #define __ISL_LIST_XALLOC_FLAG_m 0
 #define __ISL_LIST_XALLOC_FLAG_c 1
@@ -75,6 +76,8 @@
 #define isl_list_malloc(_type, _count) __ISL_LIST_XALLOC(m, _type, _count)
 #define isl_list_calloc(_type, _count) __ISL_LIST_XALLOC(c, _type, _count)
 
+
+
 /* freev list means free the list and set the ptr variable to NULL */
 #define isl_list_freev(_list_ptrv)                                \
     do {                                                          \
@@ -87,15 +90,35 @@
     } while (0)
 
 // just free the list.
-#define isl_list_free(_list_adr)                                    \
-    do {                                                            \
-        void* _list_adr_ = _list_adr; /*to eliminate side effects*/ \
-        isl_assert(_list_adr_);                                     \
-        isl_release(                                                \
-            isl_list_head_regress_base(_list_adr_),                 \
-            sizeof(ist_usize) + isl_list_catch_length(_list_adr_)   \
-        );                                                          \
+#define isl_list_free(_list_adr)                                                \
+    do {                                                                        \
+        void* isl_list_free_list_adr = _list_adr; /*to eliminate side effects*/ \
+        isl_list_freev(isl_list_free_list_adr);                                 \
     } while (0)
+
+
+
+#define __ISL_LIST_RESIZXV(_x, _ptrv, _nse_newcap)                                               \
+    do {                                                                                         \
+        typedef typeof(*(_ptrv)) isl_list_resizev_element_type;                                  \
+        isl_assert((_ptrv) && (_nse_newcap));                                                    \
+        isl_list_resizev_element_type* isl_list_resizev_new_list =                               \
+            __ISL_LIST_XALLOC(_x, isl_list_resizev_element_type, _nse_newcap);                   \
+        memcpy(                                                                                  \
+            isl_list_resizev_new_list,                                                           \
+            _ptrv,                                                                               \
+            isl_minimum(_nse_newcap, isl_list_ptr_get_capacity(_ptrv))                           \
+                * sizeof(isl_list_resizev_element_type)                                          \
+        );                                                                                       \
+        isl_list_catch_length(isl_list_resizev_new_list) = sizeof(isl_list_resizev_element_type) \
+                                                         * (_nse_newcap);                        \
+        isl_list_freev(_ptrv);                                                                   \
+        (_ptrv) = isl_list_resizev_new_list;                                                     \
+    } while (0)
+
+#define isl_list_resizcv(_ptrv, _newcapv) __ISL_LIST_RESIZXV(c, _ptrv, _newcapv)
+#define isl_list_resizmv(_ptrv, _newcapv) __ISL_LIST_RESIZXV(m, _ptrv, _newcapv)
+
 
 /**
  * components for __ISL_LIST_RESIZX, this provide an alernative
@@ -109,79 +132,87 @@
  * stv: storager variable, if there are some reason cause
  * that you can't provide ptrv but ptr, it was an alternative option.
  */
-#define __ISL_LIST_RESIZX(_x, _ptr, _new_capcaity, _stv...)                                     \
-    do {                                                                                        \
-        typedef typeof(*_ptr)         isl_list_resize_element_type;                             \
-        isl_list_resize_element_type* isl_list_resize_ptr = _ptr; /*to eliminate side effects*/ \
-        ist_usize isl_list_resize_new_capacity = _new_capcaity;   /*to eliminate side effects*/ \
-        isl_assert(isl_list_resize_ptr &&isl_list_resize_new_capacity);                         \
-        ist_usize isl_list_resize_capacity = isl_list_ptr_get_capacity(isl_list_resize_ptr);    \
-        isl_list_resize_element_type* isl_list_resize_new_list =                                \
-            __ISL_LIST_XALLOC(_x, isl_list_resize_element_type, isl_list_resize_new_capacity);  \
-        memcpy(                                                                                 \
-            isl_list_resize_new_list,                                                           \
-            isl_list_resize_ptr,                                                                \
-            isl_minimum(isl_list_resize_new_capacity, isl_list_resize_capacity)                 \
-                * sizeof(isl_list_resize_element_type)                                          \
-        );                                                                                      \
-        isl_list_catch_length(isl_list_resize_new_list) = sizeof(isl_list_resize_element_type)  \
-                                                        * isl_list_resize_new_capacity;         \
-        isl_list_free(isl_list_resize_ptr);                                                     \
-        _isl_overload(__ISL_LIST_RESIZE_STORAGE, _ptr, isl_list_resize_new_list, ##_stv);       \
+#define __ISL_LIST_RESIZX(_x, _ptr, _newcap, _stv...)                                      \
+    do {                                                                                   \
+        typeof(_ptr) isl_list_resize_ptr          = _ptr;    /*to eliminate side effects*/ \
+        ist_usize    isl_list_resize_new_capacity = _newcap; /*to eliminate side effects*/ \
+        isl_assert(isl_list_resize_ptr &&isl_list_resize_new_capacity);                    \
+        __ISL_LIST_RESIZXV(_x, isl_list_resize_ptr, isl_list_resize_new_capacity);         \
+        _isl_overload(__ISL_LIST_RESIZE_STORAGE, _ptr, isl_list_resize_ptr, ##_stv);       \
     } while (0)
 
-#define isl_list_resizc(_ptr, _new_capcaity, _stv...) \
-    __ISL_LIST_RESIZX(c, _ptr, _new_capcaity, ##_stv)
-#define isl_list_resizm(_ptr, _new_capcaity, _stv...) \
-    __ISL_LIST_RESIZX(m, _ptr, _new_capcaity, ##_stv)
+#define isl_list_resizc(_ptr, _newcap, _stv...) __ISL_LIST_RESIZX(c, _ptr, _newcap, ##_stv)
+#define isl_list_resizm(_ptr, _newcap, _stv...) __ISL_LIST_RESIZX(m, _ptr, _newcap, ##_stv)
+
+
+#define __ISL_LIST_ENSUREXV(_x, _ptrv, _nse_size, _nse_require)                                 \
+    do {                                                                                        \
+        ist_usize isl_list_ensurev_capacity = isl_list_ptr_get_capacity(_ptrv);                 \
+        isl_ifreport(                                                                           \
+            isl_list_ensurev_capacity < (_nse_size), rid_catch_size_overflow, isp_catch_coreloc \
+        );                                                                                      \
+        if (isl_list_ensurev_capacity - (_nse_size) < (_nse_require)) {                         \
+            isl_report(                                                                         \
+                rid_inform_list_reisze,                                                         \
+                _ptrv,                                                                          \
+                isl_list_ensurev_capacity,                                                      \
+                isl_list_ensurev_capacity - (_nse_size),                                        \
+                (_nse_require),                                                                 \
+                ceil_upon_powertwo(isl_list_ensurev_capacity + (_nse_require))                  \
+            );                                                                                  \
+            __ISL_LIST_RESIZXV(                                                                 \
+                _x, _ptrv, ceil_upon_powertwo(isl_list_ensurev_capacity + (_nse_require))       \
+            );                                                                                  \
+        }                                                                                       \
+    } while (0)
+
+#define isl_list_ensurecv(_ptrv, _nse_size, _nse_require) \
+    __ISL_LIST_ENSUREXV(c, _ptrv, _nse_size, _nse_require)
+#define isl_list_ensuremv(_ptrv, _nse_size, _nse_require) \
+    __ISL_LIST_ENSUREXV(m, _ptrv, _nse_size, _nse_require)
+
 
 /**
  * components for __ISL_LIST_ENSUREX, used to fix the problem when the ptr is a side effect
  * expression. when there exist the stv, indicate the ptr might not be a variable, and it might has
- * side effects, in this case, we can't provide it to __ISL_LIST_ENSUREX directly, so we use
+ * side effects, in this case, we can't provide it to __ISL_LIST_ENSUREXV directly, so we use
  * __ISL_LIST_ENSURE_STORAGE to forward it.
  */
-#define __ISL_LIST_ENSURE_STORAGE_2(_ptr, __ptr)             _ptr
-#define __ISL_LIST_ENSURE_STORAGE_3(_ptr, __ptr, _stv)       __ptr
-#define __ISL_LIST_ENSURE_STORAGE_4(_ptr, __ptr, _stv, _wtf) isl_assert(0)
+#define __ISL_LIST_ENSURE_STORAGE_1(_ptr)             _ptr
+#define __ISL_LIST_ENSURE_STORAGE_2(_ptr, _stv)       _stv
+#define __ISL_LIST_ENSURE_STORAGE_3(_ptr, _stv, _wtf) isl_assert(0)
 
 /**
  * why there has double underline suffix variable here?
  * because there will occur _ptr_=_ptr_ in macro:resize when it has sigle underline suffix.
  */
-#define __ISL_LIST_ENSUREX(_x, _ptr, _size, _require, _stv...)                                  \
-    do {                                                                                        \
-        typeof(_ptr) isl_list_ensure_ptr      = _ptr;     /*to eliminate side effects*/         \
-        ist_usize    isl_list_ensure_size     = _size;    /*to eliminate side effects*/         \
-        ist_usize    isl_list_ensure_require  = _require; /*to eliminate side effects*/         \
-        ist_usize    isl_list_ensure_capacity = isl_list_ptr_get_capacity(isl_list_ensure_ptr); \
-        isl_ifreport(                                                                           \
-            isl_list_ensure_capacity < isl_list_ensure_size,                                    \
-            rid_catch_size_overflow,                                                            \
-            isp_catch_coreloc                                                                   \
-        );                                                                                      \
-        if (isl_list_ensure_capacity - isl_list_ensure_size < isl_list_ensure_require) {        \
-            isl_report(                                                                         \
-                rid_inform_list_reisze,                                                         \
-                isl_list_ensure_ptr,                                                            \
-                isl_list_ensure_capacity,                                                       \
-                isl_list_ensure_capacity - isl_list_ensure_size,                                \
-                isl_list_ensure_require,                                                        \
-                ceil_upon_powertwo(isl_list_ensure_capacity + isl_list_ensure_require)          \
-            );                                                                                  \
-            __ISL_LIST_RESIZX(                                                                  \
-                _x,                                                                             \
-                _isl_overload(__ISL_LIST_ENSURE_STORAGE, _ptr, isl_list_ensure_ptr, ##_stv),    \
-                ceil_upon_powertwo(isl_list_ensure_capacity + isl_list_ensure_require),         \
-                ##_stv                                                                          \
-            );                                                                                  \
-        } else _isl_overload(__ISL_LIST_RESIZE_STORAGE, _ptr, isl_list_ensure_ptr, ##_stv);     \
+#define __ISL_LIST_ENSUREX(_x, _ptr, _size, _require, _stv...)                         \
+    do {                                                                               \
+        typeof(_ptr) isl_list_ensure_ptr     = _ptr;     /*to eliminate side effects*/ \
+        ist_usize    isl_list_ensure_size    = _size;    /*to eliminate side effects*/ \
+        ist_usize    isl_list_ensure_require = _require; /*to eliminate side effects*/ \
+        __ISL_LIST_ENSUREXV(                                                           \
+            _x, isl_list_ensure_ptr, isl_list_ensure_size, isl_list_ensure_require     \
+        );                                                                             \
+        _isl_overload(__ISL_LIST_ENSURE_STORAGE, _ptr, ##_stv) = isl_list_ensure_ptr;  \
     } while (0)
 
 #define isl_list_ensurec(_ptr, _size, _require, _stv...) \
     __ISL_LIST_ENSUREX(c, _ptr, _size, _require, ##_stv)
 #define isl_list_ensurem(_ptr, _size, _require, _stv...) \
     __ISL_LIST_ENSUREX(m, _ptr, _size, _require, ##_stv)
+
+
+
+#define __ISL_LIST_ADDXV(_x, _ptrv, _sizev, _value) \
+    do {                                            \
+        __ISL_LIST_ENSUREXV(_x, _ptr, _sizev, 1);   \
+        (_ptrv)[(_sizev)++] = _value;               \
+    } while (0)
+
+#define isl_list_addcv(_ptrv, _sizev, _value) __ISL_LIST_ADDXV(c, _ptrv, _sizev, _value)
+#define isl_list_addmv(_ptrv, _sizev, _value) __ISL_LIST_ADDXV(m, _ptrv, _sizev, _value)
+
 
 /* components for __ISL_LIST_ADDX */
 #define __ISL_LIST_ADD_STORAGE_3(_ptr, _sizev, _value)       (_ptr)[(_sizev)++] = _value
@@ -198,6 +229,7 @@
     __ISL_LIST_ADDX(c, _ptr, _sizev, _value, ##_stv)
 #define isl_list_addm(_ptr, _sizev, _value, _stv...) \
     __ISL_LIST_ADDX(m, _ptr, _sizev, _value, ##_stv)
+
 
 
 #define in ,

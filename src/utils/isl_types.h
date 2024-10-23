@@ -34,4 +34,21 @@ static_assert(
     "ist_usize(aka size_t) must be the same size as pointer."
 );
 
+union ist_value;
+
+struct ist_module;
+struct ist_compdata;
+
+struct ist_lexer;
+struct ist_parser;
+struct ist_compiler;
+struct ist_astnode;
+
+struct ist_fn_entity;
+struct ist_var_entity;
+struct ist_global_entity;
+struct ist_literal_entity;
+struct ist_reference_entity;
+
+
 #endif // ISC_TYPES_H
