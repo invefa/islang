@@ -7,14 +7,12 @@
 
 inline ISG_STRUCT_NAME* ISG_FN_NAME(calloc)(ist_usize _capacity) {
     ISG_STRUCT_NAME* this = isl_malloc(ISG_STRUCT_NAME);
-    this->size        = 0;
-    this->data        = isl_list_calloc(ISG_VALUE_TYPE, _capacity);
+    *this = (ISG_STRUCT_NAME){.size = 0, .data = isl_list_calloc(ISG_VALUE_TYPE, _capacity)};
     return this;
 }
 inline ISG_STRUCT_NAME* ISG_FN_NAME(malloc)(ist_usize _capacity) {
     ISG_STRUCT_NAME* this = isl_malloc(ISG_STRUCT_NAME);
-    this->size        = 0;
-    this->data        = isl_list_malloc(ISG_VALUE_TYPE, _capacity);
+    *this = (ISG_STRUCT_NAME){.size = 0, .data = isl_list_malloc(ISG_VALUE_TYPE, _capacity)};
     return this;
 }
 
@@ -23,17 +21,17 @@ inline ISG_STRUCT_NAME* ISG_FN_NAME(create)(ist_usize _capacity, ist_bool _docle
 }
 
 inline void ISG_FN_NAME(resizm)(ISG_STRUCT_NAME* this, ist_usize _newcap) {
-    isl_list_resizm(this->data, _newcap);
+    isl_list_resizmv(this->data, _newcap);
 }
 inline void ISG_FN_NAME(resizc)(ISG_STRUCT_NAME* this, ist_usize _newcap) {
-    isl_list_resizc(this->data, _newcap);
+    isl_list_resizcv(this->data, _newcap);
 }
 
 inline void ISG_FN_NAME(addm)(ISG_STRUCT_NAME* this, ISG_VALUE_TYPE _value) {
-    isl_list_addm(this->data, this->size, _value);
+    isl_list_addmv(this->data, this->size, _value);
 }
 inline void ISG_FN_NAME(addc)(ISG_STRUCT_NAME* this, ISG_VALUE_TYPE _value) {
-    isl_list_addc(this->data, this->size, _value);
+    isl_list_addcv(this->data, this->size, _value);
 }
 
 inline void ISG_FN_NAME(delete)(ISG_STRUCT_NAME* this) {

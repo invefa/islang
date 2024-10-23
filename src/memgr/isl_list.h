@@ -206,7 +206,7 @@
 
 #define __ISL_LIST_ADDXV(_x, _ptrv, _sizev, _value) \
     do {                                            \
-        __ISL_LIST_ENSUREXV(_x, _ptr, _sizev, 1);   \
+        __ISL_LIST_ENSUREXV(_x, _ptrv, _sizev, 1);  \
         (_ptrv)[(_sizev)++] = _value;               \
     } while (0)
 
