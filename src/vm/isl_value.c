@@ -1,5 +1,7 @@
 #include "isl_value.h"
 
+#include <inttypes.h>
+
 #include "isl_string.h"
 #include "isl_token.h"
 
@@ -7,7 +9,7 @@ ist_string ist_value_dump_json(ist_value* this, ist_u32 type, ist_string* buffer
 
     switch (type) {
         case ISL_TOKENT_VL_INT:
-            return ist_strbuf_sprintf(buffer, NULL, "%lld", this->int_value);
+            return ist_strbuf_sprintf(buffer, NULL, "%" PRId64, this->int_value);
         case ISL_TOKENT_VL_REAL:
             return ist_strbuf_sprintf(buffer, NULL, "%g", this->real_value);
         case ISL_TOKENT_VL_STRING:

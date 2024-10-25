@@ -1,6 +1,8 @@
 #include "isl_token.h"
 
+#include <inttypes.h>
 #include <stdio.h>
+
 
 #include "isl_lexer.h"
 #include "isl_list.h"
@@ -40,7 +42,7 @@ inline ist_string ist_token_dump(ist_token* this, ist_string* buffer) {
         buffer,
         NULL,
         "token<0x%zX> {module=<%s:%s>,location=<%zu:%zu>,type=%s,"
-        "extract=\"%.*s\",length=%zu,value={int=%lld,real=%g}}",
+        "extract=\"%.*s\",length=%zu,value={int=%" PRId64 ",real=%g}}",
         (ist_usize)this,
         this->location.module->name,
         this->location.pagename ?: (ist_string) "\b",

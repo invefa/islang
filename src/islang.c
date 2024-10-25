@@ -13,8 +13,10 @@
  * Written by invefa.
  */
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 
 #include "isl_ansictrl.h"
 #include "isl_astnode.h"
@@ -127,8 +129,8 @@ void isl_test_generic(void) {
     ist_value_list_addc(value_list, ist_value_consby_i64(495051));
     ist_value_list_addc(value_list, ist_value_consby_i64(525354));
 
-    isg_list_foreach(iterp, *value_list, idx) {
-        printf("value[%zu] = %lld\n", idx, iterp->int_value);
+    isg_list_foreach (iterp, *value_list, idx) {
+        printf("value[%zu] = %" PRId64 "\n", idx, iterp->int_value);
     }
 
     ist_module_list* module_list = ist_module_list_calloc(10);
@@ -142,7 +144,7 @@ void isl_test_generic(void) {
         module_list, ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is"))
     );
 
-    isg_list_foreach(iterp, *module_list, idx) {
+    isg_list_foreach (iterp, *module_list, idx) {
         printf("module[%zu].name = %s\n", idx, iterp->name);
     }
 
@@ -168,7 +170,7 @@ void isl_test_generic(void) {
 
 
     // isl_list_foreach (iterp, int_list->data, idx) {
-    //     printf("int_value[%zu] = %lld\n", idx, *iterp);
+    //     printf("int_value[%zu] = %" PRId64 "\n", idx, *iterp);
     // }
 
     // ist_value_int_list_delete(int_list);
