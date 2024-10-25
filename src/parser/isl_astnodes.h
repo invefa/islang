@@ -5,9 +5,8 @@ manifest(UNKNOWN, (ist_astnode))
 
 /* tool node */
 manifest(NODE_LIST, (struct {
-             ist_astnode   base;
-             ist_astnode** nodeptr_list;
-             ist_usize     nodeptr_count;
+             ist_astnode         base;
+             ist_astnodeptr_list nodeptr_list;
          }))
 
 /* basic components */

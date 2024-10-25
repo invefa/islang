@@ -8,7 +8,7 @@
 #compiler relevants
 compiler_name       := gcc
 compiler_flags      := -fdiagnostics-color=always -std=gnu11
-# build_version_flags := -s -O3
+#build_version_flags := -s -O3
 build_version_flags := -g
 enable_warnings     := all shadow no-pointer-sign inline unreachable-code
 optional_macros     := _DEBUG ISL_BWMF #islang build with makefile

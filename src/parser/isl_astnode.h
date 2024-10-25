@@ -36,6 +36,10 @@ typedef struct ist_astnode {
     ist_location     location;
 } ist_astnode;
 
+/* define the list of the astnodeptr */
+#define ISG_STRUCT_NAME ist_astnodeptr_list
+#define ISG_VALUE_TYPE  ist_astnode*
+#include "isg_list_head.h"
 
 /* define all the astnode struct */
 #define manifest(_name, _struct) typedef __ISL_MACRO_UNPACKAGER _struct IST_ASTNODE_##_name;

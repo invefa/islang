@@ -50,8 +50,8 @@ int main(int argc, char* argv[]) {
     // isl_test_memgr();
     // isl_test_string();
     // isl_test_report();
-    isl_test_lexer();
-    isl_test_generic();
+    // isl_test_lexer();
+    // isl_test_generic();
     isl_test_astnode();
 
     return 0;
@@ -93,11 +93,11 @@ void isl_test_astnode(void) {
     ISL_AS_LITERAL_ENT(binopt_node->right_node)->value.int_value = -456;
 
     IST_ASTNODE_MODULE* module_node = ist_astnode_createby_full(MODULE, ist_location_consby_null());
-    module_node->nodeptr_list       = isl_list_malloc(ist_astnode*, 2);
+    module_node->nodeptr_list       = ist_astnodeptr_list_consc(2);
     IST_ASTNODE_NODE_LIST_ADD(module_node, binopt_node);
     IST_ASTNODE_NODE_LIST_ADD(module_node, unopt_node);
 
-    ist_string* buffer = ist_string_create_buffer(32);
+    ist_string* buffer = ist_string_create_buffer(684);
 
     printf("dump result: %s\n", ist_ast_dump_json(module_node, buffer, NULL));
 

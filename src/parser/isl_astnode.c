@@ -3,6 +3,11 @@
 #include "isl_list.h"
 #include "isl_memgr.h"
 
+#define ISG_STRUCT_NAME         ist_astnodeptr_list
+#define ISG_VALUE_TYPE          ist_astnode*
+#define ISG_VALUE_CLEAN_FN_NAME ist_ast_delete
+#include "isg_list_code.h"
+
 
 const ist_string ist_astnode_type_names[] = {
 #define manifest(_name, _struct) [ISL_ASTNT_##_name] = #_name,
@@ -54,11 +59,7 @@ void ist_ast_delete(void* this) {
         case ISL_ASTNT_PARAM_LIST:
         case ISL_ASTNT_NODE_LIST: {
             IST_ASTNODE_NODE_LIST* node_list = this;
-
-            isl_list_foreach_to (nodepp, node_list->nodeptr_list, node_list->nodeptr_count)
-                ist_ast_delete(*nodepp);
-
-            isl_list_freev(node_list->nodeptr_list);
+            ist_astnodeptr_list_clean(&node_list->nodeptr_list);
             break;
         }
         case ISL_ASTNT_UNARY_OPT: {
@@ -83,26 +84,18 @@ void ist_ast_delete(void* this) {
 }
 
 ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) {
+    isl_report(rid_custom_core_warning, "dumping node<0x%zX>.", (ist_usize)this);
     idxptr = idxptr ?: (ist_usize[1]){};
 
-    isl_report(rid_custom_core_warning, "dumping node<0x%zX>.", (ist_usize)this);
+    ist_astnode_type type = 0 [(ist_astnode_type*)this];
 
-    ist_string* tmp_buffer = ist_string_create_buffer(64);
-    ist_usize   tmp_idx    = 0;
+    ist_strbuf_sprintf(buffer, idxptr, "{\"type:\":\"%s\",", ist_astnode_type_names[type]);
+    ist_location_dump_json(&((ist_astnode*)this)->location, buffer, idxptr);
+    ist_strbuf_append_raw(buffer, idxptr, ",");
 
-    ist_astnode* node = this;
-
-    ist_strbuf_sprintf(
-        buffer,
-        idxptr,
-        "{\"type:\":\"%s\",%s,",
-        ist_astnode_type_names[node->type],
-        ist_location_dump_json(&node->location, tmp_buffer, &tmp_idx)
-    );
-
-    switch (node->type) {
+    switch (type) {
         case ISL_ASTNT_UNKNOWN:
-            ist_strbuf_append_raw(buffer, &tmp_idx, "\b");
+            ist_strbuf_append_raw(buffer, idxptr, "\b");
             break;
 
         case ISL_ASTNT_SCOPE:
@@ -113,11 +106,10 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
             IST_ASTNODE_NODE_LIST* node_list = this;
 
             ist_strbuf_append_raw(buffer, idxptr, "\"nodeptr_list\":[");
-            isl_list_foreach_to (nodepp, node_list->nodeptr_list, node_list->nodeptr_count)
-                ist_strbuf_append_raws(
-                    buffer, idxptr, ist_ast_dump_json(*nodepp, tmp_buffer, NULL), ",", NULL
-                );
-
+            isg_list_foreach (nodepp, node_list->nodeptr_list) {
+                ist_ast_dump_json(*nodepp, buffer, idxptr);
+                ist_strbuf_append_raw(buffer, idxptr, ",");
+            }
             ist_strbuf_append_raw(buffer, idxptr, "\b]");
             break;
         }
@@ -127,12 +119,10 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
             ist_strbuf_sprintf(
                 buffer,
                 idxptr,
-                "\"literal_type\":\"%s\",\"value\":%s",
-                ist_token_names[literal_ent->literal_type],
-                ist_value_dump_json(
-                    &literal_ent->value, literal_ent->literal_type, tmp_buffer, NULL
-                )
+                "\"literal_type\":\"%s\",\"value\":",
+                ist_token_names[literal_ent->literal_type]
             );
+            ist_value_dump_json(&literal_ent->value, literal_ent->literal_type, buffer, idxptr);
             break;
         }
 
@@ -141,13 +131,12 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
             ist_strbuf_sprintf(
                 buffer,
                 idxptr,
-                "\"operator_type\":\"%s\",\"left_node\":%s,\"right_node\":",
-                ist_token_names[binary_opt->operator_type],
-                ist_ast_dump_json(binary_opt->left_node, tmp_buffer, NULL)
+                "\"operator_type\":\"%s\",\"left_node\":",
+                ist_token_names[binary_opt->operator_type]
             );
-            ist_strbuf_append_raw(
-                buffer, idxptr, ist_ast_dump_json(binary_opt->right_node, tmp_buffer, NULL)
-            );
+            ist_ast_dump_json(binary_opt->left_node, buffer, idxptr);
+            ist_strbuf_append_raw(buffer, idxptr, ",\"right_node\":");
+            ist_ast_dump_json(binary_opt->right_node, buffer, idxptr);
             break;
         }
 
@@ -156,11 +145,11 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
             ist_strbuf_sprintf(
                 buffer,
                 idxptr,
-                "\"operator_type\":\"%s\",\"on_left\":%s,\"sub_node\":%s",
+                "\"operator_type\":\"%s\",\"on_left\":%s,\"sub_node\":",
                 ist_token_names[unary_opt->operator_type],
-                unary_opt->on_left ? "true" : "false",
-                ist_ast_dump_json(unary_opt->sub_node, tmp_buffer, NULL)
+                unary_opt->on_left ? "true" : "false"
             );
+            ist_ast_dump_json(unary_opt->sub_node, buffer, idxptr);
             break;
         }
 
@@ -169,12 +158,9 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
             break;
     }
 
-    ist_strbuf_append_raw(buffer, idxptr, "}");
-
-    ist_string_delete(tmp_buffer);
-    return *buffer;
+    return ist_strbuf_append_raw(buffer, idxptr, "}");
 }
 
 inline void IST_ASTNODE_NODE_LIST_ADD(IST_ASTNODE_NODE_LIST* this, void* node) {
-    isl_list_addc(this->nodeptr_list, this->nodeptr_count, node);
+    ist_astnodeptr_list_addm(&this->nodeptr_list, node);
 }

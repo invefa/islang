@@ -5,15 +5,27 @@
 #include "isl_memgr.h"
 #include "isl_types.h"
 
-inline ISG_STRUCT_NAME* ISG_FN_NAME(calloc)(ist_usize _capacity) {
-    ISG_STRUCT_NAME* this = isl_malloc(ISG_STRUCT_NAME);
-    *this = (ISG_STRUCT_NAME){.size = 0, .data = isl_list_calloc(ISG_VALUE_TYPE, _capacity)};
+inline ISG_STRUCT_NAME ISG_FN_NAME(consm)(ist_usize _capacity) {
+    return (ISG_STRUCT_NAME){.size = 0, .data = isl_list_malloc(ISG_VALUE_TYPE, _capacity)};
+}
+inline ISG_STRUCT_NAME ISG_FN_NAME(consc)(ist_usize _capacity) {
+    return (ISG_STRUCT_NAME){.size = 0, .data = isl_list_calloc(ISG_VALUE_TYPE, _capacity)};
+}
+
+inline ISG_STRUCT_NAME* ISG_FN_NAME(initm)(ISG_STRUCT_NAME* this, ist_usize _capacity) {
+    *this = ISG_FN_NAME(consm)(_capacity);
     return this;
 }
-inline ISG_STRUCT_NAME* ISG_FN_NAME(malloc)(ist_usize _capacity) {
-    ISG_STRUCT_NAME* this = isl_malloc(ISG_STRUCT_NAME);
-    *this = (ISG_STRUCT_NAME){.size = 0, .data = isl_list_malloc(ISG_VALUE_TYPE, _capacity)};
+inline ISG_STRUCT_NAME* ISG_FN_NAME(initc)(ISG_STRUCT_NAME* this, ist_usize _capacity) {
+    *this = ISG_FN_NAME(consc)(_capacity);
     return this;
+}
+
+inline ISG_STRUCT_NAME* ISG_FN_NAME(malloc)(ist_usize _capacity) {
+    return ISG_FN_NAME(initm)(isl_malloc(ISG_STRUCT_NAME), _capacity);
+}
+inline ISG_STRUCT_NAME* ISG_FN_NAME(calloc)(ist_usize _capacity) {
+    return ISG_FN_NAME(initc)(isl_malloc(ISG_STRUCT_NAME), _capacity);
 }
 
 inline ISG_STRUCT_NAME* ISG_FN_NAME(create)(ist_usize _capacity, ist_bool _doclean) {
@@ -34,13 +46,21 @@ inline void ISG_FN_NAME(addc)(ISG_STRUCT_NAME* this, ISG_VALUE_TYPE _value) {
     isl_list_addcv(this->data, this->size, _value);
 }
 
-inline void ISG_FN_NAME(delete)(ISG_STRUCT_NAME* this) {
-#if !defined(ISG_VALUE_DONT_CLEAN)
-    isl_list_foreach_to (value, this->data, this->size) {
-        ISG_UCAT(ISG_VALUE_TYPE, clean)(value);
-    }
+void ISG_FN_NAME(clean)(ISG_STRUCT_NAME* this) {
+#ifndef ISG_VALUE_DONT_CLEAN
+    isg_list_foreach (valuep, *this)
+#ifndef ISG_VALUE_CLEAN_FN_NAME
+        ISG_UCAT(ISG_VALUE_TYPE, clean)(valuep);
+#else
+        ISG_VALUE_CLEAN_FN_NAME(*valuep);
+#endif
 #endif
     isl_list_freev(this->data);
+    this->size = 0;
+}
+
+inline void ISG_FN_NAME(delete)(ISG_STRUCT_NAME* this) {
+    ISG_FN_NAME(clean)(this);
     isl_free(this);
 }
 

@@ -65,25 +65,6 @@ inline void ist_string_delete(ist_string* this) {
 }
 
 
-// inline ist_string* ist_string_sprintf(ist_string* this, ist_cstring _format, ...) {
-//     va_list args;
-
-//     /**
-//      * check the length and ersure that the string buffer has enough space to
-//      * store the formatted string.
-//      */
-//     va_start(args, _format);
-//     ist_strbuf_ensure(this, 0, vsnprintf(NULL, 0, _format, args) + 1);
-//     va_end(args);
-
-//     /* format the string */
-//     va_start(args, _format);
-//     vsprintf(*this, _format, args);
-//     va_end(args);
-
-//     return this;
-// }
-
 inline void ist_strbuf_ensure(ist_string* this, ist_usize size, ist_usize _reqlen) {
 
     /* check nullptr */
@@ -107,7 +88,7 @@ inline void ist_strbuf_ensure(ist_string* this, ist_usize size, ist_usize _reqle
 }
 
 
-inline ist_string* ist_strbuf_append_ref(
+inline ist_string ist_strbuf_append_ref(
     ist_string* this,
     ist_usize*  idxptr,
     ist_cstring _string,
@@ -126,12 +107,12 @@ inline ist_string* ist_strbuf_append_ref(
     *idxptr          += _length;
     (*this)[*idxptr]  = '\0';
 
-    return this;
+    return *this;
 }
-inline ist_string* ist_strbuf_append_raw(ist_string* this, ist_usize* idxptr, ist_cstring _string) {
+inline ist_string ist_strbuf_append_raw(ist_string* this, ist_usize* idxptr, ist_cstring _string) {
     return ist_strbuf_append_ref(this, idxptr, (ist_string)_string, strlen(_string));
 }
-inline ist_string* ist_strbuf_append_raws(
+inline ist_string ist_strbuf_append_raws(
     ist_string* this,
     ist_usize*  idxptr,
     ist_cstring _string,
@@ -142,7 +123,7 @@ inline ist_string* ist_strbuf_append_raws(
     for (ist_string cat_string = _string; cat_string; cat_string = va_arg(args, ist_string))
         ist_strbuf_append_raw(this, idxptr, cat_string);
     va_end(args);
-    return this;
+    return *this;
 }
 
 ist_string ist_strbuf_sprintf(ist_string* this, ist_usize* idxptr, ist_cstring _format, ...) {

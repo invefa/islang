@@ -14,13 +14,13 @@ ist_string ist_value_dump_json(
 
     switch (type) {
         case ISL_TOKENT_VL_INT:
-            return ist_strbuf_sprintf(buffer, NULL, "%" PRId64, this->int_value);
+            return ist_strbuf_sprintf(buffer, idxptr, "%" PRId64, this->int_value);
         case ISL_TOKENT_VL_REAL:
-            return ist_strbuf_sprintf(buffer, NULL, "%g", this->real_value);
+            return ist_strbuf_sprintf(buffer, idxptr, "%g", this->real_value);
         case ISL_TOKENT_VL_STRING:
-            return ist_strbuf_sprintf(buffer, NULL, "\"%s\"", this->string_value);
+            return ist_strbuf_sprintf(buffer, idxptr, "\"%s\"", this->string_value);
         default:
-            return ist_strbuf_sprintf(buffer, NULL, "null");
+            return ist_strbuf_sprintf(buffer, idxptr, "null");
     }
 }
 
