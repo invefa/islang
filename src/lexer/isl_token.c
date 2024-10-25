@@ -23,13 +23,14 @@ const ist_cstring ist_token_names[] = {
 };
 
 ist_string ist_location_dump_json(ist_location* this, ist_string* buffer) {
-
     return ist_strbuf_sprintf(
         buffer,
         NULL,
-        "\"module\":\"%s\",\"pagename\":\"%s\",\"line\":%zu,\"column\":%zu",
-        this->module ? this->module->name : (ist_string) "",
-        this->pagename ?: (ist_string) "",
+        "\"module\":\"%s%s,\"pagename\":\"%s%s,\"line\":%zu,\"column\":%zu",
+        this->module ? this->module->name : (ist_string) "\bnull",
+        this->module ? "\"" : "",
+        this->pagename ?: (ist_string) "\bnull",
+        this->pagename ? "\"" : "",
         this->line,
         this->column
     );
@@ -37,12 +38,11 @@ ist_string ist_location_dump_json(ist_location* this, ist_string* buffer) {
 
 
 inline ist_string ist_token_dump(ist_token* this, ist_string* buffer) {
-
     return ist_strbuf_sprintf(
         buffer,
         NULL,
-        "token<0x%zX> {module=<%s:%s>,location=<%zu:%zu>,type=%s,"
-        "extract=\"%.*s\",length=%zu,value={int=%" PRId64 ",real=%g}}",
+        "token<0x%zX> {module=<%s:%s>,position=<%zu:%zu>,type=%s,"
+        "extract[%zu]=\"%.*s\",value={int=%" PRId64 ",real=%g}}",
         (ist_usize)this,
         this->location.module->name,
         this->location.pagename ?: (ist_string) "\b",
@@ -50,8 +50,8 @@ inline ist_string ist_token_dump(ist_token* this, ist_string* buffer) {
         this->location.column,
         ist_token_names[this->type],
         this->length,
-        this->extract,
         this->length,
+        this->extract,
         this->value.int_value,
         this->value.real_value
     );
