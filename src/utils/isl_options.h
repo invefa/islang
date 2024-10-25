@@ -6,6 +6,14 @@
     Written by invefa.
 */
 
+#ifdef __GNUC__
+#if __GNUC__ < 5 || (__GNUC__ == 5 && __GNUC_MINOR__ < 1)
+#error "islang requires GCC 5.1 or later!"
+#endif // GNUC version check
+#else  // __GNUC__
+#error "islang requires GCC!"
+#endif // __GNUC__
+
 
 #ifdef _DEBUG
 
@@ -16,7 +24,7 @@
 */
 #define ISL_DEBUG
 
-#endif
+#endif // _DEBUG
 
 
 #ifdef ISL_DEBUG
@@ -33,7 +41,7 @@
 */
 #define ISL_ASSERT_FAILURE_CODE 0x24AD6F05
 
-#endif
+#endif // ISL_DEBUG
 
 #define ISL_ENABLE_INFORM_ALLOCATED
 #define ISL_ENABLE_INFORM_RELEASED
