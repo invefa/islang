@@ -8,13 +8,13 @@
 #include "isl_report.h"
 
 
-const ist_string ist_token_reflects[] = {
+const ist_cstring ist_token_reflects[] = {
 #define manifest(_name, _reflect) [ISL_TOKENT_##_name] = _reflect,
 #include "isl_tokens.h"
 #undef manifest
 };
 
-const ist_string ist_token_names[] = {
+const ist_cstring ist_token_names[] = {
 #define manifest(_name, _reflect) [ISL_TOKENT_##_name] = #_name,
 #include "isl_tokens.h"
 #undef manifest
@@ -27,7 +27,7 @@ ist_string ist_location_dump_json(ist_location* this, ist_string* buffer) {
         NULL,
         "\"module\":\"%s\",\"pagename\":\"%s\",\"line\":%zu,\"column\":%zu",
         this->module ? this->module->name : (ist_string) "",
-        this->pagename ? this->pagename : (ist_string) "",
+        this->pagename ?: (ist_string) "",
         this->line,
         this->column
     );
@@ -43,7 +43,7 @@ inline ist_string ist_token_dump(ist_token* this, ist_string* buffer) {
         "extract=\"%.*s\",length=%zu,value={int=%lld,real=%g}}",
         (ist_usize)this,
         this->location.module->name,
-        this->location.pagename ? this->location.pagename : (ist_string) "\b",
+        this->location.pagename ?: (ist_string) "\b",
         this->location.line,
         this->location.column,
         ist_token_names[this->type],

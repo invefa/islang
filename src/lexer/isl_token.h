@@ -14,8 +14,8 @@ enum ist_token_type {
 #undef manifest
 };
 
-extern const ist_string ist_token_reflects[];
-extern const ist_string ist_token_names[];
+extern const ist_cstring ist_token_reflects[];
+extern const ist_cstring ist_token_names[];
 
 
 typedef struct ist_location {

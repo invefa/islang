@@ -127,7 +127,7 @@ inline void isl_report(isp_repid rid, ...) {
             domain_fmts[reploc.domain],
             level_fmts[reploc.level],
             location.module->name,
-            location.pagename ? location.pagename : (ist_string) "\b",
+            location.pagename ?: (ist_string) "\b",
             location.line,
             location.column,
             isp_fmts[rid]

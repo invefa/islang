@@ -1,4 +1,11 @@
 
+/**
+ * This file was supplied for all files that with the prefix of isg(that means islang generating).
+ * The generating (also call it as generic for islang core codes) make it easy to generate the
+ * various collections for any type. The generating codes are used in the lexer, parser, and vm.
+ * Now we supplied the isg_list from the original isl_list, it can make codes more readable.
+ */
+
 
 /* concat with underline */
 #define ISG_UCAT_IMPL(_a, _b) _a##_##_b

@@ -114,16 +114,20 @@ inline ist_string* ist_strbuf_append_ref(
     ist_usize   _length
 ) {
 
-    /* check nullptr */
-    isl_assert(idxptr);
+    ist_usize index = idxptr ? *idxptr : 0;
 
     /* check buffer remaining length */
-    ist_strbuf_ensure(this, *idxptr, _length + 1);
+    ist_strbuf_ensure(this, index, _length + 1);
 
     /* append string */
-    memcpy((*this) + (*idxptr), _string, _length);
-    (*idxptr)        += _length;
-    (*this)[*idxptr]  = '\0';
+    memcpy((*this) + index, _string, _length);
+
+    /* update the index and set the end of strbuf */
+    index          += _length;
+    (*this)[index]  = '\0';
+
+    /* update the *idxptr if it was exist */
+    if (idxptr) *idxptr = index;
 
     return this;
 }
@@ -145,19 +149,20 @@ inline ist_string* ist_strbuf_append_raws(
 }
 
 ist_string ist_strbuf_sprintf(ist_string* this, ist_usize* idxptr, ist_cstring _format, ...) {
-    va_list args;
+    ist_usize index = idxptr ? *idxptr : 0;
+    va_list   args;
 
     /**
      * check the length and ersure that the string buffer has enough space to
      * store the formatted string.
      */
     va_start(args, _format);
-    ist_strbuf_ensure(this, idxptr ? *idxptr : 0, vsnprintf(NULL, 0, _format, args) + 1);
+    ist_strbuf_ensure(this, index, vsnprintf(NULL, 0, _format, args) + 1);
     va_end(args);
 
     /* format the string */
     va_start(args, _format);
-    ist_usize length = vsprintf(*this + (idxptr ? *idxptr : 0), _format, args);
+    ist_usize length = vsprintf(*this + index, _format, args);
     va_end(args);
 
     /* update the index if it was exist */

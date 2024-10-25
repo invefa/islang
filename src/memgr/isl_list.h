@@ -10,9 +10,9 @@
 
 /**
  * Before read the comments below, you must to digest some basic concepts about the list:
- *  1. length:      the count of bytes that the list has.
- *  2. capacity:    the number of elements that the list can hold.
- *  3. size:        the number of elements that the list used.
+ *  1. length:   the count of bytes that the list has.
+ *  2. capacity: the number of elements that the list can hold.
+ *  3. size:     the number of elements that the list used.
  *
  * isl_list is a special structure:
  * it has a base address that maintains a usize memory to store the length of its elements space.
