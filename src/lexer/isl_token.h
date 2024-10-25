@@ -25,7 +25,7 @@ typedef struct ist_location {
     ist_usize   column;
 } ist_location;
 
-ist_string ist_location_dump_json(ist_location* this, ist_string* buffer);
+ist_string ist_location_dump_json(ist_location* this, ist_string* buffer, ist_usize* idxptr);
 
 #define ist_location_consby_full(_module, _pagename) \
     ((ist_location){.module = (_module), .pagename = (_pagename), .line = 1, .column = 1})
@@ -70,7 +70,7 @@ typedef struct ist_token {
       .value    = (_value)})
 
 
-ist_string ist_token_dump(ist_token* this, ist_string* buffer);
+ist_string ist_token_dump(ist_token* this, ist_string* buffer, ist_usize* idxptr);
 
 /*
     if the string is a keyword, return the keyword type.

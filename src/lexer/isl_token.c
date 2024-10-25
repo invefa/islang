@@ -22,10 +22,10 @@ const ist_cstring ist_token_names[] = {
 #undef manifest
 };
 
-ist_string ist_location_dump_json(ist_location* this, ist_string* buffer) {
+ist_string ist_location_dump_json(ist_location* this, ist_string* buffer, ist_usize* idxptr) {
     return ist_strbuf_sprintf(
         buffer,
-        NULL,
+        idxptr,
         "\"module\":\"%s%s,\"pagename\":\"%s%s,\"line\":%zu,\"column\":%zu",
         this->module ? this->module->name : (ist_string) "\bnull",
         this->module ? "\"" : "",
@@ -37,10 +37,10 @@ ist_string ist_location_dump_json(ist_location* this, ist_string* buffer) {
 }
 
 
-inline ist_string ist_token_dump(ist_token* this, ist_string* buffer) {
+inline ist_string ist_token_dump(ist_token* this, ist_string* buffer, ist_usize* idxptr) {
     return ist_strbuf_sprintf(
         buffer,
-        NULL,
+        idxptr,
         "token<0x%zX> {module=<%s:%s>,position=<%zu:%zu>,type=%s,"
         "extract[%zu]=\"%.*s\",value={int=%" PRId64 ",real=%g}}",
         (ist_usize)this,

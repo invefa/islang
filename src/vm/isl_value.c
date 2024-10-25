@@ -5,7 +5,12 @@
 #include "isl_string.h"
 #include "isl_token.h"
 
-ist_string ist_value_dump_json(ist_value* this, ist_u32 type, ist_string* buffer) {
+ist_string ist_value_dump_json(
+    ist_value* this,
+    ist_u32     type,
+    ist_string* buffer,
+    ist_usize*  idxptr
+) {
 
     switch (type) {
         case ISL_TOKENT_VL_INT:

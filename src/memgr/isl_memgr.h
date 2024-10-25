@@ -3,9 +3,10 @@
 
 #include <string.h>
 
+#include "isl_overload.h"
 #include "isl_types.h"
 #include "isl_xssert.h"
-#include "isl_overload.h"
+
 
 // all we allocated memory will be recorded at this variable.
 extern ist_usize isl_allocated_length;
@@ -22,27 +23,28 @@ void* _isl_set_adr_usize_value(void* _adr, ist_usize _value);
 
 // after there, we define some useful macros to allocate and release single type memory.
 
-#define isl_malloc(_type) ((_type*)isl_allocate(sizeof(_type),0))
-#define isl_calloc(_type) ((_type*)isl_allocate(sizeof(_type),1))
+#define isl_malloc(_type) ((_type*)isl_allocate(sizeof(_type), 0))
+#define isl_calloc(_type) ((_type*)isl_allocate(sizeof(_type), 1))
 
 
 // freev means free the memory and set the ptr variable to NULL.
-#define isl_freev(_ptrv)            \
-do{                                 \
-    isl_assert(_ptrv);              \
-    isl_release(_ptrv,              \
-        sizeof(typeof(*_ptrv)));    \
-    _ptrv = NULL;                   \
-}while(0)
+#define isl_freev(_ptrv)                            \
+    do {                                            \
+        isl_assert(_ptrv);                          \
+        isl_release(_ptrv, sizeof(typeof(*_ptrv))); \
+        _ptrv = NULL;                               \
+    } while (0)
 
 // just free the memory.
-#define isl_free(_ptr)              \
-do{                                 \
-    void* _ptr_ = _ptr;             \
-    isl_assert(_ptr_);              \
-    isl_release(_ptr_,              \
-        sizeof(typeof(*_ptr)));     \
-}while(0)
+#define isl_free(_ptr)                             \
+    do {                                           \
+        void* _ptr_ = _ptr;                        \
+        isl_assert(_ptr_);                         \
+        isl_release(_ptr_, sizeof(typeof(*_ptr))); \
+    } while (0)
 
+#define isl_param_default(_idxptrv, _cons) \
+    ({ _idxptrv = _idxptrv ?: ((typeof(*(_idxptrv))[1]){_cons}); })
+#define isl_param_default_null(_idxptrv) isl_param_default(_idxptrv, 0)
 
 #endif // ISC_MEMGR_H
