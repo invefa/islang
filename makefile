@@ -25,7 +25,6 @@ source_subdirs  := \
 depend_flags    :=
 
 #build relevants
-build_target    := is.exe
 build_target_dir:= build/target
 build_dir       := build
 
@@ -37,21 +36,20 @@ symbol_empty    :=
 symbol_space    := $(symbol_empty) $(symbol_empty)
 symbol_comma    := ,
 
-#others for Compatibility (different from OS, now for Windows)
+#options for Compatibility (different from OS, capable for Windows / Linux / MacOS)
 ifeq ($(OS),Windows_NT)
-dir_slash       := $(symbol_empty)\$(symbol_empty)
-rmfile_cmd      := del /Q
-rmdir_cmd       := rmdir /Q /S
+    build_target    := is.exe
+    dir_slash       := $(symbol_empty)\$(symbol_empty)
+    rmfile_cmd      := del /Q
+    rmdir_cmd       := rmdir /Q /S
 else
-rmfile_cmd      := rm -rf
-rmdir_cmd       := rm -rf
-dir_slash       := $(symbol_empty)/$(symbol_empty)
+    build_target    := is
+    rmfile_cmd      := rm -rf
+    rmdir_cmd       := rm -rf
+    dir_slash       := $(symbol_empty)/$(symbol_empty)
 endif
 mkdir_cmd       := mkdir
 echo_cmd        := echo
-# rmfile_cmd      := del /Q
-# rmdir_cmd       := rmdir /Q /S
-# dir_slash       := $(symbol_empty)\$(symbol_empty)
 
 
 ###################################
