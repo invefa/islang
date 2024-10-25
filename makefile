@@ -38,11 +38,20 @@ symbol_space    := $(symbol_empty) $(symbol_empty)
 symbol_comma    := ,
 
 #others for Compatibility (different from OS, now for Windows)
+ifeq ($(OS),Windows_NT)
+dir_slash       := $(symbol_empty)\$(symbol_empty)
 rmfile_cmd      := del /Q
 rmdir_cmd       := rmdir /Q /S
+else
+rmfile_cmd      := rm -rf
+rmdir_cmd       := rm -rf
+dir_slash       := $(symbol_empty)/$(symbol_empty)
+endif
 mkdir_cmd       := mkdir
 echo_cmd        := echo
-dir_slash       := $(symbol_empty)\$(symbol_empty)
+# rmfile_cmd      := del /Q
+# rmdir_cmd       := rmdir /Q /S
+# dir_slash       := $(symbol_empty)\$(symbol_empty)
 
 
 ###################################
