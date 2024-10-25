@@ -51,8 +51,8 @@ int main(int argc, char* argv[]) {
     // isl_test_string();
     // isl_test_report();
     isl_test_lexer();
-    // isl_test_generic();
-    // isl_test_astnode();
+    isl_test_generic();
+    isl_test_astnode();
 
     return 0;
 }
@@ -196,7 +196,7 @@ void isl_test_lexer(void) {
     /* construct module and lexer, and create dump buffer */
     ist_module  module  = ist_module_consby_filepath(filepath);
     ist_lexer   lexer   = ist_lexer_consby_module(&module);
-    ist_string* dumpbuf = ist_string_create_buffer(32);
+    ist_string* dumpbuf = ist_string_create_buffer(128);
 
     /* make sure token dumping synchronized with fn:advance analysis */
     printf("%s\n", ist_token_dump(&lexer.cur_token, dumpbuf, NULL));
