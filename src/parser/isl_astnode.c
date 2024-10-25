@@ -83,7 +83,7 @@ void ist_ast_delete(void* this) {
 }
 
 ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) {
-    isl_param_default_null(idxptr);
+    idxptr = idxptr ?: (ist_usize[1]){};
 
     isl_report(rid_custom_core_warning, "dumping node<0x%zX>.", (ist_usize)this);
 

@@ -43,8 +43,5 @@ void* _isl_set_adr_usize_value(void* _adr, ist_usize _value);
         isl_release(_ptr_, sizeof(typeof(*_ptr))); \
     } while (0)
 
-#define isl_param_default(_idxptrv, _cons) \
-    ({ _idxptrv = _idxptrv ?: ((typeof(*(_idxptrv))[1]){_cons}); })
-#define isl_param_default_null(_idxptrv) isl_param_default(_idxptrv, 0)
 
 #endif // ISC_MEMGR_H
