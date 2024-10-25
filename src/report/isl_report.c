@@ -59,7 +59,7 @@ ist_string domain_fmts[] = {
 
 #define ISP_BUFFER_SIZE 4096
 
-inline void isl_report(isp_repid rid, ...) {
+void isl_report(isp_repid rid, ...) {
     typedef FILE* isp_ostream;
 
     isp_replocation reploc  = isp_replocs[rid];

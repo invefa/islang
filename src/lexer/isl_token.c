@@ -38,11 +38,11 @@ ist_string ist_location_dump_json(ist_location* this, ist_string* buffer, ist_us
 
 
 inline ist_string ist_token_dump(ist_token* this, ist_string* buffer, ist_usize* idxptr) {
-    return ist_strbuf_sprintf(
+    idxptr = idxptr ?: (ist_usize[1]){};
+    ist_strbuf_sprintf(
         buffer,
         idxptr,
-        "token<0x%zX> {module=<%s:%s>,position=<%zu:%zu>,type=%s,"
-        "extract[%zu]=\"%.*s\",value={int=%" PRId64 ",real=%g}}",
+        "token<0x%zX> {location=<%s:%s:%zu:%zu>,type=%s,extract[%zu]=\"%.*s\"",
         (ist_usize)this,
         this->location.module->name,
         this->location.pagename ?: (ist_string) "\b",
@@ -51,10 +51,49 @@ inline ist_string ist_token_dump(ist_token* this, ist_string* buffer, ist_usize*
         ist_token_names[this->type],
         this->length,
         this->length,
-        this->extract,
-        this->value.int_value,
-        this->value.real_value
+        this->extract
     );
+    switch (this->type) {
+        case ISL_TOKENT_VL_INT:
+            ist_strbuf_sprintf(buffer, idxptr, ",value=%" PRId64, this->value.int_value);
+            break;
+        case ISL_TOKENT_VL_REAL:
+            ist_strbuf_sprintf(buffer, idxptr, ",value=%lf", this->value.real_value);
+            break;
+        case ISL_TOKENT_VL_STRING:
+            ist_strbuf_sprintf(buffer, idxptr, ",value=\"%s\"", this->value.string_value);
+            break;
+    }
+    return ist_strbuf_append_raw(buffer, idxptr, "}");
+}
+
+
+inline ist_string ist_token_dump_json(ist_token* this, ist_string* buffer, ist_usize* idxptr) {
+    idxptr = idxptr ?: (ist_usize[1]){};
+    ist_strbuf_sprintf(
+        buffer,
+        idxptr,
+        "{\"type\":\"%s\",\"location\":\"<%s:%s:%zu:%zu>\",\"extract\"=\"%.*s\"",
+        ist_token_names[this->type],
+        this->location.module->name,
+        this->location.pagename ?: (ist_string) "\b",
+        this->location.line,
+        this->location.column,
+        this->length,
+        this->extract
+    );
+    switch (this->type) {
+        case ISL_TOKENT_VL_INT:
+            ist_strbuf_sprintf(buffer, idxptr, ",\"value\":%" PRId64, this->value.int_value);
+            break;
+        case ISL_TOKENT_VL_REAL:
+            ist_strbuf_sprintf(buffer, idxptr, ",\"value\":%lf", this->value.real_value);
+            break;
+        case ISL_TOKENT_VL_STRING:
+            ist_strbuf_sprintf(buffer, idxptr, ",\"value\":\"%s\"", this->value.string_value);
+            break;
+    }
+    return ist_strbuf_append_raw(buffer, idxptr, "}");
 }
 
 ist_token_type ist_string_is_keyword(ist_cstring this, ist_usize length) {

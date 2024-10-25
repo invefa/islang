@@ -50,9 +50,9 @@ int main(int argc, char* argv[]) {
     // isl_test_memgr();
     // isl_test_string();
     // isl_test_report();
-    // isl_test_lexer();
+    isl_test_lexer();
     // isl_test_generic();
-    isl_test_astnode();
+    // isl_test_astnode();
 
     return 0;
 }

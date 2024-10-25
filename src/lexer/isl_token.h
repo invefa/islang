@@ -71,6 +71,7 @@ typedef struct ist_token {
 
 
 ist_string ist_token_dump(ist_token* this, ist_string* buffer, ist_usize* idxptr);
+ist_string ist_token_dump_json(ist_token* this, ist_string* buffer, ist_usize* idxptr);
 
 /*
     if the string is a keyword, return the keyword type.

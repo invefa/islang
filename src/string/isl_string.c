@@ -112,7 +112,7 @@ inline ist_string ist_strbuf_append_ref(
 inline ist_string ist_strbuf_append_raw(ist_string* this, ist_usize* idxptr, ist_cstring _string) {
     return ist_strbuf_append_ref(this, idxptr, (ist_string)_string, strlen(_string));
 }
-inline ist_string ist_strbuf_append_raws(
+ist_string ist_strbuf_append_raws(
     ist_string* this,
     ist_usize*  idxptr,
     ist_cstring _string,

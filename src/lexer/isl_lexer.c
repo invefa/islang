@@ -10,7 +10,7 @@
 #include "isl_report.h"
 #include "isl_utf8.h"
 
-#define analysis_token (this->ana_token)
+#define analysis_token (this->sec_token)
 
 #define CHECK_SINCHAR_TOKENT(_char, _tokent) \
     case _char:                              \
@@ -136,7 +136,7 @@ ist_lexer ist_lexer_consby_full(ist_module* _module, ist_codepage* _codepage) {
         .cur_token = ist_token_consby_location(_codepage->location),
         .sec_token = ist_token_consby_location(_codepage->location),
         .nex_token = ist_token_consby_location(_codepage->location),
-        .ana_token = ist_token_consby_location(_codepage->location),
+        // .ana_token = ist_token_consby_location(_codepage->location),
 
         .ahead_token_list  = NULL,
         .ahead_token_count = 0,
@@ -210,7 +210,7 @@ void ist_lexer_lookahead_end(ist_lexer* this) {
     this->sec_token = this->ahead_token_list[this->ahead_token_index++];
 }
 
-inline ist_token ist_lexer_lex(ist_lexer* this) {
+void ist_lexer_lex(ist_lexer* this) {
 
     while (ist_lexer_skip_blanks(this)) {
 
@@ -219,7 +219,7 @@ inline ist_token ist_lexer_lex(ist_lexer* this) {
                 ist_lexer_advance_codepoint(this);
                 continue;
             case ISL_CODEPOINT_ERROR:
-                return analysis_token;
+                return;
 
                 CHECK_SINCHAR_TOKENT('(', ISL_TOKENT_LPARE);
                 CHECK_SINCHAR_TOKENT(')', ISL_TOKENT_RPARE);
@@ -280,7 +280,7 @@ inline ist_token ist_lexer_lex(ist_lexer* this) {
 
             case '"':
                 ist_lexer_parse_string(this);
-                return analysis_token;
+                return;
 
             default:
                 if (isl_utf8_is_digit_codepoint(ist_lexer_get_current_codepoint(this))) {
@@ -300,7 +300,7 @@ inline ist_token ist_lexer_lex(ist_lexer* this) {
                     ist_lexer_advance_codepoint(this);
                     continue;
                 }
-                return analysis_token;
+                return;
         }
 
         analysis_token.length = (this->codepage->source + this->codepage->next_sequence_index)
@@ -309,7 +309,7 @@ inline ist_token ist_lexer_lex(ist_lexer* this) {
         ist_lexer_advance_codepoint(this);
         break;
     }
-    return analysis_token;
+    return;
 }
 
 inline ist_token* ist_lexer_advance(ist_lexer* this) {
@@ -340,7 +340,7 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
                 when the remain token has been consumed,
                 we can only read the next token from the source.
             */
-            this->sec_token = ist_lexer_lex(this);
+            ist_lexer_lex(this);
 
             if (lookaheading) {
                 /*
@@ -354,7 +354,7 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
         } else read_from_list();
 
     } else /* the common case if we have no any ahead token */
-        this->sec_token = ist_lexer_lex(this);
+        ist_lexer_lex(this);
 
     return &this->pre_token;
 
@@ -439,7 +439,7 @@ inline void ist_lexer_parse_identifier(ist_lexer* this) {
     analysis_token.type = ist_string_is_keyword(analysis_token.extract, analysis_token.length);
 }
 
-inline void ist_lexer_parse_number(ist_lexer* this) {
+void ist_lexer_parse_number(ist_lexer* this) {
     ist_usize dot_count = 0;
     while (isl_utf8_is_digit_codepoint(ist_lexer_get_current_codepoint(this))
            || ist_lexer_get_current_codepoint(this) == '.')
@@ -527,7 +527,7 @@ inline ist_codepoint ist_lexer_get_next_codepoint(ist_lexer* this) {
 }
 
 /* return the current codepoint, and advance to the next codepoint */
-inline void ist_lexer_advance_codepoint(ist_lexer* this) {
+void ist_lexer_advance_codepoint(ist_lexer* this) {
 
     if (!ist_lexer_get_current_codepoint(this)) {
         isl_report(rid_advance_codepoint_when_eof, isp_catch_coreloc);
