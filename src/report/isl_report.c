@@ -7,14 +7,16 @@
 #include "isl_string.h"
 #include "isl_token.h"
 
+ist_u8 isp_report_option = ISP_ROPTM_NONE;
 
-const ist_string isp_fmts[] = {
+
+const ist_cstring isp_fmts[] = {
 #define manifest(_name, _reploc, _fmt) [rid_##_name] = _fmt,
 #include "isl_repids.h"
 #undef manifest
 };
 
-const ist_string isp_repid_names[] = {
+const ist_cstring isp_repid_names[] = {
 #define manifest(_name, _reploc, _fmt) [rid_##_name] = #_name,
 #include "isl_repids.h"
 #undef manifest
@@ -26,58 +28,60 @@ const isp_replocation isp_replocs[] = {
 #undef manifest
 };
 
-ist_string level_fmts[] = {
-    "info",
-    "reserved",
-    "warning",
-    "reserved",
-    "error",
-    "panic",
-    "fatal",
-    "reserved",
+ist_cstring level_fmts[] = {
+    [ISP_LEVEL_INFO]    = "info",
+    [ISP_LEVEL_NOTE]    = "note",
+    [ISP_LEVEL_WARNING] = "warn",
+    [ISP_LEVEL_ERROR]   = "error",
+    [ISP_LEVEL_PANIC]   = "panic",
+    [ISP_LEVEL_FATAL]   = "fatal",
 };
 
-ist_string level_colors[] = {
-    ANSI_GRE,
-    ANSI_HIL,
-    ANSI_YEL,
-    ANSI_HIL,
-    ANSI_HIR,
-    ANSI_MAG,
-    ANSI_RED,
-    ANSI_HIL,
+ist_cstring level_colors[] = {
+    [ISP_LEVEL_INFO]    = ANSI_GRE,
+    [ISP_LEVEL_NOTE]    = ANSI_YEL,
+    [ISP_LEVEL_WARNING] = ANSI_YEL,
+    [ISP_LEVEL_ERROR]   = ANSI_HIR,
+    [ISP_LEVEL_PANIC]   = ANSI_MAG,
+    [ISP_LEVEL_FATAL]   = ANSI_RED,
 };
 
-ist_string domain_fmts[] = {
-    "core",
-    "lexer",
-    "parser",
-    "compiler",
-    "vm",
+ist_cstring domain_fmts[] = {
+    [ISP_DOMAIN_CORE]     = "core",
+    [ISP_DOMAIN_LEXER]    = "lexer",
+    [ISP_DOMAIN_PARSER]   = "parser",
+    [ISP_DOMAIN_COMPILER] = "compiler",
+    [ISP_DOMAIN_VM]       = "vm",
 };
 
 
 #define ISP_BUFFER_SIZE 4096
 
 void isl_report(isp_repid rid, ...) {
-    typedef FILE* isp_ostream;
 
-    isp_replocation reploc  = isp_replocs[rid];
-    isp_ostream     ostream = reploc.level >= ISP_LEVEL_ERROR ? stderr : stdout;
+    isp_replocation reploc = isp_replocs[rid];
+
+    if (isp_report_option & ISP_ROPTM_NO_CORE_INFO)
+        if (reploc.domain == ISP_DOMAIN_CORE)
+            if (reploc.level == ISP_LEVEL_INFO) return;
 
     va_list vargs;
     va_start(vargs, rid);
 
+    /**
+     * using the c-array buffer, instead strbuf which
+     * come from islang to avoid recursive reoport.
+     */
     char buffer[ISP_BUFFER_SIZE] = {0};
 
     /* if reploc.attribute == ISP_ATTR_CUSTOM, then the fmt will be provided by user */
     if (reploc.attribute == ISP_ATTR_CUSTOM) {
-        ist_string custom_fmt = va_arg(vargs, ist_string);
+        ist_cstring custom_fmt = va_arg(vargs, ist_cstring);
 
         snprintf(
             buffer,
             ISP_BUFFER_SIZE,
-            "%s%s %s: %s\n" ANSI_RST,
+            "%s%s %s: %s" ANSI_RST "\n",
             level_colors[reploc.level],
             domain_fmts[reploc.domain],
             level_fmts[reploc.level],
@@ -89,9 +93,9 @@ void isl_report(isp_repid rid, ...) {
     /* if reploc.attribute == ISP_ATTR_CORELOC, then we will obtain the core location to report */
     else if (reploc.attribute == ISP_ATTR_CORELOC)
     {
-        ist_string file_name = va_arg(vargs, ist_string);
-        ist_string func_name = va_arg(vargs, ist_string);
-        ist_usize  line      = va_arg(vargs, ist_usize);
+        ist_cstring file_name = va_arg(vargs, ist_cstring);
+        ist_cstring func_name = va_arg(vargs, ist_cstring);
+        ist_usize   line      = va_arg(vargs, ist_usize);
 
         snprintf(
             buffer,
@@ -99,7 +103,7 @@ void isl_report(isp_repid rid, ...) {
             "%s%s %s:\n"
             "\tin file '%s':\n"
             "\tat fn %s(...) <line:%zu>:\n"
-            "%s\n" ANSI_RST,
+            "%s" ANSI_RST "\n",
             level_colors[reploc.level],
             domain_fmts[reploc.domain],
             level_fmts[reploc.level],
@@ -122,12 +126,12 @@ void isl_report(isp_repid rid, ...) {
             ISP_BUFFER_SIZE,
             "%s%s %s:\n"
             "\tin module <%s:%s>:<%zu:%zu>\n"
-            "%s\n" ANSI_RST,
+            "%s" ANSI_RST "\n",
             level_colors[reploc.level],
             domain_fmts[reploc.domain],
             level_fmts[reploc.level],
             location.module->name,
-            location.pagename ?: (ist_string) "\b",
+            location.pagename ?: (ist_cstring) "\b",
             location.line,
             location.column,
             isp_fmts[rid]
@@ -141,7 +145,7 @@ void isl_report(isp_repid rid, ...) {
         snprintf(
             buffer,
             ISP_BUFFER_SIZE,
-            "%s%s %s: %s\n" ANSI_RST,
+            "%s%s %s: %s" ANSI_RST "\n",
             level_colors[reploc.level],
             domain_fmts[reploc.domain],
             level_fmts[reploc.level],
@@ -150,7 +154,7 @@ void isl_report(isp_repid rid, ...) {
     }
 
     /* write to output stream, this is the core of the report */
-    vfprintf(ostream, buffer, vargs);
+    vfprintf(reploc.level >= ISP_LEVEL_ERROR ? stderr : stdout, buffer, vargs);
 
     va_end(vargs);
     if (reploc.level >= ISP_LEVEL_FATAL) exit(rid);

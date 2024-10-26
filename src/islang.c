@@ -59,18 +59,14 @@ int main(int argc, char* argv[]) {
 
 
 void isl_test_astnode(void) {
-    isl_report(rid_custom_core_warning, "start testing astnode...");
+    isl_report(rid_inform_start_testing, "astnode");
 
     isl_report(
-        rid_custom_core_warning,
-        "sizeof(IST_ASTNODE_BINARY_OPT) = %zu",
-        sizeof(IST_ASTNODE_BINARY_OPT)
+        rid_custom_core_warn, "sizeof(IST_ASTNODE_BINARY_OPT) = %zu", sizeof(IST_ASTNODE_BINARY_OPT)
     );
 
     isl_report(
-        rid_custom_core_warning,
-        "sizeof(IST_ASTNODE_UNARY_OPT) = %zu",
-        sizeof(IST_ASTNODE_UNARY_OPT)
+        rid_custom_core_warn, "sizeof(IST_ASTNODE_UNARY_OPT) = %zu", sizeof(IST_ASTNODE_UNARY_OPT)
     );
 
     IST_ASTNODE_UNARY_OPT* unopt_node =
@@ -105,10 +101,14 @@ void isl_test_astnode(void) {
     ist_ast_delete(module_node);
 
     isl_report(rid_custom_core_info, "max allocated-length = %zu.", isl_max_allocated_length);
-    isl_report(rid_custom_core_warning, "end testing astnode.");
+    isl_report(rid_inform_end_testing, "astnode");
 }
 
 void isl_test_generic(void) {
+    isl_report(rid_custom_core_warn, "start testing generic...");
+
+    // isp_report_option_enable(ISP_ROPTM_NO_CORE_INFO);
+
     ist_value_list* value_list = ist_value_list_create(10, 1);
     ist_value_list_addc(value_list, ist_value_consby_i64(123));
     ist_value_list_addc(value_list, ist_value_consby_i64(456));
@@ -144,19 +144,25 @@ void isl_test_generic(void) {
         module_list, ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is"))
     );
 
-    ist_string buffer = ist_string_cons_buffer(128);
+    ist_string buffer = ist_string_cons_buffer(142);
 
     isg_list_foreach (iterp, *module_list, idx) {
         printf("module[%zu] = %s\n", idx, ist_module_dump_json(iterp, &buffer, NULL));
     }
 
+    ist_string_clean(&buffer);
     ist_module_list_delete(module_list);
     ist_value_list_delete(value_list);
+
+    // isp_report_option_disable(ISP_ROPTM_NO_CORE_INFO);
+
+    isl_report(rid_custom_core_info, "max allocated-length = %zu.", isl_max_allocated_length);
+    isl_report(rid_inform_end_testing, "generic");
 }
 
 void isl_test_lexer(void) {
 
-    isl_report(rid_custom_core_warning, "start testing lexer...");
+    isl_report(rid_inform_start_testing, "lexer");
 
     /* init some basic information */
     ist_string filepath       = ist_string_consby_raw("./scripts/test.is");
@@ -192,7 +198,7 @@ void isl_test_lexer(void) {
         if (lexer.sec_token.type == ISL_TOKENT_VL_INT) {
 
             ist_lexer_lookahead_start(&lexer);
-            isl_report(rid_custom_core_warning, "start lookahead.");
+            isl_report(rid_custom_core_warn, "start lookahead.");
 
             while (lexer.sec_token.type != ISL_TOKENT_EOS && lexer.sec_token.type != ISL_TOKENT_EOF)
             {
@@ -201,7 +207,7 @@ void isl_test_lexer(void) {
             }
 
             ist_lexer_lookahead_end(&lexer);
-            isl_report(rid_custom_core_warning, "end lookahead.");
+            isl_report(rid_custom_core_warn, "end lookahead.");
         }
 
         ist_lexer_advance(&lexer);
@@ -215,14 +221,14 @@ void isl_test_lexer(void) {
     ist_string_delete(dumpbuf);
 
     isl_report(rid_custom_core_info, "max allocated-length = %zu.", isl_max_allocated_length);
-    isl_report(rid_custom_core_warning, "end testing lexer.");
+    isl_report(rid_inform_end_testing, "lexer");
 }
 
 void isl_test_report(void) {
 
     isl_report(rid_unknown);
     isl_report(rid_custom_core_info, "the second arg was %d.", 123);
-    isl_report(rid_custom_core_warning, "the second arg was %d.", 345);
+    isl_report(rid_custom_core_warn, "the second arg was %d.", 345);
     isl_report(rid_custom_core_error, "the second arg was %d.", 789);
     isl_report(rid_custom_core_panic, "the second arg was %d.", 666);
     // isl_report(rid_custom_core_fatal, "the second arg was %d.", 123456);

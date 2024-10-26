@@ -28,6 +28,7 @@
 */
 enum {
     INFO,
+    NOTE,
     WARNING,
     ERROR,
     PANIC,
@@ -50,6 +51,7 @@ enum {
 */
 typedef enum isp_level {
     ISP_LEVEL_INFO    = 0,
+    ISP_LEVEL_NOTE    = 1,
     ISP_LEVEL_WARNING = 2,
     ISP_LEVEL_ERROR   = 4,
     ISP_LEVEL_PANIC   = 5,
@@ -113,6 +115,19 @@ typedef enum isp_repid {
 #undef manifest
 } isp_repid;
 
+extern ist_u8 isp_report_option;
+
+enum isp_reoprt_option_mask {
+    ISP_ROPTM_NONE         = 0,
+    ISP_ROPTM_NO_CORE_INFO = 1 << 1,
+    ISP_ROPTM_NO_NOTE      = 1 << 2,
+    ISP_ROPTM_NO_WARN      = 1 << 3,
+    ISP_ROPTM_WARNUP       = 1 << 4,
+};
+
+#define isp_report_option_enable(_roptm)  (isp_report_option |= (_roptm))
+#define isp_report_option_disable(_roptm) (isp_report_option &= ~(_roptm))
+#define isp_report_option_get(_roptm)     (isp_report_option & (_roptm))
 
 /* the only function of the reporting system */
 void isl_report(isp_repid _rid, ...);

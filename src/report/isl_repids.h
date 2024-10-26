@@ -9,7 +9,7 @@ manifest(unknown, (CORE, INFO, NONE), "?")
 
 
 manifest(custom_core_info, (CORE, INFO, CUSTOM), NULL)
-manifest(custom_core_warning, (CORE, WARNING, CUSTOM), NULL)
+manifest(custom_core_warn, (CORE, WARNING, CUSTOM), NULL)
 manifest(custom_core_error, (CORE, ERROR, CUSTOM), NULL)
 manifest(custom_core_panic, (CORE, PANIC, CUSTOM), NULL)
 manifest(custom_core_fatal, (CORE, FATAL, CUSTOM), NULL)
@@ -19,6 +19,11 @@ manifest(open_file_failed, (CORE, FATAL, CORELOC), "failed to open file '%s', do
 manifest(unreachable_brench, (CORE, FATAL, CORELOC), "the program entered an unreachable branch...")
 manifest(catch_size_overflow, (CORE, FATAL, CORELOC), "catched an overflow size.")
 manifest(illegal_utf8_codepoint, (CORE, FATAL, CORELOC), "cannot encode illegal UTF-8 codepoint.")
+
+manifest(inform_dumping, (CORE, NOTE, NONE), "dumping %s<%zX>.")
+manifest(inform_start_testing, (CORE, NOTE, NONE), "start testing %s...")
+manifest(inform_end_testing, (CORE, NOTE, NONE), "end testing %s...")
+
 manifest(
     catch_nullptr,
     (CORE, FATAL, CORELOC),
@@ -61,7 +66,6 @@ manifest(
     (CORE, INFO, NONE),
     "list<0x%zX> {capacity=%zu, remaining=%zu} ->require(%zu) ->resize(%zu)."
 )
-
 
 manifest(
     catch_zero_string_length,
