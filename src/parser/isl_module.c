@@ -86,7 +86,9 @@ inline ist_usize ist_module_register_strbuf(
     isg_list_foreach (itp, this->strbuf_entry_list, idx)
         if (itp->buffer == _strbuf) return idx;
 
-    return ist_strbuf_entry_list_addm(&this->strbuf_entry_list, (ist_strbuf_entry){_strbuf, _type});
+    return ist_strbuf_entry_list_addm(
+        &this->strbuf_entry_list, (ist_strbuf_entry){.buffer = _strbuf, .type = _type}
+    );
 }
 
 ist_string ist_module_dump_json(ist_module* this, ist_string* buffer, ist_usize* idxptr) {
