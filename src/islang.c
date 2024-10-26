@@ -144,8 +144,10 @@ void isl_test_generic(void) {
         module_list, ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is"))
     );
 
+    ist_string buffer = ist_string_cons_buffer(128);
+
     isg_list_foreach (iterp, *module_list, idx) {
-        printf("module[%zu].name = %s\n", idx, iterp->name);
+        printf("module[%zu] = %s\n", idx, ist_module_dump_json(iterp, &buffer, NULL));
     }
 
     ist_module_list_delete(module_list);

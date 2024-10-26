@@ -8,6 +8,8 @@
 #define ISG_VALUE_FN_CLEAN(_entp) ist_string_clean(&(_entp)->buffer)
 #include "isg_list_code.h"
 
+#define ISG_VALUE_TYPE ist_module
+#include "isg_list_code.h"
 
 inline ist_string isl_filename_catchby_filepath(ist_cstring _filepath) {
 
@@ -35,8 +37,8 @@ inline ist_module ist_module_consby_full(ist_string _name, ist_string _filepath)
         .filepath          = _filepath,
         .strbuf_entry_list = ist_strbuf_entry_list_consm(4),
     };
-    ist_module_register_strbuf(&module, _name, ISL_STRBUFT_NAME);
     ist_module_register_strbuf(&module, _filepath, ISL_STRBUFT_FILEPATH);
+    ist_module_register_strbuf(&module, _name, ISL_STRBUFT_NAME);
     return module;
 }
 inline ist_module* ist_module_initby_full(
@@ -64,23 +66,10 @@ inline ist_module* ist_module_createby_filepath(ist_string _filepath) {
 
 
 inline void ist_module_clean(ist_module* this) {
-
     isl_assert(this);
-    // if (this->strbuf_list) {
-    //     for (ist_usize i = 0; i < this->strbuf_count; ++i)
-    //         if (this->strbuf_list[i]) {
-    //             ist_string_clean(this->strbuf_list + i);
-    //         } else continue;
-    // }
-
     ist_strbuf_entry_list_clean(&this->strbuf_entry_list);
-
-    // isl_list_freev(this->strbuf_list);
-    // isl_list_freev(this->strbuf_types);
-
     this->name     = NULL;
     this->filepath = NULL;
-    // this->strbuf_count = 0;
 }
 inline void ist_module_delete(ist_module* this) {
     ist_module_clean(this);
@@ -100,5 +89,34 @@ inline ist_usize ist_module_register_strbuf(
     return ist_strbuf_entry_list_addm(&this->strbuf_entry_list, (ist_strbuf_entry){_strbuf, _type});
 }
 
-#define ISG_VALUE_TYPE ist_module
-#include "isg_list_code.h"
+ist_string ist_module_dump_json(ist_module* this, ist_string* buffer, ist_usize* idxptr) {
+    idxptr = idxptr ?: (ist_usize[1]){};
+
+    ist_strbuf_sprintf(
+        buffer,
+        idxptr,
+        "{\"name\":\"%s\",\"filepath\":\"%s\",\"strbufs\":[",
+        this->name,
+        this->filepath
+    );
+
+    static ist_cstring isl_strbuf_type_names[] =
+        {[ISL_STRBUFT_UNKNOWN]  = "unknown",
+         [ISL_STRBUFT_SYMBOL]   = "symbol",
+         [ISL_STRBUFT_SOURCE]   = "source",
+         [ISL_STRBUFT_NAME]     = "name",
+         [ISL_STRBUFT_FILEPATH] = "filepath",
+         [ISL_STRBUFT_LITERAL]  = "literal"};
+
+    isg_list_foreach (entp, this->strbuf_entry_list) {
+        ist_strbuf_sprintf(
+            buffer,
+            idxptr,
+            "{\"type\":\"%s\",\"buffer\":\"%s\"},",
+            isl_strbuf_type_names[entp->type],
+            entp->buffer
+        );
+    }
+
+    return ist_strbuf_append_raw(buffer, idxptr, "\b]}");
+}

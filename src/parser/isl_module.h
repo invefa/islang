@@ -50,9 +50,6 @@ typedef struct ist_module {
        compilation is finished.
     */
     ist_strbuf_entry_list strbuf_entry_list;
-    // ist_string* strbuf_list;
-    // ist_sbtype* strbuf_types;
-    // ist_usize   strbuf_count;
 
 } ist_module;
 
@@ -68,6 +65,8 @@ void ist_module_clean(ist_module* this);
 void ist_module_delete(ist_module* this);
 
 ist_usize ist_module_register_strbuf(ist_module* this, ist_string _strbuf, ist_sbtype _type);
+
+ist_string ist_module_dump_json(ist_module* this, ist_string* buffer, ist_usize* idxptr);
 
 /**
  * Define the list of modules.
