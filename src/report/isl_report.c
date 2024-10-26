@@ -3,9 +3,9 @@
 #include <stdlib.h>
 
 #include "isl_ansictrl.h"
-#include "isl_lexer.h"
-#include "isl_string.h"
-#include "isl_token.h"
+#include "isl_location.h"
+#include "isl_types.h"
+
 
 ist_u8 isp_report_option = ISP_ROPTM_NONE;
 

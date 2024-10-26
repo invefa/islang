@@ -3,10 +3,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-
-#include "isl_lexer.h"
 #include "isl_list.h"
-#include "isl_memgr.h"
 #include "isl_report.h"
 
 
@@ -21,20 +18,6 @@ const ist_cstring ist_token_names[] = {
 #include "isl_tokens.h"
 #undef manifest
 };
-
-ist_string ist_location_dump_json(ist_location* this, ist_string* buffer, ist_usize* idxptr) {
-    return ist_strbuf_sprintf(
-        buffer,
-        idxptr,
-        "\"module\":\"%s%s,\"pagename\":\"%s%s,\"line\":%zu,\"column\":%zu",
-        this->module ? this->module->name : (ist_string) "\bnull",
-        this->module ? "\"" : "",
-        this->pagename ?: (ist_string) "\bnull",
-        this->pagename ? "\"" : "",
-        this->line,
-        this->column
-    );
-}
 
 
 inline ist_string ist_token_dump(ist_token* this, ist_string* buffer, ist_usize* idxptr) {

@@ -21,7 +21,7 @@ enum ist_sbtype {
     ISL_STRBUFT_LITERAL,  /* string literal analyzed from source */
 };
 
-typedef struct {
+typedef struct ist_strbuf_entry {
     ist_sbtype type;
     ist_string buffer;
 } ist_strbuf_entry;

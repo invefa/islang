@@ -7,6 +7,11 @@
 
 
 typedef size_t ist_usize;
+static_assert(
+    sizeof(ist_usize) == sizeof(void*),
+    "ist_usize(aka size_t) must be the same size as pointer."
+);
+
 
 typedef int8_t  ist_i8;
 typedef int16_t ist_i16;
@@ -21,7 +26,7 @@ typedef uint64_t ist_u64;
 typedef float  ist_f32;
 typedef double ist_f64;
 
-/* To avoid complement, we set its type to u8 instead of i8. */
+/* To avoid complement, we set byte type to u8 instead of i8. */
 typedef ist_u8 ist_byte;
 typedef ist_i8 ist_bool;
 
@@ -29,16 +34,16 @@ typedef ist_i8 ist_bool;
 #define true  1
 #define false 0
 
-static_assert(
-    sizeof(ist_usize) == sizeof(void*),
-    "ist_usize(aka size_t) must be the same size as pointer."
-);
+// declaration of the compiler structures
 
 union ist_value;
 
 struct ist_module;
 struct ist_compdata;
 
+struct ist_location;
+struct ist_token;
+struct ist_codepage;
 struct ist_lexer;
 struct ist_parser;
 struct ist_compiler;
