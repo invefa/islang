@@ -21,6 +21,14 @@ enum ist_sbtype {
     ISL_STRBUFT_LITERAL,  /* string literal analyzed from source */
 };
 
+typedef struct {
+    ist_string buffer;
+    ist_sbtype type;
+} ist_strbuf_entry;
+
+
+#define ISG_VALUE_TYPE ist_strbuf_entry
+#include "isg_list_head.h"
 
 typedef struct ist_module {
 
@@ -41,9 +49,10 @@ typedef struct ist_module {
        was designed for memory management, to ensure that the memory will be released when the
        compilation is finished.
     */
-    ist_string* strbuf_list;
-    ist_sbtype* strbuf_types;
-    ist_usize   strbuf_count;
+    ist_strbuf_entry_list strbuf_entry_list;
+    // ist_string* strbuf_list;
+    // ist_sbtype* strbuf_types;
+    // ist_usize   strbuf_count;
 
 } ist_module;
 

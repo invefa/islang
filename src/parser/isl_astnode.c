@@ -3,9 +3,11 @@
 #include "isl_list.h"
 #include "isl_memgr.h"
 
-#define ISG_STRUCT_NAME         ist_astnodeptr_list
-#define ISG_VALUE_TYPE          ist_astnode*
-#define ISG_VALUE_CLEAN_FN_NAME ist_ast_delete
+
+
+#define ISG_STRUCT_NAME           ist_astnodeptr_list
+#define ISG_VALUE_TYPE            ist_astnode*
+#define ISG_VALUE_FN_CLEAN(_astp) ist_ast_delete(*(_astp))
 #include "isg_list_code.h"
 
 

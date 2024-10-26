@@ -148,32 +148,6 @@ void isl_test_generic(void) {
         printf("module[%zu].name = %s\n", idx, iterp->name);
     }
 
-    // ist_value_int_list* int_list = ist_value_int_list_create(10, 1);
-    // ist_value_int_list_addc(int_list, 123);
-    // ist_value_int_list_addc(int_list, 456);
-    // ist_value_int_list_addc(int_list, 789);
-    // ist_value_int_list_addc(int_list, 101112);
-    // ist_value_int_list_addc(int_list, 131415);
-    // ist_value_int_list_addc(int_list, 161718);
-    // ist_value_int_list_addc(int_list, 192021);
-    // ist_value_int_list_addc(int_list, 222324);
-    // ist_value_int_list_addc(int_list, 252627);
-    // ist_value_int_list_addc(int_list, 282930);
-    // ist_value_int_list_addc(int_list, 313233);
-    // ist_value_int_list_addc(int_list, 343536);
-    // ist_value_int_list_addc(int_list, 373839);
-    // ist_value_int_list_addc(int_list, 404142);
-    // ist_value_int_list_addc(int_list, 434445);
-    // ist_value_int_list_addc(int_list, 464748);
-    // ist_value_int_list_addc(int_list, 495051);
-    // ist_value_int_list_addc(int_list, 525354);
-
-
-    // isl_list_foreach (iterp, int_list->data, idx) {
-    //     printf("int_value[%zu] = %" PRId64 "\n", idx, *iterp);
-    // }
-
-    // ist_value_int_list_delete(int_list);
     ist_module_list_delete(module_list);
     ist_value_list_delete(value_list);
 }
@@ -243,13 +217,6 @@ void isl_test_lexer(void) {
 }
 
 void isl_test_report(void) {
-    // #define pal() printf("allocated length = %u\n", isl_allocated_length)
-
-    // fprintf(stderr, ANSI_GRE_SET("this is a info    message: %d\n"), 123456);
-    // fprintf(stderr, ANSI_YEL_SET("this is a warning message: %d\n"), 123456);
-    // fprintf(stderr, ANSI_HIR_SET("this is a error   message: %d\n"), 123456);
-    // fprintf(stderr, ANSI_HIM_SET("this is a panic   message: %d\n"), 123456);
-    // fprintf(stderr, ANSI_RED_SET("this is a fatal   message: %d\n"), 123456);
 
     isl_report(rid_unknown);
     isl_report(rid_custom_core_info, "the second arg was %d.", 123);
@@ -420,13 +387,6 @@ void isl_test_list(void) {
 }
 
 void isl_test_xssert(void) {
-    /*
-        __ISL_XSSERT(w, num != 1);
-        __ISL_XSSERT(w, num != 1, "num should not be 1.");
-        __ISL_XSSERT(w, num != 1, "num should not be 1.", "this is just a test.");
-        __ISL_XSSERT(a, num != 1, "num should not be 1.", "num = %d, num + 1 = %d.", (num, num +
-       1));
-    */
 
     int num = 1;
     isl_wssert(num != 1);

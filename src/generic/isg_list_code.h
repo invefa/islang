@@ -39,20 +39,22 @@ inline void ISG_FN_NAME(resizc)(ISG_STRUCT_NAME* this, ist_usize _newcap) {
     isl_list_resizcv(this->data, _newcap);
 }
 
-inline void ISG_FN_NAME(addm)(ISG_STRUCT_NAME* this, ISG_VALUE_TYPE _value) {
+inline ist_usize ISG_FN_NAME(addm)(ISG_STRUCT_NAME* this, ISG_VALUE_TYPE _value) {
     isl_list_addmv(this->data, this->size, _value);
+    return this->size - 1;
 }
-inline void ISG_FN_NAME(addc)(ISG_STRUCT_NAME* this, ISG_VALUE_TYPE _value) {
+inline ist_usize ISG_FN_NAME(addc)(ISG_STRUCT_NAME* this, ISG_VALUE_TYPE _value) {
     isl_list_addcv(this->data, this->size, _value);
+    return this->size - 1;
 }
 
 void ISG_FN_NAME(clean)(ISG_STRUCT_NAME* this) {
 #ifndef ISG_VALUE_DONT_CLEAN
     isg_list_foreach (valuep, *this)
-#ifndef ISG_VALUE_CLEAN_FN_NAME
+#ifndef ISG_VALUE_FN_CLEAN
         ISG_UCAT(ISG_VALUE_TYPE, clean)(valuep);
 #else
-        ISG_VALUE_CLEAN_FN_NAME(*valuep);
+        ISG_VALUE_FN_CLEAN(valuep);
 #endif
 #endif
     isl_list_freev(this->data);

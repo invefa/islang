@@ -109,19 +109,16 @@ inline ist_string ist_strbuf_append_ref(
 
     return *this;
 }
+
 inline ist_string ist_strbuf_append_raw(ist_string* this, ist_usize* idxptr, ist_cstring _string) {
     return ist_strbuf_append_ref(this, idxptr, (ist_string)_string, strlen(_string));
 }
-ist_string ist_strbuf_append_raws(
-    ist_string* this,
-    ist_usize*  idxptr,
-    ist_cstring _string,
-    ...
-) {
+
+ist_string ist_strbuf_append_raws(ist_string* this, ist_usize* idxptr, ist_cstring _string, ...) {
     va_list args;
     va_start(args, _string);
-    for (ist_string cat_string = _string; cat_string; cat_string = va_arg(args, ist_string))
-        ist_strbuf_append_raw(this, idxptr, cat_string);
+    for (ist_string catstr = _string; catstr; catstr = va_arg(args, ist_string))
+        ist_strbuf_append_raw(this, idxptr, catstr);
     va_end(args);
     return *this;
 }

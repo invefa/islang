@@ -5,9 +5,11 @@
 
 #undef ISG_VALUE_TYPE
 #undef ISG_VALUE_DONT_CLEAN
+#undef ISG_VALUE_FN_CLEAN
 
 #undef ISG_KEY_TYPE
 #undef ISG_KEY_DONT_CLEAN
+#undef ISG_KEY_FN_CLEAN
 
 /* inner-implement generating option macros */
 
