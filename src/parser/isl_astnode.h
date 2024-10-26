@@ -1,11 +1,7 @@
 #ifndef ISC_ASTNODE_H
 #define ISC_ASTNODE_H
 
-#include "isl_macros.h"
-#include "isl_memgr.h"
 #include "isl_token.h"
-#include "isl_types.h"
-#include "isl_value.h"
 
 
 /**

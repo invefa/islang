@@ -2,8 +2,6 @@
 #define ISC_UTF8_H
 
 #include "isl_string.h"
-#include "isl_types.h"
-
 
 typedef ist_i32 ist_codepoint;
 

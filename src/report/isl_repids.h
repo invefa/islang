@@ -20,9 +20,9 @@ manifest(unreachable_brench, (CORE, FATAL, CORELOC), "the program entered an unr
 manifest(catch_size_overflow, (CORE, FATAL, CORELOC), "catched an overflow size.")
 manifest(illegal_utf8_codepoint, (CORE, FATAL, CORELOC), "cannot encode illegal UTF-8 codepoint.")
 
-manifest(inform_dumping, (CORE, NOTE, NONE), "dumping %s<%zX>.")
+manifest(inform_dumping, (CORE, NOTE, NONE), "dumping %s<0x%zX>.")
 manifest(inform_start_testing, (CORE, NOTE, NONE), "start testing %s...")
-manifest(inform_end_testing, (CORE, NOTE, NONE), "end testing %s...")
+manifest(inform_end_testing, (CORE, NOTE, NONE), "end testing %s...\n")
 
 manifest(
     catch_nullptr,
@@ -102,7 +102,7 @@ manifest(
 manifest(
     unrecongnized_codepoint,
     (LEXER, WARNING, USERLOC),
-    "unrecongnized unicode codepoint: <0x%X>, it will be skipped."
+    "unrecongnized unicode codepoint: <0x%X:\"%.*s\">, it will be skipped."
 )
 manifest(
     is_it_the_version_code,

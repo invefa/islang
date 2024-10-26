@@ -1,12 +1,6 @@
 #include "isl_string.h"
 
-#include <stdarg.h>
-#include <string.h>
-
-
 #include "isl_list.h"
-#include "isl_memgr.h"
-#include "isl_report.h"
 
 
 inline ist_string ist_string_consby_ref(ist_cstring _cstring, ist_usize _length) {

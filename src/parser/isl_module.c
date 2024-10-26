@@ -1,8 +1,5 @@
 #include "isl_module.h"
 
-#include "isl_list.h"
-#include "isl_memgr.h"
-
 
 #define ISG_VALUE_TYPE            ist_strbuf_entry
 #define ISG_VALUE_FN_CLEAN(_entp) ist_string_clean(&(_entp)->buffer)

@@ -2,9 +2,6 @@
 #define ISC_TOKEN_H
 
 #include "isl_location.h"
-#include "isl_module.h"
-#include "isl_string.h"
-#include "isl_types.h"
 #include "isl_value.h"
 
 

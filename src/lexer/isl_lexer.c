@@ -1,14 +1,5 @@
 #include "isl_lexer.h"
 
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "isl_list.h"
-#include "isl_memgr.h"
-#include "isl_module.h"
-#include "isl_report.h"
-#include "isl_utf8.h"
 
 #define analysis_token (this->sec_token)
 
@@ -215,7 +206,9 @@ void ist_lexer_lex(ist_lexer* this) {
                     isl_report(
                         rid_unrecongnized_codepoint,
                         this->codepage->location,
-                        ist_lexer_get_current_codepoint(this)
+                        ist_lexer_get_current_codepoint(this),
+                        this->codepage->decode_codepoint_length,
+                        this->codepage->source + this->codepage->next_sequence_index
                     );
 
                     ist_lexer_advance_codepoint(this);

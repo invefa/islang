@@ -1,9 +1,5 @@
 #include "isl_astnode.h"
 
-#include "isl_list.h"
-#include "isl_memgr.h"
-
-
 
 #define ISG_STRUCT_NAME           ist_astnodeptr_list
 #define ISG_VALUE_TYPE            ist_astnode*
