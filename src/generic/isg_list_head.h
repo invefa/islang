@@ -2,12 +2,10 @@
 #include "isg_defines.h"
 
 #include "isl_list.h"
-#include "isl_types.h"
-
 
 typedef struct ISG_STRUCT_NAME {
-    ISG_VALUE_TYPE* data;
     ist_usize       size;
+    ISG_VALUE_TYPE* data;
 } ISG_STRUCT_NAME;
 
 ISG_STRUCT_NAME  ISG_FN_NAME(consm)(ist_usize _capacity);

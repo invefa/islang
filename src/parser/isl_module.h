@@ -22,8 +22,8 @@ enum ist_sbtype {
 };
 
 typedef struct {
-    ist_string buffer;
     ist_sbtype type;
+    ist_string buffer;
 } ist_strbuf_entry;
 
 
@@ -64,6 +64,12 @@ ist_module* ist_module_createby_filepath(ist_string _filepath);
 void ist_module_clean(ist_module* this);
 void ist_module_delete(ist_module* this);
 
+/**
+ * Register a string buffer to the module, and return the index of it.
+ * It will return the index of the string buffer in the strbuf_entry_list:
+ * If the string buffer is already registered, it will update the type of it, and return the index.
+ * If the string buffer is NULL, it will return the size of the strbuf_entry_list.
+ */
 ist_usize ist_module_register_strbuf(ist_module* this, ist_string _strbuf, ist_sbtype _type);
 
 ist_string ist_module_dump_json(ist_module* this, ist_string* buffer, ist_usize* idxptr);

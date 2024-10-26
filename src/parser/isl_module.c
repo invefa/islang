@@ -82,16 +82,18 @@ inline ist_usize ist_module_register_strbuf(
     ist_string _strbuf,
     ist_sbtype _type
 ) {
+    if (!_strbuf) return this->strbuf_entry_list.size;
 
     isg_list_foreach (itp, this->strbuf_entry_list, idx)
-        if (itp->buffer == _strbuf) return idx;
+        if (itp->buffer == _strbuf) return itp->type = _type, idx;
 
     return ist_strbuf_entry_list_addm(
-        &this->strbuf_entry_list, (ist_strbuf_entry){.buffer = _strbuf, .type = _type}
+        &this->strbuf_entry_list, (ist_strbuf_entry){.type = _type, .buffer = _strbuf}
     );
 }
 
 ist_string ist_module_dump_json(ist_module* this, ist_string* buffer, ist_usize* idxptr) {
+    isl_report(rid_inform_dumping, "module", this);
     idxptr = idxptr ?: (ist_usize[1]){};
 
     ist_strbuf_sprintf(
