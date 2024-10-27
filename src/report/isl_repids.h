@@ -111,8 +111,6 @@ manifest(
 )
 
 
-manifest(
-    unexpected_token,
-    (PARSER, ERROR, USERLOC),
-    "expect token: <%s>, but got: <%s>, parser will pass this statement."
-)
+manifest(assert_tokentype_failed, (PARSER, ERROR, USERLOC), "expect token: <%s>, but got: <%s>.")
+manifest(unexpected_token, (PARSER, ERROR, USERLOC), "expect token: <%s>.")
+manifest(expect_expression, (PARSER, ERROR, USERLOC), "expect an expression!")

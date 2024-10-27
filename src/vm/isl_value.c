@@ -11,6 +11,7 @@ ist_string ist_value_dump_json(
     ist_string* buffer,
     ist_usize*  idxptr
 ) {
+    isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
 
     switch (type) {
         case ISL_TOKENT_VL_INT:

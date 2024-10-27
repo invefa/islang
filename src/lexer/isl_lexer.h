@@ -34,8 +34,8 @@ void ist_lexer_delete(ist_lexer* this);
 void ist_lexer_lookahead_start(ist_lexer* this);
 void ist_lexer_lookahead_end(ist_lexer* this);
 
-void       ist_lexer_lex(ist_lexer* this);
-ist_token* ist_lexer_advance(ist_lexer* this);
+void ist_lexer_lex(ist_lexer* this);
+void ist_lexer_advance(ist_lexer* this);
 
 void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage);
 

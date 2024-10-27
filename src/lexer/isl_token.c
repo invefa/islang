@@ -21,6 +21,7 @@ const ist_cstring ist_token_names[] = {
 
 
 inline ist_string ist_token_dump(ist_token* this, ist_string* buffer, ist_usize* idxptr) {
+    isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
     idxptr = idxptr ?: (ist_usize[1]){};
     ist_strbuf_sprintf(
         buffer,
@@ -52,6 +53,7 @@ inline ist_string ist_token_dump(ist_token* this, ist_string* buffer, ist_usize*
 
 
 inline ist_string ist_token_dump_json(ist_token* this, ist_string* buffer, ist_usize* idxptr) {
+    isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
     idxptr = idxptr ?: (ist_usize[1]){};
     ist_strbuf_sprintf(
         buffer,

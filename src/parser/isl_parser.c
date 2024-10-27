@@ -27,8 +27,8 @@ inline ist_parser* ist_parser_createby_module(ist_module* _module) {
 
 void ist_parser_clean(ist_parser* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
-    ist_lexer_clean(&this->lexer);
     if (this->root) ist_ast_delete(this->root);
+    ist_lexer_clean(&this->lexer);
 }
 
 void ist_parser_delete(ist_parser* this) {
@@ -45,12 +45,12 @@ void ist_parser_delete(ist_parser* this) {
         inert_parse_result;                                             \
     })
 
-#define force_parse(fncall, _rid, rptvargs...)            \
+#define force_parse(fncall, _rid, _rptvargs...)           \
     ({                                                    \
         ist_parse_result force_parse_result = fncall;     \
         switch (force_parse_result.state) {               \
             case PRS_FUNREPROTED:                         \
-                isl_report(_rid, rptvargs);               \
+                isl_report(_rid, _rptvargs);              \
             case PRS_FREPROTED:                           \
                 force_parse_result.state = PRS_FREPROTED; \
             case PRS_FAHEAD:                              \
@@ -77,10 +77,8 @@ void ist_parser_delete(ist_parser* this) {
 #define nex_token(this) ((this)->lexer.nex_token)
 #define sec_token(this) ((this)->lexer.sec_token)
 
-ist_token advance(ist_parser* this) {
-    ist_lexer_advance(&this->lexer);
-    return pre_token(this);
-}
+
+#define advance(this) ist_lexer_advance(&this->lexer)
 
 ist_bool match_token_type(ist_parser* this, ist_token_type _type) {
     if (cur_token(this).type != _type) return false;
@@ -88,20 +86,28 @@ ist_bool match_token_type(ist_parser* this, ist_token_type _type) {
     return true;
 }
 
-void assert_token_type(ist_parser* this, ist_token_type _type) {
-    if (cur_token(this).type != _type) {
-        isl_report(
-            rid_unexpected_token,
-            cur_token(this).location,
-            ist_token_names[_type],
-            ist_token_names[cur_token(this).type]
-        );
-        while (cur_token(this).type != ISL_TOKENT_EOS) advance(this);
-    }
-    advance(this);
-}
+#define parse_fail(_result, _rid, _rptvargs...) \
+    do {                                        \
+        isl_report(_rid, _rptvargs);            \
+        (_result).state = PRS_FREPROTED;        \
+        return (_result);                       \
+    } while (0)
 
-enum optbindpower {
+#define assert_token_type(this, _type, _result)       \
+    do {                                              \
+        if (cur_token(this).type != _type) {          \
+            parse_fail(                               \
+                _result,                              \
+                rid_assert_tokentype_failed,          \
+                cur_token(this).location,             \
+                ist_token_names[_type],               \
+                ist_token_names[cur_token(this).type] \
+            );                                        \
+        }                                             \
+        advance(this);                                \
+    } while (0)
+
+typedef enum optbindpower {
     PCD_NONE    = 0x0,
     PCD_LOWEST  = 0x1,
     PCD_ASSIGN  = 0x20,
@@ -112,7 +118,7 @@ enum optbindpower {
     PCD_SUFFIX  = 0x70,
     PCD_PAREN   = 0xFF,
     PCD_HIGHEST = INT16_MAX,
-};
+} optbindpower;
 
 struct {
     ist_bool          nud: 1;
@@ -148,7 +154,7 @@ typedef struct ist_parse_result {
 } ist_parse_result;
 
 
-ist_parse_result parse_expr(ist_parser* this) {
+ist_parse_result parse_expr(ist_parser* this, optbindpower minbp) {
     ist_parse_result result = {.state = PRS_SUCCESS, .node = NULL};
     switch (cur_token(this).type) {
         case ISL_TOKENT_VL_INT:
@@ -157,26 +163,24 @@ ist_parse_result parse_expr(ist_parser* this) {
         case ISL_TOKENT_BV_FALSE:
         case ISL_TOKENT_BV_TRUE:
             result.node = ist_astnode_createby_full(LITERAL_ENT, cur_token(this).location);
+            ISL_AS_LITERAL_ENT(result.node)->value        = cur_token(this).value;
             ISL_AS_LITERAL_ENT(result.node)->literal_type = cur_token(this).type;
             break;
 
         case ISL_TOKENT_LPARE:
-            assert_token_type(this, ISL_TOKENT_LPARE);
-            result = parse_expr(this);
-            assert_token_type(this, ISL_TOKENT_LPARE);
-            if (result.state) return result;
-            if (nex_token(this).type != ISL_TOKENT_RPARE) {
-                // isl_report(rid_unmatched_parenthesis, nex_token.location);
-                return (ist_parse_result){.state = PRS_FUNREPROTED};
-            }
+            assert_token_type(this, ISL_TOKENT_LPARE, result);
+            result = force_parse(
+                parse_expr(this, minbp), rid_expect_expression, cur_token(this).location
+            );
+            assert_token_type(this, ISL_TOKENT_RPARE, result);
             break;
         default:
-            isl_report(rid_unexpected_token, cur_token(this).location, cur_token(this).type);
+            isl_report(rid_expect_expression, cur_token(this).location);
             return (ist_parse_result){.state = PRS_FUNREPROTED};
     }
     return result;
 }
 
 void ist_parser_parse(ist_parser* this) {
-    this->root = parse_expr(this).node;
+    this->root = parse_expr(this, PCD_LOWEST).node;
 }

@@ -226,7 +226,7 @@ void ist_lexer_lex(ist_lexer* this) {
     return;
 }
 
-inline ist_token* ist_lexer_advance(ist_lexer* this) {
+inline void ist_lexer_advance(ist_lexer* this) {
 
     /*
         define some macro to make the logic of
@@ -270,7 +270,7 @@ inline ist_token* ist_lexer_advance(ist_lexer* this) {
     } else /* the common case if we have no any ahead token */
         ist_lexer_lex(this);
 
-    return &this->pre_token;
+    return;
 
     /* undef for macros */
 #undef lookaheading
