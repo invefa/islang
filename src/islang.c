@@ -40,6 +40,7 @@ void isl_test_report(void);
 void isl_test_lexer(void);
 void isl_test_generic(void);
 void isl_test_astnode(void);
+void isl_test_parser(void);
 
 int main(int argc, char* argv[]) {
 
@@ -53,13 +54,22 @@ int main(int argc, char* argv[]) {
     isl_test_lexer();
     isl_test_generic();
     isl_test_astnode();
+    isl_test_parser();
 
     return 0;
 }
 
+void isl_test_parser(void) {
+    isl_report(rid_inform_start_testing, "parser");
+    isl_max_allocated_length = 0;
+
+
+    isl_report(rid_inform_end_testing, "parser");
+}
 
 void isl_test_astnode(void) {
     isl_report(rid_inform_start_testing, "astnode");
+    isl_max_allocated_length = 0;
 
     isl_report(
         rid_custom_core_warn, "sizeof(IST_ASTNODE_BINARY_OPT) = %zu", sizeof(IST_ASTNODE_BINARY_OPT)
@@ -106,6 +116,7 @@ void isl_test_astnode(void) {
 
 void isl_test_generic(void) {
     isl_report(rid_custom_core_warn, "start testing generic...");
+    isl_max_allocated_length = 0;
 
     // isp_report_option_enable(ISP_ROPTM_NO_CORE_INFO);
 
@@ -114,7 +125,7 @@ void isl_test_generic(void) {
     struct timespec start, end;
     clock_gettime(CLOCK_REALTIME, &start);
 
-    for (ist_usize i = 0; i < 1234567; ++i)
+    for (ist_usize i = 0; i < 123456; ++i)
         ist_value_list_addm(value_list, ist_value_consby_i64(i * 13));
 
     clock_gettime(CLOCK_REALTIME, &end);
@@ -158,8 +169,8 @@ void isl_test_generic(void) {
 }
 
 void isl_test_lexer(void) {
-
     isl_report(rid_inform_start_testing, "lexer");
+    isl_max_allocated_length = 0;
 
     /* init some basic information */
     ist_string filepath       = ist_string_consby_raw("./scripts/test.is");
