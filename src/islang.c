@@ -114,7 +114,7 @@ void isl_test_generic(void) {
     struct timespec start, end;
     clock_gettime(CLOCK_REALTIME, &start);
 
-    for (ist_usize i = 0; i < 12345; ++i)
+    for (ist_usize i = 0; i < 1234567; ++i)
         ist_value_list_addm(value_list, ist_value_consby_i64(i * 13));
 
     clock_gettime(CLOCK_REALTIME, &end);

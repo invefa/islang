@@ -27,8 +27,9 @@ source_subdirs  := \
 depend_flags    :=
 
 #build relevants
-build_target_dir:= target
-build_dir       := build
+build_base_dir   := builds
+build_target_dir := target
+build_depend_dir := depend
 
 #run relevants
 run_args        :=
@@ -60,13 +61,14 @@ echo_cmd        := echo
 
 #full expanding and redirecting for variables
 
+build_depend_dir:= $(build_base_dir)/$(build_depend_dir)
 
 ifeq ($(mode),debug)
     build_version_flags := $(todebug_version_flags)
-    build_dir           := $(build_dir)/debug
+    build_dir           := $(build_base_dir)/debug
 else
     build_version_flags := $(release_version_flags)
-    build_dir           := $(build_dir)/release
+    build_dir           := $(build_base_dir)/release
 endif
 
 build_target_dir:= $(build_dir)/$(build_target_dir)
@@ -79,12 +81,14 @@ compile_header  += $(foreach _waring,$(enable_warnings),-W$(_waring))
 compile_header  += $(foreach _dir,$(source_dirs),-I$(_dir))
 compile_header  += $(foreach _macro,$(optional_macros),-D$(_macro))
 
-build_dirs      := $(build_dir) $(foreach _dir,$(source_dirs),$(build_dir)/$(_dir)) $(build_target_dir)
+build_dirs	    := $(build_base_dir) $(build_depend_dir) $(build_dir) $(build_target_dir)
+build_dirs      += $(foreach _dir,$(source_dirs),$(build_depend_dir)/$(_dir))
+build_dirs      += $(foreach _dir,$(source_dirs),$(build_dir)/$(_dir))
 build_target    := $(build_target_dir)/$(build_target)
 
 source_files    := $(foreach _dir,$(source_dirs),$(wildcard $(_dir)/*.c))
 object_files    := $(foreach _file,$(source_files),$(build_dir)/$(_file:.c=.o))
-depend_files    := $(object_files:.o=.d)
+depend_files    := $(foreach _file,$(source_files),$(build_depend_dir)/$(_file:.c=.d))
 
 phony_depend_files  := $(foreach _file,$(depend_files),phony$(_file))
 existed_depend_files:= $(wildcard $(depend_files))
@@ -114,10 +118,13 @@ $(build_target): $(object_files)
 
 rebuild: clean-all depend build
 
+#some trick to get the actual depend file path
+@convert-to-depend = $(patsubst $(build_dir)/%.o,$(build_depend_dir)/%.d,$@)
+
 #pre-define rule for recipes of depend files
-$(build_dir)/%.o: %.c $(build_dir)/%.d | mkdirs
+$(build_dir)/%.o: %.c | mkdirs
 	@$(echo_cmd) building object: $@
-	@$(compile_header) -MQ $@ -MF $(@:.o=.d) -MP -MMD -c $< -o $@
+	@$(compile_header) -MQ $@ -MF $(@convert-to-depend) -MP -MMD -c $< -o $@
 #make the phony targets for depend files
 $(depend_files):
 #include recipes of depend files
@@ -137,7 +144,7 @@ clean-object:
 clean-depend:
 	-$(rmfile_cmd) $(wildcard $(subst /,$(dir_slash),$(depend_files)))
 clean-dirs:
-	-$(rmdir_cmd) $(wildcard $(subst /,$(dir_slash),$(build_dir)))
+	-$(rmdir_cmd) $(wildcard $(subst /,$(dir_slash),$(build_base_dir)))
 
 #################
 # other methods #
@@ -151,14 +158,15 @@ depend: $(phony_depend_files)
 #phony targets for depend method to make depend files
 #different with upper phony target form 'notdir'
 #it never be find out at this project.
-$(phony_depend_files): phony$(build_dir)/%.d : %.c | mkdirs
-	$(compile_header) -o $(@deprefix-phony) $< -MT $(@deprefix-phony:.d=.o) -MP -MM
+$(phony_depend_files): phony$(build_depend_dir)/%.d : %.c | mkdirs
+	@$(echo_cmd) refreashing depend file: $(@deprefix-phony)
+	@$(compile_header) $< -MP -MM -MF $(@deprefix-phony) -MQ $(@deprefix-phony:.d=.o)
 
 mkdirs: $(build_dirs)
-$(build_dirs): #mk-build-dir
+$(build_dirs): #mk-build-dirs
 	$(mkdir_cmd) $(subst /,$(dir_slash),$@)
 mk-build-dir:
-	$(mkdir_cmd) $(subst /,$(dir_slash),$(build_dir))
+	$(mkdir_cmd) $(subst /,$(dir_slash),$(build_base_dir))
 
 #test codes
 test_escapes = -o $@ $< -MM -MT $(@:.d=.o)
