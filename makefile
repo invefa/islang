@@ -63,12 +63,12 @@ echo_cmd        := echo
 
 build_depend_dir:= $(build_base_dir)/$(build_depend_dir)
 
-ifeq ($(mode),release)
-    build_version_flags := $(release_version_flags)
-    build_dir           := $(build_base_dir)/release
-else
+ifeq ($(mode),debug)
     build_version_flags := $(todebug_version_flags)
     build_dir           := $(build_base_dir)/debug
+else
+    build_version_flags := $(release_version_flags)
+    build_dir           := $(build_base_dir)/release
 endif
 
 build_target_dir:= $(build_dir)/$(build_target_dir)
