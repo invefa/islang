@@ -40,14 +40,14 @@ void ist_parser_delete(ist_parser* this) {
 
 #define inert_parse(fncall)                                             \
     ({                                                                  \
-        ist_parse_result inert_parse_result = fncall;                   \
+        parse_result inert_parse_result = fncall;                   \
         if (!inert_parse_result.state) return inert_parse_result.state; \
         inert_parse_result;                                             \
     })
 
 #define force_parse(fncall, _rid, _rptvargs...)           \
     ({                                                    \
-        ist_parse_result force_parse_result = fncall;     \
+        parse_result force_parse_result = fncall;     \
         switch (force_parse_result.state) {               \
             case PRS_FUNREPROTED:                         \
                 isl_report(_rid, _rptvargs);              \
@@ -64,7 +64,7 @@ void ist_parser_delete(ist_parser* this) {
 #define ahead_match(fncall)                                                                   \
     ({                                                                                        \
         ist_lexer_lookahead_start(&this->lexer);                                              \
-        ist_parse_result ahead_match_result = fncall;                                         \
+        parse_result ahead_match_result = fncall;                                         \
         ist_lexer_lookahead_end(&this->lexer);                                                \
         isl_assert(                                                                           \
             ahead_match_result.state == PRS_SUCCESS || ahead_match_result.state == PRS_FAHEAD \
@@ -143,7 +143,7 @@ struct {
     [ISL_TOKENT_BV_TRUE]    = {true, false, PCD_HIGHEST, PCD_HIGHEST},
 };
 
-typedef struct ist_parse_result {
+typedef struct parse_result {
     enum parse_result_state {
         PRS_SUCCESS     = 0,
         PRS_FUNREPROTED = 1,
@@ -151,11 +151,16 @@ typedef struct ist_parse_result {
         PRS_FAHEAD      = 3,
     } state: 2;
     ist_astnode* node;
-} ist_parse_result;
+} parse_result;
 
+#define parse_result_setstate(_result, _state) \
+    ({                                         \
+        (_result).state = (_state);            \
+        (_result);                             \
+    })
 
-ist_parse_result parse_expr(ist_parser* this, optbindpower minbp) {
-    ist_parse_result result = {.state = PRS_SUCCESS, .node = NULL};
+parse_result parse_expr(ist_parser* this, optbindpower minbp) {
+    parse_result result = {.state = PRS_SUCCESS, .node = NULL};
     switch (cur_token(this).type) {
         case ISL_TOKENT_VL_INT:
         case ISL_TOKENT_VL_REAL:
@@ -176,7 +181,7 @@ ist_parse_result parse_expr(ist_parser* this, optbindpower minbp) {
             break;
         default:
             isl_report(rid_expect_expression, cur_token(this).location);
-            return (ist_parse_result){.state = PRS_FUNREPROTED};
+            return (parse_result){.state = PRS_FUNREPROTED};
     }
     return result;
 }
