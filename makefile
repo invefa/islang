@@ -159,7 +159,7 @@ depend: $(phony_depend_files)
 #different with upper phony target form 'notdir'
 #it never be find out at this project.
 $(phony_depend_files): phony$(build_depend_dir)/%.d : %.c | mkdirs
-	@$(echo_cmd) refreashing depend file: $(@deprefix-phony)
+	@$(echo_cmd) freashing depend file: $(@deprefix-phony)
 	@$(compile_header) $< -MP -MM -MF $(@deprefix-phony) -MQ $(@deprefix-phony:.d=.o)
 
 mkdirs: $(build_dirs)
