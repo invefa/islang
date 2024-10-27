@@ -6,12 +6,13 @@
 ###########################
 
 #compiler relevants
-compiler_name       := gcc
-compiler_flags      := -fdiagnostics-color=always -std=gnu11
-#build_version_flags := -s -O3
-build_version_flags := -g
-enable_warnings     := all shadow no-pointer-sign inline unreachable-code
-optional_macros     := _DEBUG ISL_BWMF #islang build with makefile
+compiler_name         := gcc
+compiler_flags        := -fdiagnostics-color=always -std=gnu11
+release_version_flags := -s -O3
+todebug_version_flags := -g -DISL_DEBUG
+enable_warnings       := all shadow no-pointer-sign inline unreachable-code
+optional_macros       := ISL_BWMF #islang build with makefile
+
 
 #debugger relevants
 debugger_name   := gdb
@@ -26,7 +27,7 @@ source_subdirs  := \
 depend_flags    :=
 
 #build relevants
-build_target_dir:= build/target
+build_target_dir:= target
 build_dir       := build
 
 #run relevants
@@ -59,6 +60,17 @@ echo_cmd        := echo
 
 #full expanding and redirecting for variables
 
+
+ifeq ($(mode),debug)
+    build_version_flags := $(todebug_version_flags)
+    build_dir           := $(build_dir)/debug
+else
+    build_version_flags := $(release_version_flags)
+    build_dir           := $(build_dir)/release
+endif
+
+build_target_dir:= $(build_dir)/$(build_target_dir)
+
 source_subdirs  := $(foreach _dir,$(source_subdirs),$(source_dir)/$(_dir))
 source_dirs     := $(source_dir) $(source_subdirs)
 
@@ -67,7 +79,7 @@ compile_header  += $(foreach _waring,$(enable_warnings),-W$(_waring))
 compile_header  += $(foreach _dir,$(source_dirs),-I$(_dir))
 compile_header  += $(foreach _macro,$(optional_macros),-D$(_macro))
 
-build_dirs      := $(foreach _dir,$(source_dirs),$(build_dir)/$(_dir)) $(build_target_dir)
+build_dirs      := $(build_dir) $(foreach _dir,$(source_dirs),$(build_dir)/$(_dir)) $(build_target_dir)
 build_target    := $(build_target_dir)/$(build_target)
 
 source_files    := $(foreach _dir,$(source_dirs),$(wildcard $(_dir)/*.c))
