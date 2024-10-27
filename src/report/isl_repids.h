@@ -109,3 +109,10 @@ manifest(
     (LEXER, WARNING, USERLOC),
     "are you sure? is it the version code? the second dot and its suffix numbers will be ignored."
 )
+
+
+manifest(
+    unexpected_token,
+    (PARSER, ERROR, USERLOC),
+    "expect token: <%s>, but got: <%s>, parser will pass this statement."
+)
