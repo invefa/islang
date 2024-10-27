@@ -16,7 +16,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <time.h>
 
 #include "isl_ansictrl.h"
 #include "isl_astnode.h"
@@ -110,28 +110,25 @@ void isl_test_generic(void) {
     // isp_report_option_enable(ISP_ROPTM_NO_CORE_INFO);
 
     ist_value_list* value_list = ist_value_list_create(10, 1);
-    ist_value_list_addc(value_list, ist_value_consby_i64(123));
-    ist_value_list_addc(value_list, ist_value_consby_i64(456));
-    ist_value_list_addc(value_list, ist_value_consby_i64(789));
-    ist_value_list_addc(value_list, ist_value_consby_i64(101112));
-    ist_value_list_addc(value_list, ist_value_consby_i64(131415));
-    ist_value_list_addc(value_list, ist_value_consby_i64(161718));
-    ist_value_list_addc(value_list, ist_value_consby_i64(192021));
-    ist_value_list_addc(value_list, ist_value_consby_i64(222324));
-    ist_value_list_addc(value_list, ist_value_consby_i64(252627));
-    ist_value_list_addc(value_list, ist_value_consby_i64(282930));
-    ist_value_list_addc(value_list, ist_value_consby_i64(313233));
-    ist_value_list_addc(value_list, ist_value_consby_i64(343536));
-    ist_value_list_addc(value_list, ist_value_consby_i64(373839));
-    ist_value_list_addc(value_list, ist_value_consby_i64(404142));
-    ist_value_list_addc(value_list, ist_value_consby_i64(434445));
-    ist_value_list_addc(value_list, ist_value_consby_i64(464748));
-    ist_value_list_addc(value_list, ist_value_consby_i64(495051));
-    ist_value_list_addc(value_list, ist_value_consby_i64(525354));
 
-    isg_list_foreach (iterp, *value_list, idx) {
-        printf("value[%zu] = %" PRId64 "\n", idx, iterp->int_value);
-    }
+    struct timespec start, end;
+    clock_gettime(CLOCK_REALTIME, &start);
+
+    for (ist_usize i = 0; i < 12345; ++i)
+        ist_value_list_addm(value_list, ist_value_consby_i64(i * 13));
+
+    clock_gettime(CLOCK_REALTIME, &end);
+
+    printf(
+        "time cost: %lfs\n",
+        (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1000000000.
+    );
+
+    ist_value_list_addc(value_list, ist_value_consby_i64(1234567890));
+
+    // isg_list_foreach (iterp, *value_list, idx)
+    //     printf("value[%zu] = %" PRId64 "\n", idx, iterp->int_value);
+
 
     ist_module_list* module_list = ist_module_list_calloc(10);
     ist_module_list_addc(
@@ -401,6 +398,7 @@ void isl_test_xssert(void) {
     isl_wssert(num != 1, "num should not be 1.");
     isl_wssert(num != 1, "num should not be 1.", "this is just a test.");
     isl_wssert(num != 1, "num should not be 1.", "num = %d, num + 1 = %d.", (num, num + 1));
+    num = 2;
 }
 
 void isl_test_overload(void) {
