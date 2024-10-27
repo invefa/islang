@@ -3,12 +3,12 @@
 inline ist_parser ist_parser_consby_full(ist_lexer _lexer) {
     return (ist_parser){.lexer = _lexer, .root = NULL};
 }
-inline ist_parser ist_parser_consby_module(ist_module* _module) {
+ist_parser ist_parser_consby_module(ist_module* _module) {
     return ist_parser_consby_full(ist_lexer_consby_module(_module));
 }
 
 
-inline ist_parser* ist_parser_initby_full(ist_parser* this, ist_lexer _lexer) {
+ist_parser* ist_parser_initby_full(ist_parser* this, ist_lexer _lexer) {
     *this = ist_parser_consby_full(_lexer);
     return this;
 }
