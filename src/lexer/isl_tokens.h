@@ -106,3 +106,5 @@ manifest(LESSTHAN, "<")
 manifest(GREATERTHAN, ">")
 manifest(LESSEQUAL, "<=")
 manifest(GREATEQUAL, ">=")
+
+manifest(LATEST, NULL)
