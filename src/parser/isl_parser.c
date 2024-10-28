@@ -38,97 +38,29 @@ void ist_parser_delete(ist_parser* this) {
 
 
 
-#define inert_parse(fncall)                                             \
-    ({                                                                  \
-        parse_result inert_parse_result = fncall;                       \
-        if (!inert_parse_result.state) return inert_parse_result.state; \
-        inert_parse_result;                                             \
-    })
+typedef enum ist_optbindpower {
+    OBP_NONE    = 0x0,
+    OBP_LOWEST  = 0x1,
+    OBP_ASSIGN  = 0x20,
+    OBP_ARITH   = 0x30,
+    OBP_TERM    = 0x40,
+    OBP_FACTOR  = 0x50,
+    OBP_PREFIX  = 0x60,
+    OBP_SUFFIX  = 0x70,
+    OBP_PAREN   = 0xFF,
+    OBP_HIGHEST = INT16_MAX,
+} ist_optbindpower;
 
-#define force_parse(fncall, _rid, _rptvargs...)           \
-    ({                                                    \
-        parse_result force_parse_result = fncall;         \
-        switch (force_parse_result.state) {               \
-            case PRS_FUNREPROTED:                         \
-                isl_report(_rid, _rptvargs);              \
-            case PRS_FREPROTED:                           \
-                force_parse_result.state = PRS_FREPROTED; \
-            case PRS_FAHEAD:                              \
-                return force_parse_result;                \
-            case PRS_SUCCESS:                             \
-                break;                                    \
-        }                                                 \
-        force_parse_result;                               \
-    })
-
-#define ahead_match(fncall)                                                                   \
-    ({                                                                                        \
-        ist_lexer_lookahead_start(&this->lexer);                                              \
-        parse_result ahead_match_result = fncall;                                             \
-        ist_lexer_lookahead_end(&this->lexer);                                                \
-        isl_assert(                                                                           \
-            ahead_match_result.state == PRS_SUCCESS || ahead_match_result.state == PRS_FAHEAD \
-        );                                                                                    \
-        !ahead_match_result.state;                                                            \
-    })
-
-#define pre_token() ((this)->lexer.pre_token)
-#define cur_token() ((this)->lexer.cur_token)
-#define nex_token() ((this)->lexer.nex_token)
-#define sec_token() ((this)->lexer.sec_token)
-
-
-#define advance() ist_lexer_advance(&this->lexer)
-
-ist_bool match_token(ist_parser* this, ist_token_type _type) {
-    if (cur_token().type != _type) return false;
-    advance();
-    return true;
-}
-
-#define parse_fail(_result, _rid, _rptvargs...) \
-    do {                                        \
-        isl_report(_rid, _rptvargs);            \
-        (_result).state = PRS_FREPROTED;        \
-        return (_result);                       \
-    } while (0)
-
-
-
-#define assert_token(_type, _result)              \
-    do {                                          \
-        if (!match_token(this, _type))            \
-            parse_fail(                           \
-                _result,                          \
-                rid_assert_tokentype_failed,      \
-                cur_token().location,             \
-                ist_token_names[_type],           \
-                ist_token_names[cur_token().type] \
-            );                                    \
-    } while (0)
-
-typedef enum optbindpower {
-    PCD_NONE    = 0x0,
-    PCD_LOWEST  = 0x1,
-    PCD_ASSIGN  = 0x20,
-    PCD_ARITH   = 0x30,
-    PCD_TERM    = 0x40,
-    PCD_FACTOR  = 0x50,
-    PCD_PREFIX  = 0x60,
-    PCD_SUFFIX  = 0x70,
-    PCD_PAREN   = 0xFF,
-    PCD_HIGHEST = INT16_MAX,
-} optbindpower;
-
-typedef struct parse_result {
-    enum parse_result_state {
+typedef struct ist_presult {
+    enum ist_parse_result_state {
         PRS_SUCCESS     = 0,
         PRS_FUNREPROTED = 1,
         PRS_FREPROTED   = 2,
         PRS_FAHEAD      = 3,
     } state: 2;
     ist_astnode* node;
-} parse_result;
+} ist_presult;
+
 
 #define parse_result_setstate(_result, _state) \
     ({                                         \
@@ -136,80 +68,193 @@ typedef struct parse_result {
         (_result);                             \
     })
 
-#define parse_result_consby_null() ((parse_result){.state = PRS_SUCCESS, .node = NULL})
+#define parse_result_consby_null() ((ist_presult){.state = PRS_SUCCESS, .node = NULL})
 #define parse_result_consby_node(_node) \
-    ((parse_result){.state = PRS_SUCCESS, .node = (ist_astnode*)(_node)})
+    ((ist_presult){.state = PRS_SUCCESS, .node = (ist_astnode*)(_node)})
 
 
-typedef parse_result (*parselet_nud_fntype)(ist_parser*, ist_token);
-typedef parse_result (*parselet_led_fntype)(ist_parser*, ist_token, optbindpower);
+typedef ist_presult (*ist_pletnud_fn)(ist_parser*);
+typedef ist_presult (*ist_pletled_fn)(ist_parser*, ist_astnode*);
 
-parse_result nud_literal_ent(ist_parser* this, ist_token _token) {
-    IST_ASTNODE_LITERAL_ENT* node = ist_astnode_createby_full(LITERAL_ENT, _token.location);
+ist_presult nud_literal_ent(ist_parser* this);
+ist_presult nud_prefix(ist_parser* this);
 
-    node->value        = _token.value;
-    node->literal_type = _token.type;
-    return parse_result_consby_node(node);
+ist_presult led_infix(ist_parser* this, ist_astnode* lhs);
+
+
+#define pre_token(this) ((this)->lexer.pre_token)
+#define cur_token(this) ((this)->lexer.cur_token)
+#define nex_token(this) ((this)->lexer.nex_token)
+#define sec_token(this) ((this)->lexer.sec_token)
+
+
+#define inert_parse(_result, _fncall)           \
+    ({                                          \
+        (_result) = _fncall;                    \
+        if (!(_result).state) return (_result); \
+        (_result);                              \
+    })
+
+#define force_parse(_result, _fncall, _rid, _rptvargs...) \
+    ({                                                    \
+        (_result) = _fncall;                              \
+        switch ((_result).state) {                        \
+            case PRS_FUNREPROTED:                         \
+                isl_report(_rid, _rptvargs);              \
+            case PRS_FREPROTED:                           \
+                (_result).state = PRS_FREPROTED;          \
+            case PRS_FAHEAD:                              \
+                return (_result);                         \
+            case PRS_SUCCESS:                             \
+                break;                                    \
+        }                                                 \
+        (_result);                                        \
+    })
+
+#define ahead_match(_result, _fncall)                                                \
+    ({                                                                               \
+        ist_lexer_lookahead_start(&this->lexer);                                     \
+        (_result) = fncall;                                                          \
+        ist_lexer_lookahead_end(&this->lexer);                                       \
+        isl_assert((_result).state == PRS_SUCCESS || (_result).state == PRS_FAHEAD); \
+        !(_result).state;                                                            \
+    })
+
+
+#define parse_fail(_result, _rid, _rptvargs...)               \
+    do {                                                      \
+        isl_report(_rid, _rptvargs);                          \
+        return parse_result_setstate(_result, PRS_FREPROTED); \
+    } while (0)
+
+#define assert_token(_result, _type)                  \
+    do {                                              \
+        if (!match_token(this, _type))                \
+            parse_fail(                               \
+                _result,                              \
+                rid_assert_tokentype_failed,          \
+                cur_token(this).location,             \
+                ist_token_names[_type],               \
+                ist_token_names[cur_token(this).type] \
+            );                                        \
+    } while (0)
+
+
+
+ist_token* advance(ist_parser* this) {
+    ist_lexer_advance(&this->lexer);
+    return &pre_token(this);
 }
 
+ist_bool match_token(ist_parser* this, ist_token_type _type) {
+    if (cur_token(this).type != _type) return false;
+    advance(this);
+    return true;
+}
+
+
+
 struct {
-    parselet_nud_fntype nud;
-    parselet_led_fntype led;
-    optbindpower        lbp: 16;
-    optbindpower        rbp: 16;
+
+    ist_pletnud_fn nud;
+    ist_pletled_fn led;
+    ist_optbindpower    lbp: 16;
+    ist_optbindpower    rbp: 16;
+
 } opttattrs[] = {
-    [ISL_TOKENT_ASSIGN]     = {NULL, NULL, PCD_ASSIGN + 1, PCD_ASSIGN},
-    [ISL_TOKENT_ADD_ASSIGN] = {NULL, NULL, PCD_ASSIGN + 1, PCD_ASSIGN},
-    [ISL_TOKENT_SUB_ASSIGN] = {NULL, NULL, PCD_ASSIGN + 1, PCD_ASSIGN},
-    [ISL_TOKENT_MUL_ASSIGN] = {NULL, NULL, PCD_ASSIGN + 1, PCD_ASSIGN},
-    [ISL_TOKENT_DIV_ASSIGN] = {NULL, NULL, PCD_ASSIGN + 1, PCD_ASSIGN},
-    [ISL_TOKENT_MOD_ASSIGN] = {NULL, NULL, PCD_ASSIGN + 1, PCD_ASSIGN},
-    [ISL_TOKENT_ADD]        = {NULL, NULL, PCD_ARITH, PCD_ARITH + 1},
-    [ISL_TOKENT_SUB]        = {NULL, NULL, PCD_ARITH, PCD_ARITH + 1},
-    [ISL_TOKENT_MUL]        = {NULL, NULL, PCD_TERM, PCD_TERM + 1},
-    [ISL_TOKENT_DIV]        = {NULL, NULL, PCD_TERM, PCD_TERM + 1},
-    [ISL_TOKENT_MOD]        = {NULL, NULL, PCD_TERM, PCD_TERM + 1},
-    [ISL_TOKENT_VL_INT]     = {nud_literal_ent, NULL, PCD_NONE, PCD_NONE},
-    [ISL_TOKENT_VL_REAL]    = {nud_literal_ent, NULL, PCD_NONE, PCD_NONE},
-    [ISL_TOKENT_VL_STRING]  = {nud_literal_ent, NULL, PCD_NONE, PCD_NONE},
-    [ISL_TOKENT_BV_FALSE]   = {nud_literal_ent, NULL, PCD_NONE, PCD_NONE},
-    [ISL_TOKENT_BV_TRUE]    = {nud_literal_ent, NULL, PCD_NONE, PCD_NONE},
+    [ISL_TOKENT_ASSIGN]     = {NULL, NULL, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_ADD_ASSIGN] = {NULL, NULL, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_SUB_ASSIGN] = {NULL, NULL, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_MUL_ASSIGN] = {NULL, NULL, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_DIV_ASSIGN] = {NULL, NULL, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_MOD_ASSIGN] = {NULL, NULL, OBP_ASSIGN + 1, OBP_ASSIGN},
+
+    [ISL_TOKENT_ADD] = {nud_prefix, NULL, OBP_ARITH, OBP_ARITH + 1},
+    [ISL_TOKENT_SUB] = {nud_prefix, NULL, OBP_ARITH, OBP_ARITH + 1},
+    [ISL_TOKENT_MUL] = {NULL, NULL, OBP_TERM, OBP_TERM + 1},
+    [ISL_TOKENT_DIV] = {NULL, NULL, OBP_TERM, OBP_TERM + 1},
+    [ISL_TOKENT_MOD] = {NULL, NULL, OBP_TERM, OBP_TERM + 1},
+
+    [ISL_TOKENT_VL_INT]    = {nud_literal_ent, NULL, OBP_NONE, OBP_NONE},
+    [ISL_TOKENT_VL_REAL]   = {nud_literal_ent, NULL, OBP_NONE, OBP_NONE},
+    [ISL_TOKENT_VL_STRING] = {nud_literal_ent, NULL, OBP_NONE, OBP_NONE},
+    [ISL_TOKENT_BV_FALSE]  = {nud_literal_ent, NULL, OBP_NONE, OBP_NONE},
+    [ISL_TOKENT_BV_TRUE]   = {nud_literal_ent, NULL, OBP_NONE, OBP_NONE},
 };
 
 
-parse_result parse_expr(ist_parser* this, optbindpower minbp) {
-    parse_result result = parse_result_consby_null();
+ist_presult parse_expr(ist_parser* this, ist_optbindpower minbp) {
+    ist_presult result   = parse_result_consby_null();
+    ist_token   curtoken = cur_token(this);
 
-    if (opttattrs[cur_token().type].nud)
-        result = opttattrs[cur_token().type].nud(this, cur_token());
+    if (opttattrs[curtoken.type].nud) inert_parse(result, opttattrs[advance(this)->type].nud(this));
+    else parse_fail(result, rid_expect_expression, curtoken.location);
 
-    else parse_fail(result, rid_expect_expression, cur_token().location);
+    while (minbp <= opttattrs[cur_token(this).type].lbp) {
+        curtoken = cur_token(this);
+        if (!opttattrs[curtoken.type].led) break;
 
-
-    switch (cur_token().type) {
-        case ISL_TOKENT_VL_INT:
-        case ISL_TOKENT_VL_REAL:
-        case ISL_TOKENT_VL_STRING:
-        case ISL_TOKENT_BV_FALSE:
-        case ISL_TOKENT_BV_TRUE:
-            result.node = ist_astnode_createby_full(LITERAL_ENT, cur_token().location);
-            ISL_AS_LITERAL_ENT(result.node)->value        = cur_token().value;
-            ISL_AS_LITERAL_ENT(result.node)->literal_type = cur_token().type;
-            break;
-
-        case ISL_TOKENT_LPARE:
-            assert_token(ISL_TOKENT_LPARE, result);
-            result =
-                force_parse(parse_expr(this, minbp), rid_expect_expression, cur_token().location);
-            assert_token(ISL_TOKENT_RPARE, result);
-            break;
-        default:
-            isl_report(rid_expect_expression, cur_token().location);
-            return (parse_result){.state = PRS_FUNREPROTED};
+        force_parse(
+            result,
+            opttattrs[advance(this)->type].led(this, result.node),
+            rid_expect_expression,
+            curtoken.location
+        );
     }
+
     return result;
 }
 
 void ist_parser_parse(ist_parser* this) {
-    this->root = parse_expr(this, PCD_LOWEST).node;
+    this->root = parse_expr(this, OBP_LOWEST).node;
+}
+
+ist_presult nud_literal_ent(ist_parser* this) {
+    ist_presult result =
+        parse_result_consby_node(ist_astnode_createby_full(LITERAL_ENT, cur_token(this).location));
+
+    ISL_AS_LITERAL_ENT(result.node)->value        = cur_token(this).value;
+    ISL_AS_LITERAL_ENT(result.node)->literal_type = cur_token(this).type;
+
+    advance(this);
+
+    return result;
+}
+
+ist_presult nud_prefix(ist_parser* this) {
+    ist_token   curop = cur_token(this);
+    ist_presult result =
+        parse_result_consby_node(ist_astnode_createby_full(UNARY_OPT, curop.location));
+
+
+    ISL_AS_UNARY_OPT(result.node)->on_left       = true;
+    ISL_AS_UNARY_OPT(result.node)->operator_type = curop.type;
+    force_parse(
+        result,
+        parse_expr(this, opttattrs[advance(this)->type].rbp),
+        rid_expect_expression,
+        curop.location
+    );
+
+    return result;
+}
+
+ist_presult led_infix(ist_parser* this, ist_astnode* lhs) {
+    ist_token   curop = cur_token(this);
+    ist_presult result =
+        parse_result_consby_node(ist_astnode_createby_full(BINARY_OPT, curop.location));
+
+
+    ISL_AS_BINARY_OPT(result.node)->left_node     = lhs;
+    ISL_AS_BINARY_OPT(result.node)->operator_type = curop.type;
+    ISL_AS_BINARY_OPT(result.node)->right_node =
+        force_parse(
+            parse_result_consby_null(),
+            parse_expr(this, opttattrs[advance(this)->type].rbp),
+            rid_expect_expression,
+            cur_token(this).location
+        )
+            .node;
+
+    return result;
 }
