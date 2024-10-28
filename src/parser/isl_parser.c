@@ -88,11 +88,11 @@ ist_presult led_infix(ist_parser* this, ist_astnode* lhs);
 #define sec_token(this) ((this)->lexer.sec_token)
 
 
-#define inert_parse(_resultv, _fncall)                            \
-    ({                                                            \
-        ist_presult inert_parse_result = _fncall;                 \
-        if (!inert_parse_result.state) return inert_parse_result; \
-        (_resultv) = inert_parse_result;                          \
+#define inert_parse(_resultv, _fncall)                           \
+    ({                                                           \
+        ist_presult inert_parse_result = _fncall;                \
+        if (inert_parse_result.state) return inert_parse_result; \
+        (_resultv) = inert_parse_result;                         \
     })
 
 #define force_parse(_resultv, _fncall, _rid, _rptvargs...) \
