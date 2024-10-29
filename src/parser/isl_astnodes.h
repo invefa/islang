@@ -18,21 +18,21 @@ manifest(PARAM_LIST, (IST_ASTNODE_NODE_LIST))
 /* operations */
 manifest(UNARY_OPT, (struct {
              ist_astnode    base;
-             ist_token_type operator_type;
-             ist_bool       on_left;
+             ist_token_type optype;
+             ist_bool       onlhs;
              ist_astnode*   sub_node;
          }))
 
 manifest(BINARY_OPT, (struct {
              ist_astnode    base;
-             ist_token_type operator_type;
-             ist_astnode*   left_node;
-             ist_astnode*   right_node;
+             ist_token_type optype;
+             ist_astnode*   lhs_node;
+             ist_astnode*   rhs_node;
          }))
 
 manifest(TERNARY_OPT, (struct {
              ist_astnode    base;
-             ist_token_type operator_type;
+             ist_token_type optype;
              ist_astnode*   first_node;
              ist_astnode*   second_node;
              ist_astnode*   third_node;
@@ -41,7 +41,7 @@ manifest(TERNARY_OPT, (struct {
 /* comptime entities */
 manifest(LITERAL_ENT, (struct {
              ist_astnode    base;
-             ist_token_type literal_type;
+             ist_token_type litype;
              ist_value      value;
          }))
 

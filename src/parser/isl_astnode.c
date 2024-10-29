@@ -66,8 +66,8 @@ void ist_ast_delete(void* this) {
         }
         case ISL_ASTNT_BINARY_OPT: {
             IST_ASTNODE_BINARY_OPT* binary_opt = this;
-            ist_ast_delete(binary_opt->left_node);
-            ist_ast_delete(binary_opt->right_node);
+            ist_ast_delete(binary_opt->lhs_node);
+            ist_ast_delete(binary_opt->rhs_node);
             break;
         }
         case ISL_ASTNT_TERNARY_OPT: {
@@ -119,10 +119,10 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
             ist_strbuf_sprintf(
                 buffer,
                 idxptr,
-                "\"literal_type\":\"%s\",\"value\":",
-                ist_token_names[literal_ent->literal_type]
+                "\"litype\":\"%s\",\"value\":",
+                ist_token_names[literal_ent->litype]
             );
-            ist_value_dump_json(&literal_ent->value, literal_ent->literal_type, buffer, idxptr);
+            ist_value_dump_json(&literal_ent->value, literal_ent->litype, buffer, idxptr);
             break;
         }
 
@@ -131,12 +131,12 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
             ist_strbuf_sprintf(
                 buffer,
                 idxptr,
-                "\"operator_type\":\"%s\",\"left_node\":",
-                ist_token_names[binary_opt->operator_type]
+                "\"optype\":\"%s\",\"lhs_node\":",
+                ist_token_names[binary_opt->optype]
             );
-            ist_ast_dump_json(binary_opt->left_node, buffer, idxptr);
-            ist_strbuf_append_raw(buffer, idxptr, ",\"right_node\":");
-            ist_ast_dump_json(binary_opt->right_node, buffer, idxptr);
+            ist_ast_dump_json(binary_opt->lhs_node, buffer, idxptr);
+            ist_strbuf_append_raw(buffer, idxptr, ",\"rhs_node\":");
+            ist_ast_dump_json(binary_opt->rhs_node, buffer, idxptr);
             break;
         }
 
@@ -145,9 +145,9 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
             ist_strbuf_sprintf(
                 buffer,
                 idxptr,
-                "\"operator_type\":\"%s\",\"on_left\":%s,\"sub_node\":",
-                ist_token_names[unary_opt->operator_type],
-                unary_opt->on_left ? "true" : "false"
+                "\"optype\":\"%s\",\"onlhs\":%s,\"sub_node\":",
+                ist_token_names[unary_opt->optype],
+                unary_opt->onlhs ? "true" : "false"
             );
             ist_ast_dump_json(unary_opt->sub_node, buffer, idxptr);
             break;

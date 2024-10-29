@@ -218,7 +218,7 @@ ist_presult nud_literal_ent(ist_parser* this) {
         ist_presult_consby_node(ist_astnode_createby_full(LITERAL_ENT, cur_token(this).location));
 
     ISL_AS_LITERAL_ENT(result.node)->value        = cur_token(this).value;
-    ISL_AS_LITERAL_ENT(result.node)->literal_type = cur_token(this).type;
+    ISL_AS_LITERAL_ENT(result.node)->litype = cur_token(this).type;
 
     advance(this);
 
@@ -231,8 +231,8 @@ ist_presult nud_prefix(ist_parser* this) {
         ist_presult_consby_node(ist_astnode_createby_full(UNARY_OPT, curtoken.location));
 
 
-    ISL_AS_UNARY_OPT(result.node)->on_left       = true;
-    ISL_AS_UNARY_OPT(result.node)->operator_type = curtoken.type;
+    ISL_AS_UNARY_OPT(result.node)->onlhs       = true;
+    ISL_AS_UNARY_OPT(result.node)->optype = curtoken.type;
     ISL_AS_UNARY_OPT(result.node)->sub_node =
         force_parse(
             ist_presult_consby_null(),
@@ -251,9 +251,9 @@ ist_presult led_infix(ist_parser* this, ist_astnode* lhs) {
         ist_presult_consby_node(ist_astnode_createby_full(BINARY_OPT, curtoken.location));
 
 
-    ISL_AS_BINARY_OPT(result.node)->left_node     = lhs;
-    ISL_AS_BINARY_OPT(result.node)->operator_type = curtoken.type;
-    ISL_AS_BINARY_OPT(result.node)->right_node =
+    ISL_AS_BINARY_OPT(result.node)->lhs_node     = lhs;
+    ISL_AS_BINARY_OPT(result.node)->optype = curtoken.type;
+    ISL_AS_BINARY_OPT(result.node)->rhs_node =
         force_parse(
             ist_presult_consby_null(),
             parse_expr(this, opttattrs[advance(this)->type].rbp),

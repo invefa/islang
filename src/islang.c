@@ -97,22 +97,22 @@ void isl_test_astnode(void) {
 
     IST_ASTNODE_UNARY_OPT* unopt_node =
         ist_astnode_createby_full(UNARY_OPT, ist_location_consby_null());
-    unopt_node->operator_type = ISL_TOKENT_SUB;
+    unopt_node->optype = ISL_TOKENT_SUB;
     unopt_node->sub_node      = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
-    unopt_node->on_left       = true;
-    ISL_AS_LITERAL_ENT(unopt_node->sub_node)->literal_type    = ISL_TOKENT_VL_INT;
+    unopt_node->onlhs       = true;
+    ISL_AS_LITERAL_ENT(unopt_node->sub_node)->litype    = ISL_TOKENT_VL_INT;
     ISL_AS_LITERAL_ENT(unopt_node->sub_node)->value.int_value = 123;
 
 
     IST_ASTNODE_BINARY_OPT* binopt_node =
         ist_astnode_createby_full(BINARY_OPT, ist_location_consby_null());
-    binopt_node->operator_type = ISL_TOKENT_ADD;
-    binopt_node->left_node     = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
-    binopt_node->right_node    = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
-    ISL_AS_LITERAL_ENT(binopt_node->left_node)->literal_type     = ISL_TOKENT_VL_INT;
-    ISL_AS_LITERAL_ENT(binopt_node->right_node)->literal_type    = ISL_TOKENT_VL_INT;
-    ISL_AS_LITERAL_ENT(binopt_node->left_node)->value.int_value  = -123;
-    ISL_AS_LITERAL_ENT(binopt_node->right_node)->value.int_value = -456;
+    binopt_node->optype = ISL_TOKENT_ADD;
+    binopt_node->lhs_node     = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
+    binopt_node->rhs_node    = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
+    ISL_AS_LITERAL_ENT(binopt_node->lhs_node)->litype     = ISL_TOKENT_VL_INT;
+    ISL_AS_LITERAL_ENT(binopt_node->rhs_node)->litype    = ISL_TOKENT_VL_INT;
+    ISL_AS_LITERAL_ENT(binopt_node->lhs_node)->value.int_value  = -123;
+    ISL_AS_LITERAL_ENT(binopt_node->rhs_node)->value.int_value = -456;
 
     IST_ASTNODE_MODULE* module_node = ist_astnode_createby_full(MODULE, ist_location_consby_null());
     module_node->nodeptr_list       = ist_astnodeptr_list_consc(2);
