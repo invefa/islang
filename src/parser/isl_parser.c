@@ -135,42 +135,70 @@ ist_bool match_token(ist_parser* this, ist_token_type _type) {
 }
 
 
-struct ist_opttattr {
+
+struct ist_prefix_optattr {
 
     ist_pletnud_fn   nud;
+    ist_optbindpower rbp: 16;
+
+} prefix_optattrs[] = {
+
+    [ISL_TOKENT_ADD]     = {nud_prefix_opt, OBP_PREFIX},
+    [ISL_TOKENT_SUB]     = {nud_prefix_opt, OBP_PREFIX},
+    [ISL_TOKENT_SELFADD] = {nud_prefix_opt, OBP_PREFIX},
+    [ISL_TOKENT_SELFSUB] = {nud_prefix_opt, OBP_PREFIX},
+
+    [ISL_TOKENT_VL_INT]    = {nud_literal_entity, OBP_NONE},
+    [ISL_TOKENT_VL_REAL]   = {nud_literal_entity, OBP_NONE},
+    [ISL_TOKENT_VL_STRING] = {nud_literal_entity, OBP_NONE},
+    [ISL_TOKENT_BV_FALSE]  = {nud_literal_entity, OBP_NONE},
+    [ISL_TOKENT_BV_TRUE]   = {nud_literal_entity, OBP_NONE},
+    [ISL_TOKENT_ID]        = {nud_name_entity, OBP_NONE},
+
+    [ISL_TOKENT_LATEST] = {NULL, OBP_NONE},
+
+};
+
+struct ist_infix_optattr {
+
     ist_pletled_fn   led;
     ist_optbindpower lbp: 16;
     ist_optbindpower rbp: 16;
 
-} opttattrs[] = {
-    [ISL_TOKENT_LPARE] = {NULL, NULL, OBP_NONE, OBP_NONE},
-    [ISL_TOKENT_RPARE] = {NULL, NULL, OBP_NONE, OBP_NONE},
+} infix_optattrs[] = {
 
-    [ISL_TOKENT_ASSIGN]     = {NULL, NULL, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_ADD_ASSIGN] = {NULL, NULL, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_SUB_ASSIGN] = {NULL, NULL, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_MUL_ASSIGN] = {NULL, NULL, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_DIV_ASSIGN] = {NULL, NULL, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_MOD_ASSIGN] = {NULL, NULL, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_ASSIGN]     = {led_infix_opt, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_ADD_ASSIGN] = {led_infix_opt, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_SUB_ASSIGN] = {led_infix_opt, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_MUL_ASSIGN] = {led_infix_opt, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_DIV_ASSIGN] = {led_infix_opt, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_MOD_ASSIGN] = {led_infix_opt, OBP_ASSIGN + 1, OBP_ASSIGN},
 
-    [ISL_TOKENT_ADD] = {nud_prefix_opt, led_infix_opt, OBP_ARITH, OBP_ARITH + 1},
-    [ISL_TOKENT_SUB] = {nud_prefix_opt, led_infix_opt, OBP_ARITH, OBP_ARITH + 1},
+    [ISL_TOKENT_ADD] = {led_infix_opt, OBP_ARITH, OBP_ARITH + 1},
+    [ISL_TOKENT_SUB] = {led_infix_opt, OBP_ARITH, OBP_ARITH + 1},
+    [ISL_TOKENT_MUL] = {led_infix_opt, OBP_TERM, OBP_TERM + 1},
+    [ISL_TOKENT_DIV] = {led_infix_opt, OBP_TERM, OBP_TERM + 1},
+    [ISL_TOKENT_MOD] = {led_infix_opt, OBP_TERM, OBP_TERM + 1},
 
-    [ISL_TOKENT_MUL] = {NULL, led_infix_opt, OBP_TERM, OBP_TERM + 1},
-    [ISL_TOKENT_DIV] = {NULL, led_infix_opt, OBP_TERM, OBP_TERM + 1},
-    [ISL_TOKENT_MOD] = {NULL, led_infix_opt, OBP_TERM, OBP_TERM + 1},
+    [ISL_TOKENT_LATEST] = {NULL, OBP_NONE, OBP_NONE},
 
-    [ISL_TOKENT_VL_INT]    = {nud_literal_entity, NULL, OBP_NONE, OBP_NONE},
-    [ISL_TOKENT_VL_REAL]   = {nud_literal_entity, NULL, OBP_NONE, OBP_NONE},
-    [ISL_TOKENT_VL_STRING] = {nud_literal_entity, NULL, OBP_NONE, OBP_NONE},
-    [ISL_TOKENT_BV_FALSE]  = {nud_literal_entity, NULL, OBP_NONE, OBP_NONE},
-    [ISL_TOKENT_BV_TRUE]   = {nud_literal_entity, NULL, OBP_NONE, OBP_NONE},
-    [ISL_TOKENT_ID]        = {nud_name_entity, NULL, OBP_NONE, OBP_NONE},
-
-    [ISL_TOKENT_WRAPPER] = {NULL, led_wrap_opt, OBP_SUFFIX, OBP_SUFFIX},
-
-    [ISL_TOKENT_LATEST] = {NULL, NULL, OBP_NONE, OBP_NONE},
 };
+
+struct ist_suffix_optattr {
+
+    ist_pletled_fn   led;
+    ist_optbindpower lbp: 16;
+
+} suffix_optattrs[] = {
+
+    [ISL_TOKENT_SELFADD] = {led_suffix_opt, OBP_PREFIX},
+    [ISL_TOKENT_SELFSUB] = {led_suffix_opt, OBP_PREFIX},
+    [ISL_TOKENT_WRAPPER] = {led_wrap_opt, OBP_SUFFIX},
+
+    [ISL_TOKENT_LATEST] = {NULL, OBP_NONE},
+
+};
+
 
 void ist_parser_parse(ist_parser* this) {
     this->root = parse_expr(this, OBP_LOWEST);
@@ -178,19 +206,22 @@ void ist_parser_parse(ist_parser* this) {
 
 void* parse_expr(ist_parser* this, ist_optbindpower minbp) {
     ist_token curtoken = cur_token(this);
-    void*     lhs;
 
-    if (opttattrs[curtoken.type].nud) {
+    void* node;
 
-        lhs = opttattrs[curtoken.type].nud(this);
-        handle_pstate_inert(this, lhs);
+    if (prefix_optattrs[curtoken.type].nud) {
+
+        node = prefix_optattrs[curtoken.type].nud(this);
+        handle_pstate_inert(this, node);
 
     } else if (curtoken.type == ISL_TOKENT_LPARE) {
 
         advance(this);
-        lhs = parse_expr(this, OBP_LOWEST);
-        assert_token(this, lhs, ISL_TOKENT_RPARE);
+        node = parse_expr(this, OBP_LOWEST);
+        assert_token(this, node, ISL_TOKENT_RPARE);
+
     } else
+
         parse_failed(
             this,
             NULL,
@@ -199,20 +230,23 @@ void* parse_expr(ist_parser* this, ist_optbindpower minbp) {
             ist_token_names[curtoken.type]
         );
 
-    while (minbp < opttattrs[cur_token(this).type].lbp) {
+    while (minbp < infix_optattrs[cur_token(this).type].lbp) {
         curtoken = cur_token(this);
-        if (!opttattrs[curtoken.type].led) break;
 
-        lhs = opttattrs[curtoken.type].led(this, lhs);
+        if (infix_optattrs[curtoken.type].led)
+            node = infix_optattrs[curtoken.type].led(this, (node));
+
+        else break;
+
         handle_pstate_force(
             this,
-            lhs,
+            node,
             rid_expect_expression_after,
             curtoken.location,
             ist_token_names[curtoken.type]
         );
     }
-    return lhs;
+    return node;
 }
 
 
@@ -241,10 +275,14 @@ void* nud_prefix_opt(ist_parser* this) {
 
     node->onlhs    = true;
     node->optype   = curtoken.type;
-    node->sub_node = parse_expr(this, OBP_PREFIX);
+    node->sub_node = parse_expr(this, prefix_optattrs[curtoken.type].rbp);
 
     handle_pstate_force(
-        this, node, rid_expect_expression_after, curtoken.location, ist_token_names[curtoken.type]
+        this,
+        ((node)),
+        rid_expect_expression_after,
+        curtoken.location,
+        ist_token_names[curtoken.type]
     );
 
     return node;
@@ -261,10 +299,14 @@ void* led_infix_opt(ist_parser* this, ist_astnode* lhs) {
 
     node->lhs_node = lhs;
     node->optype   = curtoken.type;
-    node->rhs_node = parse_expr(this, opttattrs[curtoken.type].rbp);
+    node->rhs_node = parse_expr(this, infix_optattrs[curtoken.type].rbp);
 
     handle_pstate_force(
-        this, node, rid_expect_expression_after, curtoken.location, ist_token_names[curtoken.type]
+        this,
+        ((node)),
+        rid_expect_expression_after,
+        curtoken.location,
+        ist_token_names[curtoken.type]
     );
 
     return node;
