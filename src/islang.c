@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
     // isl_test_memgr();
     // isl_test_string();
     // isl_test_report();
-    // isl_test_lexer();
+    isl_test_lexer();
     // isl_test_generic();
     // isl_test_astnode();
     isl_test_parser();
@@ -97,21 +97,21 @@ void isl_test_astnode(void) {
 
     IST_ASTNODE_UNARY_OPT* unopt_node =
         ist_astnode_createby_full(UNARY_OPT, ist_location_consby_null());
-    unopt_node->optype = ISL_TOKENT_SUB;
-    unopt_node->sub_node      = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
-    unopt_node->onlhs       = true;
-    ISL_AS_LITERAL_ENT(unopt_node->sub_node)->litype    = ISL_TOKENT_VL_INT;
+    unopt_node->optype   = ISL_TOKENT_SUB;
+    unopt_node->sub_node = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
+    unopt_node->onlhs    = true;
+    ISL_AS_LITERAL_ENT(unopt_node->sub_node)->litype          = ISL_TOKENT_VL_INT;
     ISL_AS_LITERAL_ENT(unopt_node->sub_node)->value.int_value = 123;
 
 
     IST_ASTNODE_BINARY_OPT* binopt_node =
         ist_astnode_createby_full(BINARY_OPT, ist_location_consby_null());
-    binopt_node->optype = ISL_TOKENT_ADD;
-    binopt_node->lhs_node     = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
-    binopt_node->rhs_node    = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
-    ISL_AS_LITERAL_ENT(binopt_node->lhs_node)->litype     = ISL_TOKENT_VL_INT;
-    ISL_AS_LITERAL_ENT(binopt_node->rhs_node)->litype    = ISL_TOKENT_VL_INT;
-    ISL_AS_LITERAL_ENT(binopt_node->lhs_node)->value.int_value  = -123;
+    binopt_node->optype   = ISL_TOKENT_ADD;
+    binopt_node->lhs_node = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
+    binopt_node->rhs_node = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
+    ISL_AS_LITERAL_ENT(binopt_node->lhs_node)->litype          = ISL_TOKENT_VL_INT;
+    ISL_AS_LITERAL_ENT(binopt_node->rhs_node)->litype          = ISL_TOKENT_VL_INT;
+    ISL_AS_LITERAL_ENT(binopt_node->lhs_node)->value.int_value = -123;
     ISL_AS_LITERAL_ENT(binopt_node->rhs_node)->value.int_value = -456;
 
     IST_ASTNODE_MODULE* module_node = ist_astnode_createby_full(MODULE, ist_location_consby_null());
@@ -219,23 +219,25 @@ void isl_test_lexer(void) {
     )
 
         /* switch codepage if the current token is a wrapper */
-        if (lexer.sec_token.type == ISL_TOKENT_WRAPPER) lexer_switch_codepage("wrap", macro_source);
-        if (lexer.sec_token.type == ISL_TOKENT_AND) lexer_switch_codepage("wrapin", macroin_source);
+        // if (lexer.sec_token.type == ISL_TOKENT_WRAPPER) lexer_switch_codepage("wrap",
+        // macro_source); if (lexer.sec_token.type == ISL_TOKENT_AND)
+        // lexer_switch_codepage("wrapin", macroin_source);
 
-        if (lexer.sec_token.type == ISL_TOKENT_VL_INT) {
+        // if (lexer.sec_token.type == ISL_TOKENT_VL_INT) {
 
-            ist_lexer_lookahead_start(&lexer);
-            isl_report(rid_custom_core_warn, "start lookahead.");
+        //     ist_lexer_lookahead_start(&lexer);
+        //     isl_report(rid_custom_core_warn, "start lookahead.");
 
-            while (lexer.sec_token.type != ISL_TOKENT_EOS && lexer.sec_token.type != ISL_TOKENT_EOF)
-            {
-                ist_lexer_advance(&lexer);
-                printf("%s\n", ist_token_dump(&lexer.sec_token, dumpbuf, NULL));
-            }
+        //     while (lexer.sec_token.type != ISL_TOKENT_EOS && lexer.sec_token.type !=
+        //     ISL_TOKENT_EOF)
+        //     {
+        //         ist_lexer_advance(&lexer);
+        //         printf("%s\n", ist_token_dump(&lexer.sec_token, dumpbuf, NULL));
+        //     }
 
-            ist_lexer_lookahead_end(&lexer);
-            isl_report(rid_custom_core_warn, "end lookahead.");
-        }
+        //     ist_lexer_lookahead_end(&lexer);
+        //     isl_report(rid_custom_core_warn, "end lookahead.");
+        // }
 
         ist_lexer_advance(&lexer);
     }

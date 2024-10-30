@@ -47,7 +47,7 @@ typedef enum ist_optbindpower {
     OBP_FACTOR  = 0x50,
     OBP_PREFIX  = 0x60,
     OBP_SUFFIX  = 0x70,
-    OBP_PAREN   = 0xFF,
+    OBP_ATOM    = 0xFF,
     OBP_HIGHEST = INT16_MAX,
 } ist_optbindpower;
 
@@ -56,7 +56,7 @@ typedef void* (*ist_pletnud_fn)(ist_parser*);
 typedef void* (*ist_pletled_fn)(ist_parser*, ist_astnode*);
 
 
-void* parse_expr(ist_parser* this, ist_optbindpower minbp);
+void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp);
 
 void* nud_literal_entity(ist_parser* this);
 void* nud_name_entity(ist_parser* this);
@@ -180,6 +180,8 @@ struct ist_infix_optattr {
     [ISL_TOKENT_DIV] = {led_infix_opt, OBP_TERM, OBP_TERM + 1},
     [ISL_TOKENT_MOD] = {led_infix_opt, OBP_TERM, OBP_TERM + 1},
 
+    [ISL_TOKENT_WRAPPER] = {led_wrap_opt, OBP_SUFFIX, OBP_SUFFIX},
+
     [ISL_TOKENT_LATEST] = {NULL, OBP_NONE, OBP_NONE},
 
 };
@@ -193,7 +195,6 @@ struct ist_suffix_optattr {
 
     [ISL_TOKENT_SELFADD] = {led_suffix_opt, OBP_PREFIX},
     [ISL_TOKENT_SELFSUB] = {led_suffix_opt, OBP_PREFIX},
-    [ISL_TOKENT_WRAPPER] = {led_wrap_opt, OBP_SUFFIX},
 
     [ISL_TOKENT_LATEST] = {NULL, OBP_NONE},
 
@@ -204,7 +205,7 @@ void ist_parser_parse(ist_parser* this) {
     this->root = parse_expr(this, OBP_LOWEST);
 }
 
-void* parse_expr(ist_parser* this, ist_optbindpower minbp) {
+void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
     ist_token curtoken = cur_token(this);
 
     void* node;
@@ -221,7 +222,6 @@ void* parse_expr(ist_parser* this, ist_optbindpower minbp) {
         assert_token(this, node, ISL_TOKENT_RPARE);
 
     } else
-
         parse_failed(
             this,
             NULL,
@@ -230,13 +230,26 @@ void* parse_expr(ist_parser* this, ist_optbindpower minbp) {
             ist_token_names[curtoken.type]
         );
 
-    while (minbp < infix_optattrs[cur_token(this).type].lbp) {
+    while (true) {
         curtoken = cur_token(this);
 
-        if (infix_optattrs[curtoken.type].led)
-            node = infix_optattrs[curtoken.type].led(this, (node));
+        /**
+         * if left-hand-side's right-binding-power is less than the current token's
+         * left-binding-power, then we should make sure the node that parsing by prefix
+         * will belong to the node of the current token.
+         */
 
-        else break;
+        if (lhsrbp < suffix_optattrs[curtoken.type].lbp) {
+            /* this for suffix recognize and parsing */
+            if (!suffix_optattrs[curtoken.type].led) break;
+            node = suffix_optattrs[curtoken.type].led(this, node);
+
+        } else if (lhsrbp < infix_optattrs[curtoken.type].lbp) {
+            /* this for infix recognize and parsing */
+            if (!infix_optattrs[curtoken.type].led) break;
+            node = infix_optattrs[curtoken.type].led(this, node);
+
+        } else break;
 
         handle_pstate_force(
             this,
@@ -289,7 +302,23 @@ void* nud_prefix_opt(ist_parser* this) {
 }
 
 void* led_suffix_opt(ist_parser* this, ist_astnode* lhs) {
-    return NULL;
+    ist_token curtoken = advance(this);
+
+    ist_astnode_defineby_full(node, UNARY_OPT, curtoken.location);
+
+    node->onlhs    = false;
+    node->optype   = curtoken.type;
+    node->sub_node = lhs;
+
+    handle_pstate_force(
+        this,
+        ((node)),
+        rid_expect_expression_after,
+        curtoken.location,
+        ist_token_names[curtoken.type]
+    );
+
+    return node;
 }
 
 void* led_infix_opt(ist_parser* this, ist_astnode* lhs) {
@@ -313,5 +342,13 @@ void* led_infix_opt(ist_parser* this, ist_astnode* lhs) {
 }
 
 void* led_wrap_opt(ist_parser* this, ist_astnode* lhs) {
-    return NULL;
+    ist_token curtoken = advance(this);
+
+    ist_astnode_defineby_full(node, BINARY_OPT, curtoken.location);
+
+    node->lhs_node = lhs;
+    node->optype   = ISL_TOKENT_LBRACE;
+    node->rhs_node = parse_expr(this, infix_optattrs[curtoken.type].rbp);
+
+    return node;
 }
