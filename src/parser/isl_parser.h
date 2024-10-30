@@ -4,9 +4,20 @@
 #include "isl_astnode.h"
 #include "isl_lexer.h"
 
+typedef enum ist_pstate {
+    PRS_SUCCESS     = 0,
+    PRS_FUNREPROTED = 1,
+    PRS_FREPROTED   = 2,
+    PRS_FAHEAD      = 3,
+} ist_pstate;
+
 typedef struct isl_parser {
     ist_lexer    lexer;
     ist_astnode* root;
+
+    /* parse time results for parsing-fns */
+    void*      pnode;
+    ist_pstate pstate: 2;
 
 } ist_parser;
 
