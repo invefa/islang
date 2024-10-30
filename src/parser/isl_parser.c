@@ -71,6 +71,11 @@ void* led_wrap_opt(ist_parser* this, ist_astnode* lhs);
 #define nex_token(this) ((this)->lexer.nex_token)
 #define sec_token(this) ((this)->lexer.sec_token)
 
+
+/**
+ * handle ahead state, when aheading, do not report
+ * anything about failure, just return to caller to notify it.
+ */
 #define handle_aheading(this, _node)                 \
     do {                                             \
         if (ist_lexer_islookahead(&(this)->lexer)) { \
@@ -79,12 +84,16 @@ void* led_wrap_opt(ist_parser* this, ist_astnode* lhs);
         }                                            \
     } while (0)
 
+/* handle parsing state in inert */
 #define handle_pstate_inert(this, _node)  \
     do {                                  \
         if ((this)->pstate) return _node; \
     } while (0)
 
-/* handle presult state in force */
+/**
+ * handle parsing state in force
+ * this macro is designed for reporting the error message when the parsing failed.
+ */
 #define handle_pstate_force(this, _node, _rid, _rptvargs...) \
     do {                                                     \
         switch ((this)->pstate) {                            \
@@ -99,18 +108,21 @@ void* led_wrap_opt(ist_parser* this, ist_astnode* lhs);
         }                                                    \
     } while (0)
 
-#define parse_failed(this, _node, _rid, _rptvargs...) \
-    do {                                              \
-        handle_aheading(this, _node);                 \
-        isl_report(_rid, _rptvargs);                  \
-        (this)->pstate = PRS_FREPROTED;               \
-        return _node;                                 \
+/**
+ * raise the parsing failed, and report the error message.
+ */
+#define raise_parsing_failed(this, _node, _rid, _rptvargs...) \
+    do {                                                      \
+        handle_aheading(this, _node);                         \
+        isl_report(_rid, _rptvargs);                          \
+        (this)->pstate = PRS_FREPROTED;                       \
+        return _node;                                         \
     } while (0)
 
 #define assert_token(this, _node, _type)              \
     do {                                              \
         if (!match_token(this, _type)) {              \
-            parse_failed(                             \
+            raise_parsing_failed(                     \
                 this,                                 \
                 _node,                                \
                 rid_assert_tokentype_failed,          \
@@ -222,7 +234,7 @@ void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
         assert_token(this, node, ISL_TOKENT_RPARE);
 
     } else
-        parse_failed(
+        raise_parsing_failed(
             this,
             NULL,
             rid_expect_expression_before,
@@ -278,7 +290,7 @@ void* nud_name_entity(ist_parser* this) {
     ist_string name = ist_string_consby_ref(curtoken.extract, curtoken.length);
     ist_module_register_strbuf(this->lexer.module, name, ISL_STRBUFT_SYMBOL);
 
-    return ist_astnode_createby_full(NAME_ENT, curtoken.location, { __result__->name = name; });
+    return ist_astnode_createby_full(NAME_ENT, curtoken.location, __result__->name = name);
 }
 
 void* nud_prefix_opt(ist_parser* this) {
@@ -347,7 +359,7 @@ void* led_wrap_opt(ist_parser* this, ist_astnode* lhs) {
     ist_astnode_defineby_full(node, BINARY_OPT, curtoken.location);
 
     node->lhs_node = lhs;
-    node->optype   = ISL_TOKENT_LBRACE;
+    node->optype   = ISL_TOKENT_LPARE;
     node->rhs_node = parse_expr(this, infix_optattrs[curtoken.type].rbp);
 
     return node;

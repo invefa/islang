@@ -38,6 +38,12 @@ manifest(TERNARY_OPT, (struct {
              ist_astnode*   third_node;
          }))
 
+manifest(FNCALL, (struct {
+             ist_astnode         base;
+             ist_usize           fnidx;
+             ist_astnodeptr_list arglist;
+         }))
+
 /* comptime entities */
 manifest(LITERAL_ENT, (struct {
              ist_astnode    base;
