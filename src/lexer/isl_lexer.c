@@ -410,6 +410,11 @@ inline void ist_lexer_parse_string(ist_lexer* this) {
                           - analysis_token.extract - this->codepage->decode_codepoint_length;
 
     ist_lexer_advance_codepoint(this);
+
+    /* extract the string literal, and register the string to the module */
+    analysis_token.value.string_value =
+        ist_string_consby_ref(analysis_token.extract, analysis_token.length);
+    ist_module_register_strbuf(this->module, analysis_token.value.string_value, ISL_STRBUFT_LITERAL);
 }
 
 inline void ist_lexer_skip_comment(ist_lexer* this, ist_bool _is_block) {

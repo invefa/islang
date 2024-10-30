@@ -63,6 +63,10 @@ typedef struct ist_astnode {
         (void*)__result__;                                                                     \
     })
 
+#define ist_astnode_defineby_full(varid, _raw_type, _location, _cons...) \
+    IST_ASTNODE_##_raw_type* varid = ist_astnode_createby_full(_raw_type, _location, _cons)
+
+
 /**
  * Make the node as pointer of the specific type of astnode.
  */

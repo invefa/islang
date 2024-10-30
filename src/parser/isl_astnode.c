@@ -117,10 +117,7 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
         case ISL_ASTNT_LITERAL_ENT: {
             IST_ASTNODE_LITERAL_ENT* literal_ent = this;
             ist_strbuf_sprintf(
-                buffer,
-                idxptr,
-                "\"litype\":\"%s\",\"value\":",
-                ist_token_names[literal_ent->litype]
+                buffer, idxptr, "\"litype\":\"%s\",\"value\":", ist_token_names[literal_ent->litype]
             );
             ist_value_dump_json(&literal_ent->value, literal_ent->litype, buffer, idxptr);
             break;
@@ -150,6 +147,12 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
                 unary_opt->onlhs ? "true" : "false"
             );
             ist_ast_dump_json(unary_opt->sub_node, buffer, idxptr);
+            break;
+        }
+
+        case ISL_ASTNT_NAME_ENT: {
+            IST_ASTNODE_NAME_ENT* name_ent = this;
+            ist_strbuf_sprintf(buffer, idxptr, "\"name\":\"%s\"", name_ent->name);
             break;
         }
 

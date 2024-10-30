@@ -1,7 +1,7 @@
 #include "isl_parser.h"
 
 inline ist_parser ist_parser_consby_full(ist_lexer _lexer) {
-    return (ist_parser){.lexer = _lexer, .root = NULL, .pstate = 0};
+    return (ist_parser){.lexer = _lexer, .root = NULL, .pstate = PRS_SUCCESS};
 }
 ist_parser ist_parser_consby_module(ist_module* _module) {
     return ist_parser_consby_full(ist_lexer_consby_module(_module));
@@ -58,10 +58,12 @@ typedef void* (*ist_pletled_fn)(ist_parser*, ist_astnode*);
 
 void* parse_expr(ist_parser* this, ist_optbindpower minbp);
 
-void* nud_literal_ent(ist_parser* this);
-void* nud_prefix(ist_parser* this);
-void* led_infix(ist_parser* this, ist_astnode* lhs);
-
+void* nud_literal_entity(ist_parser* this);
+void* nud_name_entity(ist_parser* this);
+void* nud_prefix_opt(ist_parser* this);
+void* led_suffix_opt(ist_parser* this, ist_astnode* lhs);
+void* led_infix_opt(ist_parser* this, ist_astnode* lhs);
+void* led_wrap_opt(ist_parser* this, ist_astnode* lhs);
 
 
 #define pre_token(this) ((this)->lexer.pre_token)
@@ -151,18 +153,21 @@ struct ist_opttattr {
     [ISL_TOKENT_DIV_ASSIGN] = {NULL, NULL, OBP_ASSIGN + 1, OBP_ASSIGN},
     [ISL_TOKENT_MOD_ASSIGN] = {NULL, NULL, OBP_ASSIGN + 1, OBP_ASSIGN},
 
-    [ISL_TOKENT_ADD] = {nud_prefix, led_infix, OBP_ARITH, OBP_ARITH + 1},
-    [ISL_TOKENT_SUB] = {nud_prefix, led_infix, OBP_ARITH, OBP_ARITH + 1},
+    [ISL_TOKENT_ADD] = {nud_prefix_opt, led_infix_opt, OBP_ARITH, OBP_ARITH + 1},
+    [ISL_TOKENT_SUB] = {nud_prefix_opt, led_infix_opt, OBP_ARITH, OBP_ARITH + 1},
 
-    [ISL_TOKENT_MUL] = {NULL, led_infix, OBP_TERM, OBP_TERM + 1},
-    [ISL_TOKENT_DIV] = {NULL, led_infix, OBP_TERM, OBP_TERM + 1},
-    [ISL_TOKENT_MOD] = {NULL, led_infix, OBP_TERM, OBP_TERM + 1},
+    [ISL_TOKENT_MUL] = {NULL, led_infix_opt, OBP_TERM, OBP_TERM + 1},
+    [ISL_TOKENT_DIV] = {NULL, led_infix_opt, OBP_TERM, OBP_TERM + 1},
+    [ISL_TOKENT_MOD] = {NULL, led_infix_opt, OBP_TERM, OBP_TERM + 1},
 
-    [ISL_TOKENT_VL_INT]    = {nud_literal_ent, NULL, OBP_NONE, OBP_NONE},
-    [ISL_TOKENT_VL_REAL]   = {nud_literal_ent, NULL, OBP_NONE, OBP_NONE},
-    [ISL_TOKENT_VL_STRING] = {nud_literal_ent, NULL, OBP_NONE, OBP_NONE},
-    [ISL_TOKENT_BV_FALSE]  = {nud_literal_ent, NULL, OBP_NONE, OBP_NONE},
-    [ISL_TOKENT_BV_TRUE]   = {nud_literal_ent, NULL, OBP_NONE, OBP_NONE},
+    [ISL_TOKENT_VL_INT]    = {nud_literal_entity, NULL, OBP_NONE, OBP_NONE},
+    [ISL_TOKENT_VL_REAL]   = {nud_literal_entity, NULL, OBP_NONE, OBP_NONE},
+    [ISL_TOKENT_VL_STRING] = {nud_literal_entity, NULL, OBP_NONE, OBP_NONE},
+    [ISL_TOKENT_BV_FALSE]  = {nud_literal_entity, NULL, OBP_NONE, OBP_NONE},
+    [ISL_TOKENT_BV_TRUE]   = {nud_literal_entity, NULL, OBP_NONE, OBP_NONE},
+    [ISL_TOKENT_ID]        = {nud_name_entity, NULL, OBP_NONE, OBP_NONE},
+
+    [ISL_TOKENT_WRAPPER] = {NULL, led_wrap_opt, OBP_SUFFIX, OBP_SUFFIX},
 
     [ISL_TOKENT_LATEST] = {NULL, NULL, OBP_NONE, OBP_NONE},
 };
@@ -211,7 +216,7 @@ void* parse_expr(ist_parser* this, ist_optbindpower minbp) {
 }
 
 
-void* nud_literal_ent(ist_parser* this) {
+void* nud_literal_entity(ist_parser* this) {
     ist_token curtoken = advance(this);
 
     return ist_astnode_createby_full(LITERAL_ENT, curtoken.location, {
@@ -220,32 +225,51 @@ void* nud_literal_ent(ist_parser* this) {
     });
 }
 
-void* nud_prefix(ist_parser* this) {
+void* nud_name_entity(ist_parser* this) {
     ist_token curtoken = advance(this);
 
-    IST_ASTNODE_UNARY_OPT* node = ist_astnode_createby_full(UNARY_OPT, curtoken.location, {
-        __result__->onlhs    = true;
-        __result__->optype   = curtoken.type;
-        __result__->sub_node = parse_expr(this, OBP_PREFIX);
-    });
+    ist_string name = ist_string_consby_ref(curtoken.extract, curtoken.length);
+    ist_module_register_strbuf(this->lexer.module, name, ISL_STRBUFT_SYMBOL);
+
+    return ist_astnode_createby_full(NAME_ENT, curtoken.location, { __result__->name = name; });
+}
+
+void* nud_prefix_opt(ist_parser* this) {
+    ist_token curtoken = advance(this);
+
+    ist_astnode_defineby_full(node, UNARY_OPT, curtoken.location);
+
+    node->onlhs    = true;
+    node->optype   = curtoken.type;
+    node->sub_node = parse_expr(this, OBP_PREFIX);
 
     handle_pstate_force(
         this, node, rid_expect_expression_after, curtoken.location, ist_token_names[curtoken.type]
     );
+
     return node;
 }
 
-void* led_infix(ist_parser* this, ist_astnode* lhs) {
+void* led_suffix_opt(ist_parser* this, ist_astnode* lhs) {
+    return NULL;
+}
+
+void* led_infix_opt(ist_parser* this, ist_astnode* lhs) {
     ist_token curtoken = advance(this);
 
-    IST_ASTNODE_BINARY_OPT* node = ist_astnode_createby_full(BINARY_OPT, curtoken.location, {
-        __result__->lhs_node = lhs;
-        __result__->optype   = curtoken.type;
-        __result__->rhs_node = parse_expr(this, opttattrs[curtoken.type].rbp);
-    });
+    ist_astnode_defineby_full(node, BINARY_OPT, curtoken.location);
+
+    node->lhs_node = lhs;
+    node->optype   = curtoken.type;
+    node->rhs_node = parse_expr(this, opttattrs[curtoken.type].rbp);
 
     handle_pstate_force(
         this, node, rid_expect_expression_after, curtoken.location, ist_token_names[curtoken.type]
     );
+
     return node;
+}
+
+void* led_wrap_opt(ist_parser* this, ist_astnode* lhs) {
+    return NULL;
 }
