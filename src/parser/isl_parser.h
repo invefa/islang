@@ -15,8 +15,7 @@ typedef struct isl_parser {
     ist_lexer    lexer;
     ist_astnode* root;
 
-    /* parse time results for parsing-fns */
-    void*      pnode;
+    /* parse time state for parsing-fns */
     ist_pstate pstate: 2;
 
 } ist_parser;
