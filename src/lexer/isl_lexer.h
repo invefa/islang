@@ -31,8 +31,9 @@ ist_lexer ist_lexer_consby_module(ist_module* _module);
 void ist_lexer_clean(ist_lexer* this);
 void ist_lexer_delete(ist_lexer* this);
 
-void ist_lexer_lookahead_start(ist_lexer* this);
-void ist_lexer_lookahead_end(ist_lexer* this);
+void     ist_lexer_lookahead_start(ist_lexer* this);
+void     ist_lexer_lookahead_end(ist_lexer* this);
+ist_bool ist_lexer_islookahead(ist_lexer* this);
 
 void ist_lexer_lex(ist_lexer* this);
 void ist_lexer_advance(ist_lexer* this);

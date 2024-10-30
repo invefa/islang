@@ -122,6 +122,10 @@ void ist_lexer_lookahead_end(ist_lexer* this) {
     this->sec_token = this->ahead_token_list[this->ahead_token_index++];
 }
 
+ist_bool ist_lexer_islookahead(ist_lexer* this) {
+    return !!this->ahead_backup_count;
+}
+
 void ist_lexer_lex(ist_lexer* this) {
 
     while (ist_lexer_skip_blanks(this)) {

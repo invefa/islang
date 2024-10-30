@@ -76,6 +76,8 @@ typedef struct ist_presult {
 typedef ist_presult (*ist_pletnud_fn)(ist_parser*);
 typedef ist_presult (*ist_pletled_fn)(ist_parser*, ist_astnode*);
 
+ist_presult parse_expr(ist_parser* this, ist_optbindpower minbp);
+
 ist_presult nud_literal_ent(ist_parser* this);
 ist_presult nud_prefix(ist_parser* this);
 
@@ -95,6 +97,12 @@ ist_presult led_infix(ist_parser* this, ist_astnode* lhs);
         (_resultv) = inert_parse_result;                         \
     })
 
+/* handle presult state in inert */
+#define handle_prestate_inert(_resultv)        \
+    do {                                       \
+        if ((_resultv).state) return _resultv; \
+    } while (0)
+
 #define force_parse(_resultv, _fncall, _rid, _rptvargs...) \
     ({                                                     \
         ist_presult force_parse_result = _fncall;          \
@@ -110,6 +118,24 @@ ist_presult led_infix(ist_parser* this, ist_astnode* lhs);
         }                                                  \
         (_resultv) = force_parse_result;                   \
     })
+
+
+/* handle presult state in force */
+#define handle_prestate_force(_resultv, _rid, _rptvargs...)             \
+    do {                                                                \
+        switch ((_resultv).state) {                                     \
+            case PRS_FUNREPROTED:                                       \
+                if (ist_lexer_islookahead(&this->lexer))                \
+                    return parse_result_setstate(_resultv, PRS_FAHEAD); \
+                else isl_report(_rid, _rptvargs);                       \
+            case PRS_FREPROTED:                                         \
+                (_resultv).state = PRS_FREPROTED;                       \
+            case PRS_FAHEAD:                                            \
+                return (_resultv);                                      \
+            case PRS_SUCCESS:                                           \
+                break;                                                  \
+        }                                                               \
+    } while (0)
 
 #define ahead_match(_fncall)                                                                  \
     ({                                                                                        \
@@ -143,9 +169,9 @@ ist_presult led_infix(ist_parser* this, ist_astnode* lhs);
 
 
 
-ist_token* advance(ist_parser* this) {
+ist_token advance(ist_parser* this) {
     ist_lexer_advance(&this->lexer);
-    return &pre_token(this);
+    return pre_token(this);
 }
 
 ist_bool match_token(ist_parser* this, ist_token_type _type) {
@@ -186,15 +212,18 @@ struct ist_opttattr {
     [ISL_TOKENT_LATEST] = {NULL, NULL, OBP_NONE, OBP_NONE},
 };
 
+void ist_parser_parse(ist_parser* this) {
+    this->root = parse_expr(this, OBP_LOWEST).node;
+}
 
 ist_presult parse_expr(ist_parser* this, ist_optbindpower minbp) {
-    ist_presult result   = ist_presult_consby_null();
     ist_token   curtoken = cur_token(this);
+    ist_presult result   = ist_presult_consby_null();
 
     if (opttattrs[curtoken.type].nud) inert_parse(result, opttattrs[curtoken.type].nud(this));
     else parse_fail(result, rid_expect_expression, curtoken.location);
 
-    while (minbp <= opttattrs[cur_token(this).type].lbp) {
+    while (minbp < opttattrs[cur_token(this).type].lbp) {
         curtoken = cur_token(this);
         if (!opttattrs[curtoken.type].led) break;
 
@@ -209,58 +238,46 @@ ist_presult parse_expr(ist_parser* this, ist_optbindpower minbp) {
     return result;
 }
 
-void ist_parser_parse(ist_parser* this) {
-    this->root = parse_expr(this, OBP_LOWEST).node;
-}
 
 ist_presult nud_literal_ent(ist_parser* this) {
-    ist_presult result =
-        ist_presult_consby_node(ist_astnode_createby_full(LITERAL_ENT, cur_token(this).location));
+    ist_token curtoken = advance(this);
 
-    ISL_AS_LITERAL_ENT(result.node)->value        = cur_token(this).value;
-    ISL_AS_LITERAL_ENT(result.node)->litype = cur_token(this).type;
-
-    advance(this);
-
-    return result;
+    return ist_presult_consby_node(ist_astnode_createby_full(LITERAL_ENT, curtoken.location, {
+        __result__->value  = curtoken.value;
+        __result__->litype = curtoken.type;
+    }));
+    ;
 }
 
 ist_presult nud_prefix(ist_parser* this) {
-    ist_token   curtoken = cur_token(this);
-    ist_presult result =
-        ist_presult_consby_node(ist_astnode_createby_full(UNARY_OPT, curtoken.location));
-
-
-    ISL_AS_UNARY_OPT(result.node)->onlhs       = true;
-    ISL_AS_UNARY_OPT(result.node)->optype = curtoken.type;
-    ISL_AS_UNARY_OPT(result.node)->sub_node =
-        force_parse(
-            ist_presult_consby_null(),
-            parse_expr(this, opttattrs[advance(this)->type].rbp),
-            rid_expect_expression,
-            curtoken.location
+    ist_token curtoken = advance(this);
+    return ist_presult_consby_node(ist_astnode_createby_full(UNARY_OPT, curtoken.location, {
+        __result__->onlhs    = true;
+        __result__->optype   = curtoken.type;
+        __result__->sub_node = force_parse(
+                                   ist_presult_consby_null(),
+                                   parse_expr(this, opttattrs[curtoken.type].rbp),
+                                   rid_expect_expression,
+                                   curtoken.location
         )
-            .node;
-
-    return result;
+                                   .node;
+    }));
+    ;
 }
 
 ist_presult led_infix(ist_parser* this, ist_astnode* lhs) {
-    ist_token   curtoken = cur_token(this);
-    ist_presult result =
-        ist_presult_consby_node(ist_astnode_createby_full(BINARY_OPT, curtoken.location));
+    ist_token curtoken = advance(this);
 
-
-    ISL_AS_BINARY_OPT(result.node)->lhs_node     = lhs;
-    ISL_AS_BINARY_OPT(result.node)->optype = curtoken.type;
-    ISL_AS_BINARY_OPT(result.node)->rhs_node =
-        force_parse(
-            ist_presult_consby_null(),
-            parse_expr(this, opttattrs[advance(this)->type].rbp),
-            rid_expect_expression,
-            cur_token(this).location
+    return ist_presult_consby_node(ist_astnode_createby_full(BINARY_OPT, curtoken.location, {
+        __result__->lhs_node = lhs;
+        __result__->optype   = curtoken.type;
+        __result__->rhs_node = force_parse(
+                                   ist_presult_consby_null(),
+                                   parse_expr(this, opttattrs[curtoken.type].rbp),
+                                   rid_expect_expression,
+                                   curtoken.location
         )
-            .node;
-
-    return result;
+                                   .node;
+    }));
+    ;
 }
