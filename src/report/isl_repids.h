@@ -125,3 +125,4 @@ manifest(
     "expect an expression before token:<%s>!"
 )
 manifest(not_expression, (PARSER, ERROR, USERLOC), "this is not an expression!")
+manifest(expect_fn_entity_after, (PARSER, ERROR, USERLOC), "expect an fn-entity after token:<%s>!")

@@ -50,7 +50,7 @@ typedef struct ist_astnode {
 /**
  * Create an sub of astnode by the raw type and the location and optional cons.
  * Raw type means the suffix of the type enum, for example, if you want to create IST_ASTNODE_SCOPE,
- * you should provide the raw type as SCOPE.
+ * you should provide the raw type as SCOPE_ENT.
  *
  * Optionally, you can provide the constructor argument to initialize the astnode,
  * just pass the argument in the form of a tuple to varg:cons.

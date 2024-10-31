@@ -51,30 +51,36 @@ void ist_ast_delete(void* this) {
 
     /* delete the sub nodes of the astnode by the type */
     switch (0 [(ist_astnode_type*)this]) {
-        case ISL_ASTNT_SCOPE:
-        case ISL_ASTNT_MODULE:
-        case ISL_ASTNT_ARG_LIST:
-        case ISL_ASTNT_PARAM_LIST:
+        case ISL_ASTNT_SCOPE_ENT:
+        case ISL_ASTNT_MODULE_ENT:
+        case ISL_ASTNT_ARG_LIST_PATT:
+        case ISL_ASTNT_PARAM_LIST_PATT:
         case ISL_ASTNT_NODE_LIST: {
             IST_ASTNODE_NODE_LIST* node_list = this;
             ist_astnodeptr_list_clean(&node_list->nodeptr_list);
             break;
         }
-        case ISL_ASTNT_UNARY_OPT: {
-            ist_ast_delete(ISL_AS_UNARY_OPT(this)->sub_node);
+        case ISL_ASTNT_UNARY_EXPR: {
+            ist_ast_delete(ISL_AS_UNARY_EXPR(this)->sub_node);
             break;
         }
-        case ISL_ASTNT_BINARY_OPT: {
-            IST_ASTNODE_BINARY_OPT* binary_opt = this;
+        case ISL_ASTNT_BINARY_EXPR: {
+            IST_ASTNODE_BINARY_EXPR* binary_opt = this;
             ist_ast_delete(binary_opt->lhs_node);
             ist_ast_delete(binary_opt->rhs_node);
             break;
         }
-        case ISL_ASTNT_TERNARY_OPT: {
-            IST_ASTNODE_TERNARY_OPT* ternary_opt = this;
+        case ISL_ASTNT_TERNARY_EXPR: {
+            IST_ASTNODE_TERNARY_EXPR* ternary_opt = this;
             ist_ast_delete(ternary_opt->first_node);
             ist_ast_delete(ternary_opt->second_node);
             ist_ast_delete(ternary_opt->third_node);
+            break;
+        }
+        case ISL_ASTNT_FNCALL_EXPR: {
+            IST_ASTNODE_FNCALL_EXPR* fncall = this;
+            ist_ast_delete(fncall->fnentity);
+            ist_astnodeptr_list_clean(&fncall->arglist);
             break;
         }
     }
@@ -98,10 +104,10 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
             ist_strbuf_append_raw(buffer, idxptr, "\b");
             break;
 
-        case ISL_ASTNT_SCOPE:
-        case ISL_ASTNT_MODULE:
-        case ISL_ASTNT_ARG_LIST:
-        case ISL_ASTNT_PARAM_LIST:
+        case ISL_ASTNT_SCOPE_ENT:
+        case ISL_ASTNT_MODULE_ENT:
+        case ISL_ASTNT_ARG_LIST_PATT:
+        case ISL_ASTNT_PARAM_LIST_PATT:
         case ISL_ASTNT_NODE_LIST: {
             IST_ASTNODE_NODE_LIST* node_list = this;
 
@@ -123,8 +129,8 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
             break;
         }
 
-        case ISL_ASTNT_BINARY_OPT: {
-            IST_ASTNODE_BINARY_OPT* binary_opt = this;
+        case ISL_ASTNT_BINARY_EXPR: {
+            IST_ASTNODE_BINARY_EXPR* binary_opt = this;
             ist_strbuf_sprintf(
                 buffer,
                 idxptr,
@@ -137,8 +143,8 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
             break;
         }
 
-        case ISL_ASTNT_UNARY_OPT: {
-            IST_ASTNODE_UNARY_OPT* unary_opt = this;
+        case ISL_ASTNT_UNARY_EXPR: {
+            IST_ASTNODE_UNARY_EXPR* unary_opt = this;
             ist_strbuf_sprintf(
                 buffer,
                 idxptr,
@@ -153,6 +159,19 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
         case ISL_ASTNT_NAME_ENT: {
             IST_ASTNODE_NAME_ENT* name_ent = this;
             ist_strbuf_sprintf(buffer, idxptr, "\"name\":\"%s\"", name_ent->name);
+            break;
+        }
+
+        case ISL_ASTNT_FNCALL_EXPR: {
+            IST_ASTNODE_FNCALL_EXPR* fncall = this;
+            ist_strbuf_sprintf(buffer, idxptr, "\"fnentity\":");
+            ist_ast_dump_json(fncall->fnentity, buffer, idxptr);
+            ist_strbuf_append_raw(buffer, idxptr, ",\"arglist\":[");
+            isg_list_foreach (nodepp, fncall->arglist) {
+                ist_ast_dump_json(*nodepp, buffer, idxptr);
+                ist_strbuf_append_raw(buffer, idxptr, ",");
+            }
+            ist_strbuf_append_raw(buffer, idxptr, "\b]");
             break;
         }
 

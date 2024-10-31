@@ -60,10 +60,11 @@ void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp);
 
 void* nud_literal_entity(ist_parser* this);
 void* nud_name_entity(ist_parser* this);
-void* nud_prefix_opt(ist_parser* this);
-void* led_suffix_opt(ist_parser* this, ist_astnode* lhs);
-void* led_infix_opt(ist_parser* this, ist_astnode* lhs);
-void* led_wrap_opt(ist_parser* this, ist_astnode* lhs);
+void* nud_prefix_expr(ist_parser* this);
+void* led_suffix_expr(ist_parser* this, ist_astnode* lhs);
+void* led_infix_expr(ist_parser* this, ist_astnode* lhs);
+void* led_fncall_expr(ist_parser* this, ist_astnode* lhs);
+void* led_wrap_expr(ist_parser* this, ist_astnode* lhs);
 
 
 #define pre_token(this) ((this)->lexer.pre_token)
@@ -155,10 +156,10 @@ struct ist_nudoptattr {
 
 } nudoptattrs[] = {
 
-    [ISL_TOKENT_ADD]     = {nud_prefix_opt, OBP_PREFIX},
-    [ISL_TOKENT_SUB]     = {nud_prefix_opt, OBP_PREFIX},
-    [ISL_TOKENT_SELFADD] = {nud_prefix_opt, OBP_PREFIX},
-    [ISL_TOKENT_SELFSUB] = {nud_prefix_opt, OBP_PREFIX},
+    [ISL_TOKENT_ADD]     = {nud_prefix_expr, OBP_PREFIX},
+    [ISL_TOKENT_SUB]     = {nud_prefix_expr, OBP_PREFIX},
+    [ISL_TOKENT_SELFADD] = {nud_prefix_expr, OBP_PREFIX},
+    [ISL_TOKENT_SELFSUB] = {nud_prefix_expr, OBP_PREFIX},
 
     [ISL_TOKENT_VL_INT]    = {nud_literal_entity, OBP_NONE},
     [ISL_TOKENT_VL_REAL]   = {nud_literal_entity, OBP_NONE},
@@ -179,23 +180,24 @@ struct ist_ledoptattr {
 
 } ledoptattrs[] = {
 
-    [ISL_TOKENT_ASSIGN]     = {led_infix_opt, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_ADD_ASSIGN] = {led_infix_opt, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_SUB_ASSIGN] = {led_infix_opt, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_MUL_ASSIGN] = {led_infix_opt, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_DIV_ASSIGN] = {led_infix_opt, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_MOD_ASSIGN] = {led_infix_opt, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_ASSIGN]     = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_ADD_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_SUB_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_MUL_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_DIV_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_MOD_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
 
-    [ISL_TOKENT_ADD] = {led_infix_opt, OBP_ARITH, OBP_ARITH},
-    [ISL_TOKENT_SUB] = {led_infix_opt, OBP_ARITH, OBP_ARITH},
-    [ISL_TOKENT_MUL] = {led_infix_opt, OBP_TERM, OBP_TERM},
-    [ISL_TOKENT_DIV] = {led_infix_opt, OBP_TERM, OBP_TERM},
-    [ISL_TOKENT_MOD] = {led_infix_opt, OBP_TERM, OBP_TERM},
+    [ISL_TOKENT_ADD] = {led_infix_expr, OBP_ARITH, OBP_ARITH},
+    [ISL_TOKENT_SUB] = {led_infix_expr, OBP_ARITH, OBP_ARITH},
+    [ISL_TOKENT_MUL] = {led_infix_expr, OBP_TERM, OBP_TERM},
+    [ISL_TOKENT_DIV] = {led_infix_expr, OBP_TERM, OBP_TERM},
+    [ISL_TOKENT_MOD] = {led_infix_expr, OBP_TERM, OBP_TERM},
 
-    [ISL_TOKENT_WRAPPER] = {led_wrap_opt, OBP_SUFFIX, OBP_SUFFIX},
+    [ISL_TOKENT_SELFADD] = {led_suffix_expr, OBP_PREFIX, OBP_NONE},
+    [ISL_TOKENT_SELFSUB] = {led_suffix_expr, OBP_PREFIX, OBP_NONE},
 
-    [ISL_TOKENT_SELFADD] = {led_suffix_opt, OBP_PREFIX, OBP_NONE},
-    [ISL_TOKENT_SELFSUB] = {led_suffix_opt, OBP_PREFIX, OBP_NONE},
+    [ISL_TOKENT_LPARE]   = {led_fncall_expr, OBP_SUFFIX, OBP_NONE},
+    [ISL_TOKENT_WRAPPER] = {led_wrap_expr, OBP_SUFFIX, OBP_ATOM},
 
     [ISL_TOKENT_LATEST] = {NULL, OBP_NONE, OBP_NONE},
 
@@ -211,18 +213,18 @@ void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
 
     void* node;
 
-    if (nudoptattrs[curtoken.type].nud) {
-
-        /* handle prefix or literal */
-        node = nudoptattrs[curtoken.type].nud(this);
-        handle_pstate_inert(this, node);
-
-    } else if (curtoken.type == ISL_TOKENT_LPARE) {
+    if (curtoken.type == ISL_TOKENT_LPARE) {
 
         /* handle paren */
         advance(this);
         node = parse_expr(this, OBP_LOWEST);
         assert_token(this, node, ISL_TOKENT_RPARE);
+
+    } else if (nudoptattrs[curtoken.type].nud) {
+
+        /* handle prefix or literal */
+        node = nudoptattrs[curtoken.type].nud(this);
+        handle_pstate_inert(this, node);
 
     } else
         raise_parsing_failed(
@@ -241,7 +243,7 @@ void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
     while (lhsrbp < ledoptattrs[cur_token(this).type].lbp) {
         curtoken = cur_token(this);
 
-        /* this for infix or suffix recognize and parsing */
+        /* this for infix or suffix recognizing and parsing */
         if (!ledoptattrs[curtoken.type].led) break;
         node = ledoptattrs[curtoken.type].led(this, node);
 
@@ -275,10 +277,10 @@ void* nud_name_entity(ist_parser* this) {
     return ist_astnode_createby_full(NAME_ENT, curtoken.location, __result__->name = name);
 }
 
-void* nud_prefix_opt(ist_parser* this) {
+void* nud_prefix_expr(ist_parser* this) {
     ist_token curtoken = advance(this);
 
-    ist_astnode_defineby_full(node, UNARY_OPT, curtoken.location);
+    ist_astnode_defineby_full(node, UNARY_EXPR, curtoken.location);
 
     node->onlhs    = true;
     node->optype   = curtoken.type;
@@ -295,10 +297,10 @@ void* nud_prefix_opt(ist_parser* this) {
     return node;
 }
 
-void* led_suffix_opt(ist_parser* this, ist_astnode* lhs) {
+void* led_suffix_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token curtoken = advance(this);
 
-    ist_astnode_defineby_full(node, UNARY_OPT, curtoken.location);
+    ist_astnode_defineby_full(node, UNARY_EXPR, curtoken.location);
 
     node->onlhs    = false;
     node->optype   = curtoken.type;
@@ -315,10 +317,10 @@ void* led_suffix_opt(ist_parser* this, ist_astnode* lhs) {
     return node;
 }
 
-void* led_infix_opt(ist_parser* this, ist_astnode* lhs) {
+void* led_infix_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token curtoken = advance(this);
 
-    ist_astnode_defineby_full(node, BINARY_OPT, curtoken.location);
+    ist_astnode_defineby_full(node, BINARY_EXPR, curtoken.location);
 
     node->lhs_node = lhs;
     node->optype   = curtoken.type;
@@ -335,14 +337,83 @@ void* led_infix_opt(ist_parser* this, ist_astnode* lhs) {
     return node;
 }
 
-void* led_wrap_opt(ist_parser* this, ist_astnode* lhs) {
+void* led_fncall_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token curtoken = advance(this);
+    ist_astnode_defineby_full(node, FNCALL_EXPR, curtoken.location);
 
-    ist_astnode_defineby_full(node, BINARY_OPT, curtoken.location);
+    node->fnentity = lhs;
+    node->arglist  = ist_astnodeptr_list_consc(2);
 
-    node->lhs_node = lhs;
-    node->optype   = ISL_TOKENT_LPARE;
-    node->rhs_node = parse_expr(this, ledoptattrs[curtoken.type].rbp);
+    /* if the pair closed immediately, then the parsing over! */
+    if (match_token(this, ISL_TOKENT_RPARE)) return node;
+
+    do {
+        curtoken = cur_token(this);
+
+        ist_astnodeptr_list_addc(&node->arglist, parse_expr(this, OBP_LOWEST));
+        handle_pstate_force(
+            this,
+            ((node)),
+            rid_expect_expression_before,
+            curtoken.location,
+            ist_token_names[curtoken.type]
+        );
+
+    } while (match_token(this, ISL_TOKENT_COMMA));
+
+    /**
+     * if the args has be handled, there are must
+     * a close paren to end the call of fn-entity.
+     */
+    assert_token(this, node, ISL_TOKENT_RPARE);
+
+    return node;
+}
+
+void* led_wrap_expr(ist_parser* this, ist_astnode* lhs) {
+    ist_token curtoken = advance(this);
+    ist_astnode_defineby_full(node, FNCALL_EXPR, curtoken.location);
+
+    node->arglist = ist_astnodeptr_list_consc(2);
+    ist_astnodeptr_list_addc(&node->arglist, lhs);
+
+    /* catch the fn-entity that will be called */
+    node->fnentity = parse_expr(this, ledoptattrs[curtoken.type].rbp);
+    handle_pstate_force(
+        this,
+        ((node)),
+        rid_expect_fn_entity_after,
+        curtoken.location,
+        ist_token_names[curtoken.type]
+    );
+
+    /**
+     * that means the paren pair can be omitted
+     * if there are no antoher args in wrap_expr.
+     */
+    if (!match_token(this, ISL_TOKENT_LPARE)) return node;
+    if (match_token(this, ISL_TOKENT_RPARE)) return node;
+
+    /* that means there are some args need to handle */
+    do {
+        curtoken = cur_token(this);
+
+        ist_astnodeptr_list_addc(&node->arglist, parse_expr(this, OBP_LOWEST));
+        handle_pstate_force(
+            this,
+            ((node)),
+            rid_expect_expression_after,
+            curtoken.location,
+            ist_token_names[curtoken.type]
+        );
+
+    } while (match_token(this, ISL_TOKENT_COMMA));
+
+    /**
+     * if the args has be handled, there are must
+     * a close paren to end the call of fn-entity.
+     */
+    assert_token(this, node, ISL_TOKENT_RPARE);
 
     return node;
 }

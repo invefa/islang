@@ -9,28 +9,26 @@ manifest(NODE_LIST, (struct {
              ist_astnodeptr_list nodeptr_list;
          }))
 
-/* basic components */
-manifest(SCOPE, (IST_ASTNODE_NODE_LIST))
-manifest(MODULE, (IST_ASTNODE_NODE_LIST))
-manifest(ARG_LIST, (IST_ASTNODE_NODE_LIST))
-manifest(PARAM_LIST, (IST_ASTNODE_NODE_LIST))
+/* basic components, aka pattern */
+manifest(ARG_LIST_PATT, (IST_ASTNODE_NODE_LIST))
+manifest(PARAM_LIST_PATT, (IST_ASTNODE_NODE_LIST))
 
-/* operations */
-manifest(UNARY_OPT, (struct {
+/* expressions */
+manifest(UNARY_EXPR, (struct {
              ist_astnode    base;
              ist_token_type optype;
              ist_bool       onlhs;
              ist_astnode*   sub_node;
          }))
 
-manifest(BINARY_OPT, (struct {
+manifest(BINARY_EXPR, (struct {
              ist_astnode    base;
              ist_token_type optype;
              ist_astnode*   lhs_node;
              ist_astnode*   rhs_node;
          }))
 
-manifest(TERNARY_OPT, (struct {
+manifest(TERNARY_EXPR, (struct {
              ist_astnode    base;
              ist_token_type optype;
              ist_astnode*   first_node;
@@ -38,9 +36,9 @@ manifest(TERNARY_OPT, (struct {
              ist_astnode*   third_node;
          }))
 
-manifest(FNCALL, (struct {
+manifest(FNCALL_EXPR, (struct {
              ist_astnode         base;
-             ist_usize           fnidx;
+             ist_astnode*        fnentity;
              ist_astnodeptr_list arglist;
          }))
 
@@ -60,6 +58,9 @@ manifest(REFERENCE_ENT, (struct {
              ist_astnode base;
              ist_usize   index;
          }))
+
+manifest(SCOPE_ENT, (IST_ASTNODE_NODE_LIST))
+manifest(MODULE_ENT, (IST_ASTNODE_NODE_LIST))
 
 manifest(FN_ENT, (IST_ASTNODE_REFERENCE_ENT))
 manifest(VAR_ENT, (IST_ASTNODE_REFERENCE_ENT))
