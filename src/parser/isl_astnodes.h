@@ -16,21 +16,21 @@ manifest(PARAM_LIST_PATT, (IST_ASTNODE_NODE_LIST))
 /* expressions */
 manifest(UNARY_EXPR, (struct {
              ist_astnode    base;
-             ist_token_type optype;
+             ist_token_type optype: 8;
              ist_bool       onlhs;
              ist_astnode*   sub_node;
          }))
 
 manifest(BINARY_EXPR, (struct {
              ist_astnode    base;
-             ist_token_type optype;
+             ist_token_type optype: 8;
              ist_astnode*   lhs_node;
              ist_astnode*   rhs_node;
          }))
 
 manifest(TERNARY_EXPR, (struct {
              ist_astnode    base;
-             ist_token_type optype;
+             ist_token_type optype: 8;
              ist_astnode*   first_node;
              ist_astnode*   second_node;
              ist_astnode*   third_node;
@@ -45,7 +45,7 @@ manifest(FNCALL_EXPR, (struct {
 /* comptime entities */
 manifest(LITERAL_ENT, (struct {
              ist_astnode    base;
-             ist_token_type litype;
+             ist_token_type litype: 8;
              ist_value      value;
          }))
 

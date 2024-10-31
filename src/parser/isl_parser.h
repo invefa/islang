@@ -11,6 +11,19 @@ typedef enum ist_pstate {
     PRS_FAHEAD      = 3,
 } ist_pstate;
 
+enum ist_optbindpower {
+    OBP_NONE    = 0x0,
+    OBP_LOWEST  = 0x1,
+    OBP_ASSIGN  = 0x20,
+    OBP_ARITH   = 0x30,
+    OBP_TERM    = 0x40,
+    OBP_FACTOR  = 0x50,
+    OBP_PREFIX  = 0x60,
+    OBP_SUFFIX  = 0x70,
+    OBP_ATOM    = 0xFF,
+    OBP_HIGHEST = INT16_MAX,
+};
+
 typedef struct isl_parser {
     ist_lexer    lexer;
     ist_astnode* root;

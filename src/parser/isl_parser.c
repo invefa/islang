@@ -39,6 +39,7 @@ void ist_parser_delete(ist_parser* this) {
 enum ist_optbindpower;
 typedef enum ist_optbindpower ist_optbindpower;
 
+
 /* parse statment */
 void* parse_stmts(ist_parser* this);
 
@@ -160,20 +161,6 @@ ist_bool match_token(ist_parser* this, ist_token_type _type) {
 }
 
 
-
-enum ist_optbindpower {
-    OBP_NONE    = 0x0,
-    OBP_LOWEST  = 0x1,
-    OBP_ASSIGN  = 0x20,
-    OBP_ARITH   = 0x30,
-    OBP_TERM    = 0x40,
-    OBP_FACTOR  = 0x50,
-    OBP_PREFIX  = 0x60,
-    OBP_SUFFIX  = 0x70,
-    OBP_ATOM    = 0xFF,
-    OBP_HIGHEST = INT16_MAX,
-};
-
 typedef void* (*ist_pletnud_fn)(ist_parser*);
 typedef void* (*ist_pletled_fn)(ist_parser*, ist_astnode*);
 
@@ -232,9 +219,11 @@ struct ist_ledoptattr {
 };
 
 
+/* entrance method for parser */
 void ist_parser_parse(ist_parser* this) {
     this->root = parse_expr(this, OBP_LOWEST);
 }
+
 
 void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
     ist_token curtoken = cur_token(this);

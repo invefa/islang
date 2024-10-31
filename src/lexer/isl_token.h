@@ -5,12 +5,11 @@
 #include "isl_value.h"
 
 
-typedef ist_u8 ist_token_type;
-enum ist_token_type {
+typedef enum ist_token_type {
 #define manifest(_name, _reflect) ISL_TOKENT_##_name,
 #include "isl_tokens.h"
 #undef manifest
-};
+} ist_token_type;
 
 extern const ist_cstring ist_token_reflects[];
 extern const ist_cstring ist_token_names[];
@@ -21,7 +20,7 @@ extern const ist_cstring ist_token_names[];
     the member:length is the length of extracted string
 */
 typedef struct ist_token {
-    ist_token_type type;
+    ist_token_type type: 8;
     ist_location   location;
     ist_cstring    extract;
     ist_usize      length;
