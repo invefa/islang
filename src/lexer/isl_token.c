@@ -47,6 +47,8 @@ inline ist_string ist_token_dump(ist_token* this, ist_string* buffer, ist_usize*
         case ISL_TOKENT_VL_STRING:
             ist_strbuf_sprintf(buffer, idxptr, ",value=\"%s\"", this->value.string_value);
             break;
+        default:
+            break;
     }
     return ist_strbuf_append_raw(buffer, idxptr, "}");
 }
@@ -76,6 +78,8 @@ inline ist_string ist_token_dump_json(ist_token* this, ist_string* buffer, ist_u
             break;
         case ISL_TOKENT_VL_STRING:
             ist_strbuf_sprintf(buffer, idxptr, ",\"value\":\"%s\"", this->value.string_value);
+            break;
+        default:
             break;
     }
     return ist_strbuf_append_raw(buffer, idxptr, "}");
