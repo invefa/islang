@@ -186,11 +186,11 @@ struct ist_ledoptattr {
     [ISL_TOKENT_DIV_ASSIGN] = {led_infix_opt, OBP_ASSIGN + 1, OBP_ASSIGN},
     [ISL_TOKENT_MOD_ASSIGN] = {led_infix_opt, OBP_ASSIGN + 1, OBP_ASSIGN},
 
-    [ISL_TOKENT_ADD] = {led_infix_opt, OBP_ARITH, OBP_ARITH + 1},
-    [ISL_TOKENT_SUB] = {led_infix_opt, OBP_ARITH, OBP_ARITH + 1},
-    [ISL_TOKENT_MUL] = {led_infix_opt, OBP_TERM, OBP_TERM + 1},
-    [ISL_TOKENT_DIV] = {led_infix_opt, OBP_TERM, OBP_TERM + 1},
-    [ISL_TOKENT_MOD] = {led_infix_opt, OBP_TERM, OBP_TERM + 1},
+    [ISL_TOKENT_ADD] = {led_infix_opt, OBP_ARITH, OBP_ARITH},
+    [ISL_TOKENT_SUB] = {led_infix_opt, OBP_ARITH, OBP_ARITH},
+    [ISL_TOKENT_MUL] = {led_infix_opt, OBP_TERM, OBP_TERM},
+    [ISL_TOKENT_DIV] = {led_infix_opt, OBP_TERM, OBP_TERM},
+    [ISL_TOKENT_MOD] = {led_infix_opt, OBP_TERM, OBP_TERM},
 
     [ISL_TOKENT_WRAPPER] = {led_wrap_opt, OBP_SUFFIX, OBP_SUFFIX},
 
@@ -231,22 +231,18 @@ void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
             ist_token_names[curtoken.type]
         );
 
+    /**
+     * if left-hand-side's right-binding-power is less than the current token's
+     * left-binding-power, then we should make sure the node that parsing by prefix
+     * will belong to the node of the current token.
+     */
     while (lhsrbp < ledoptattrs[cur_token(this).type].lbp) {
         curtoken = cur_token(this);
-
-        /**
-         * if left-hand-side's right-binding-power is less than the current token's
-         * left-binding-power, then we should make sure the node that parsing by prefix
-         * will belong to the node of the current token.
-         */
 
         /* this for infix or suffix recognize and parsing */
         if (!ledoptattrs[curtoken.type].led) break;
         node = ledoptattrs[curtoken.type].led(this, node);
 
-        /**
-         * handle parsing state in force
-         */
         handle_pstate_force(
             this,
             node,
