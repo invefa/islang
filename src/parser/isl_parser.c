@@ -36,35 +36,48 @@ void ist_parser_delete(ist_parser* this) {
     isl_free(this);
 }
 
+enum ist_optbindpower;
+typedef enum ist_optbindpower ist_optbindpower;
 
+/* parse statment */
+void* parse_stmts(ist_parser* this);
 
-typedef enum ist_optbindpower {
-    OBP_NONE    = 0x0,
-    OBP_LOWEST  = 0x1,
-    OBP_ASSIGN  = 0x20,
-    OBP_ARITH   = 0x30,
-    OBP_TERM    = 0x40,
-    OBP_FACTOR  = 0x50,
-    OBP_PREFIX  = 0x60,
-    OBP_SUFFIX  = 0x70,
-    OBP_ATOM    = 0xFF,
-    OBP_HIGHEST = INT16_MAX,
-} ist_optbindpower;
+void* parse_stmt(ist_parser* this);
+void* parse_import_stmt(ist_parser* this);
+void* parse_using_stmt(ist_parser* this);
+void* parse_do_stmt(ist_parser* this);
 
+/* parse common pattern */
+void* parse_codetail_patt(ist_parser* this);
+void* parse_codeblock_patt(ist_parser* this);
+void* parse_paramlist_patt(ist_parser* this);
+void* parse_arglist_patt(ist_parser* this);
 
-typedef void* (*ist_pletnud_fn)(ist_parser*);
-typedef void* (*ist_pletled_fn)(ist_parser*, ist_astnode*);
-
-
+/* parse expression */
 void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp);
 
 void* nud_literal_entity(ist_parser* this);
 void* nud_name_entity(ist_parser* this);
 void* nud_prefix_expr(ist_parser* this);
+
 void* led_suffix_expr(ist_parser* this, ist_astnode* lhs);
 void* led_infix_expr(ist_parser* this, ist_astnode* lhs);
 void* led_fncall_expr(ist_parser* this, ist_astnode* lhs);
 void* led_wrap_expr(ist_parser* this, ist_astnode* lhs);
+
+
+/* parse comptime-entity */
+void* parse_name_entity(ist_parser* this);
+void* parse_reference_entity(ist_parser* this);
+
+void* parse_fn_entity(ist_parser* this);
+void* parse_fn_prototype_entity(ist_parser* this);
+void* parse_type_entity(ist_parser* this);
+
+void* parse_regist_entity(ist_parser* this);
+void* parse_slot_entity(ist_parser* this);
+void* parse_literal_entity(ist_parser* this);
+
 
 
 #define pre_token(this) ((this)->lexer.pre_token)
@@ -135,7 +148,6 @@ void* led_wrap_expr(ist_parser* this, ist_astnode* lhs);
     } while (0)
 
 
-
 ist_token advance(ist_parser* this) {
     ist_lexer_advance(&this->lexer);
     return pre_token(this);
@@ -148,6 +160,22 @@ ist_bool match_token(ist_parser* this, ist_token_type _type) {
 }
 
 
+
+enum ist_optbindpower {
+    OBP_NONE    = 0x0,
+    OBP_LOWEST  = 0x1,
+    OBP_ASSIGN  = 0x20,
+    OBP_ARITH   = 0x30,
+    OBP_TERM    = 0x40,
+    OBP_FACTOR  = 0x50,
+    OBP_PREFIX  = 0x60,
+    OBP_SUFFIX  = 0x70,
+    OBP_ATOM    = 0xFF,
+    OBP_HIGHEST = INT16_MAX,
+};
+
+typedef void* (*ist_pletnud_fn)(ist_parser*);
+typedef void* (*ist_pletled_fn)(ist_parser*, ist_astnode*);
 
 struct ist_nudoptattr {
 
