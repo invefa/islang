@@ -414,7 +414,9 @@ inline void ist_lexer_parse_string(ist_lexer* this) {
     /* extract the string literal, and register the string to the module */
     analysis_token.value.string_value =
         ist_string_consby_ref(analysis_token.extract, analysis_token.length);
-    ist_module_register_strbuf(this->module, analysis_token.value.string_value, ISL_STRBUFT_LITERAL);
+    ist_module_register_strbuf(
+        this->module, analysis_token.value.string_value, ISL_STRBUFT_LITERAL
+    );
 }
 
 inline void ist_lexer_skip_comment(ist_lexer* this, ist_bool _is_block) {
@@ -433,9 +435,10 @@ inline void ist_lexer_skip_comment(ist_lexer* this, ist_bool _is_block) {
                 isl_report(rid_unterminated_comment_block, this->codepage->location);
                 return;
             }
-        } else if (ist_lexer_match_current_codepoint(this, '\n')) {
+        } else if (ist_lexer_match_current_codepoint(this, '\n')
+                   || ist_lexer_get_current_codepoint(this) == '\0')
             return;
-        }
+
         /* skip comment context */
         ist_lexer_advance_codepoint(this);
     }
