@@ -213,20 +213,22 @@ void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
 
     if (nudoptattrs[curtoken.type].nud) {
 
+        /* handle prefix or literal */
         node = nudoptattrs[curtoken.type].nud(this);
         handle_pstate_inert(this, node);
 
     } else if (curtoken.type == ISL_TOKENT_LPARE) {
 
+        /* handle paren */
         advance(this);
         node = parse_expr(this, OBP_LOWEST);
         assert_token(this, node, ISL_TOKENT_RPARE);
 
     } else
         raise_parsing_failed(
-            this,
-            NULL,
-            rid_expect_expression_before,
+            ((this)),
+            ((NULL)),
+            rid_not_expression,
             curtoken.location,
             ist_token_names[curtoken.type]
         );

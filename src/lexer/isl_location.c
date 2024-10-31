@@ -3,15 +3,12 @@
 
 ist_string ist_location_dump_json(ist_location* this, ist_string* buffer, ist_usize* idxptr) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
-    return ist_strbuf_sprintf(
-        buffer,
+    ist_strbuf_sprintf(
+        ((buffer)),
         idxptr,
-        "\"module\":\"%s%s,\"pagename\":\"%s%s,\"line\":%zu,\"column\":%zu",
-        this->module ? this->module->name : (ist_string) "\bnull",
-        this->module ? "\"" : "",
-        this->pagename ?: (ist_string) "\bnull",
-        this->pagename ? "\"" : "",
-        this->line,
-        this->column
+        "\"location\":\"%s",
+        this->module ? this->module->name : (ist_string) "(null)"
     );
+    if (this->pagename) ist_strbuf_sprintf(buffer, idxptr, ":%s", this->pagename);
+    return ist_strbuf_sprintf(buffer, idxptr, ":%zu:%zu\"", this->line, this->column);
 }
