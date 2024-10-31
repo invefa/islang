@@ -148,12 +148,12 @@ ist_bool match_token(ist_parser* this, ist_token_type _type) {
 
 
 
-struct ist_prefix_optattr {
+struct ist_nudoptattr {
 
     ist_pletnud_fn   nud;
     ist_optbindpower rbp: 16;
 
-} prefix_optattrs[] = {
+} nudoptattrs[] = {
 
     [ISL_TOKENT_ADD]     = {nud_prefix_opt, OBP_PREFIX},
     [ISL_TOKENT_SUB]     = {nud_prefix_opt, OBP_PREFIX},
@@ -171,13 +171,13 @@ struct ist_prefix_optattr {
 
 };
 
-struct ist_infix_optattr {
+struct ist_ledoptattr {
 
     ist_pletled_fn   led;
     ist_optbindpower lbp: 16;
     ist_optbindpower rbp: 16;
 
-} infix_optattrs[] = {
+} ledoptattrs[] = {
 
     [ISL_TOKENT_ASSIGN]     = {led_infix_opt, OBP_ASSIGN + 1, OBP_ASSIGN},
     [ISL_TOKENT_ADD_ASSIGN] = {led_infix_opt, OBP_ASSIGN + 1, OBP_ASSIGN},
@@ -194,21 +194,10 @@ struct ist_infix_optattr {
 
     [ISL_TOKENT_WRAPPER] = {led_wrap_opt, OBP_SUFFIX, OBP_SUFFIX},
 
+    [ISL_TOKENT_SELFADD] = {led_suffix_opt, OBP_PREFIX, OBP_NONE},
+    [ISL_TOKENT_SELFSUB] = {led_suffix_opt, OBP_PREFIX, OBP_NONE},
+
     [ISL_TOKENT_LATEST] = {NULL, OBP_NONE, OBP_NONE},
-
-};
-
-struct ist_suffix_optattr {
-
-    ist_pletled_fn   led;
-    ist_optbindpower lbp: 16;
-
-} suffix_optattrs[] = {
-
-    [ISL_TOKENT_SELFADD] = {led_suffix_opt, OBP_PREFIX},
-    [ISL_TOKENT_SELFSUB] = {led_suffix_opt, OBP_PREFIX},
-
-    [ISL_TOKENT_LATEST] = {NULL, OBP_NONE},
 
 };
 
@@ -222,9 +211,9 @@ void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
 
     void* node;
 
-    if (prefix_optattrs[curtoken.type].nud) {
+    if (nudoptattrs[curtoken.type].nud) {
 
-        node = prefix_optattrs[curtoken.type].nud(this);
+        node = nudoptattrs[curtoken.type].nud(this);
         handle_pstate_inert(this, node);
 
     } else if (curtoken.type == ISL_TOKENT_LPARE) {
@@ -242,7 +231,7 @@ void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
             ist_token_names[curtoken.type]
         );
 
-    while (true) {
+    while (lhsrbp < ledoptattrs[cur_token(this).type].lbp) {
         curtoken = cur_token(this);
 
         /**
@@ -251,18 +240,13 @@ void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
          * will belong to the node of the current token.
          */
 
-        if (lhsrbp < suffix_optattrs[curtoken.type].lbp) {
-            /* this for suffix recognize and parsing */
-            if (!suffix_optattrs[curtoken.type].led) break;
-            node = suffix_optattrs[curtoken.type].led(this, node);
+        /* this for infix or suffix recognize and parsing */
+        if (!ledoptattrs[curtoken.type].led) break;
+        node = ledoptattrs[curtoken.type].led(this, node);
 
-        } else if (lhsrbp < infix_optattrs[curtoken.type].lbp) {
-            /* this for infix recognize and parsing */
-            if (!infix_optattrs[curtoken.type].led) break;
-            node = infix_optattrs[curtoken.type].led(this, node);
-
-        } else break;
-
+        /**
+         * handle parsing state in force
+         */
         handle_pstate_force(
             this,
             node,
@@ -300,7 +284,7 @@ void* nud_prefix_opt(ist_parser* this) {
 
     node->onlhs    = true;
     node->optype   = curtoken.type;
-    node->sub_node = parse_expr(this, prefix_optattrs[curtoken.type].rbp);
+    node->sub_node = parse_expr(this, nudoptattrs[curtoken.type].rbp);
 
     handle_pstate_force(
         this,
@@ -340,7 +324,7 @@ void* led_infix_opt(ist_parser* this, ist_astnode* lhs) {
 
     node->lhs_node = lhs;
     node->optype   = curtoken.type;
-    node->rhs_node = parse_expr(this, infix_optattrs[curtoken.type].rbp);
+    node->rhs_node = parse_expr(this, ledoptattrs[curtoken.type].rbp);
 
     handle_pstate_force(
         this,
@@ -360,7 +344,7 @@ void* led_wrap_opt(ist_parser* this, ist_astnode* lhs) {
 
     node->lhs_node = lhs;
     node->optype   = ISL_TOKENT_LPARE;
-    node->rhs_node = parse_expr(this, infix_optattrs[curtoken.type].rbp);
+    node->rhs_node = parse_expr(this, ledoptattrs[curtoken.type].rbp);
 
     return node;
 }
