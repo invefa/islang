@@ -28,3 +28,6 @@ ist_string ist_value_dump_json(
 #define ISG_VALUE_DONT_CLEAN
 #define ISG_VALUE_TYPE ist_value
 #include "isg_list_code.h"
+#define ISG_VALUE_DONT_CLEAN
+#define ISG_VALUE_TYPE ist_value
+#include "isg_stack_code.h"

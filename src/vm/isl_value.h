@@ -44,7 +44,8 @@ ist_string ist_value_dump_json(
 
 #define ISG_VALUE_TYPE ist_value
 #include "isg_list_head.h"
-
+#define ISG_VALUE_TYPE ist_value
+#include "isg_stack_head.h"
 
 
 #endif // ISC_VALUE_H
