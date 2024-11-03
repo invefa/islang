@@ -1,4 +1,4 @@
-#define STRUCT_KIND list
+#define ISG_STRUCT_KIND list
 #include "isg_defines.h"
 
 #include "isl_list.h"
