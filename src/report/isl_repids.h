@@ -19,6 +19,8 @@ manifest(open_file_failed, (CORE, FATAL, CORELOC), "failed to open file '%s', do
 manifest(unreachable_brench, (CORE, FATAL, CORELOC), "the program entered an unreachable branch...")
 manifest(catch_size_overflow, (CORE, FATAL, CORELOC), "catched an overflow size.")
 manifest(illegal_utf8_codepoint, (CORE, FATAL, CORELOC), "cannot encode illegal UTF-8 codepoint.")
+manifest(stack_underflow, (CORE, FATAL, NONE), "stack underflow!\n")
+manifest(stack_overflow, (CORE, FATAL, NONE), "stack overflow!\n")
 
 manifest(inform_dumping, (CORE, NOTE, NONE), "dumping %s<0x%zX>.")
 manifest(inform_start_testing, (CORE, NOTE, NONE), "start testing %s...")
