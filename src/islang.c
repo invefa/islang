@@ -52,10 +52,10 @@ int main(int argc, char* argv[]) {
     // isl_test_memgr();
     // isl_test_string();
     // isl_test_report();
-    isl_test_lexer();
+    // isl_test_lexer();
     isl_test_generic();
     // isl_test_astnode();
-    isl_test_parser();
+    // isl_test_parser();
 
     return 0;
 }
@@ -182,6 +182,22 @@ void isl_test_generic(void) {
     ist_value_list_delete(value_list);
 
     // isp_report_option_disable(ISP_ROPTM_NO_CORE_INFO);
+
+    ist_value_stack* stack = ist_value_stack_calloc(16);
+    for (ist_usize i = 0; i < 18; ++i) {
+        ist_value_stack_pushc(stack, ist_value_consby_u64(i));
+    }
+
+    isg_list_foreach (vp, *stack) {
+        printf("%" PRIu64 " ", vp->uint_value);
+    }
+    printf("\n");
+
+    for (ist_usize i = 0; i < 18; ++i) {
+        isl_assert(ist_value_stack_pop(stack).uint_value == 17 - i);
+    }
+
+    ist_value_stack_delete(stack);
 
     isl_report(rid_custom_core_info, "max allocated-length = %zu.", isl_max_allocated_length);
     isl_report(rid_inform_end_testing, "generic");
