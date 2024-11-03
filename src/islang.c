@@ -4,10 +4,18 @@
  * which are suplied by GNU standard extensions.
  *
  * There are a list of extensions are used:
- *     1. typeof keyword.
- *     2. u8 prefix for string literal.
- * And some features are used:
- *     1. special macro expansion.
+ *  - Macros with a Variable Number of Arguments.
+ *  - Statements and Declarations in Expressions.
+ *  - Arithmetic on void- and Function-Pointers.
+ *  - Conditionals with Omitted Operands.
+ *  - Referring to a Type with typeof.
+ *  - u8 prefix for string literal.
+ *  - Function Names as Strings.
+ *  - Designated Initializers.
+ *  - Compound Literals.
+ *
+ * For more details about them, you can view:
+ * https://gcc.gnu.org/onlinedocs/gcc/C-Extensions.html#C-Extensions
  *
  * Anyway, you had better compile this project with gcc -std=gnu11.
  * Written by invefa.
@@ -196,6 +204,7 @@ void isl_test_generic(void) {
     for (ist_usize i = 0; i < 18; ++i) {
         isl_assert(ist_value_stack_pop(stack).uint_value == 17 - i);
     }
+    // ist_value_stack_pop(stack);
 
     ist_value_stack_delete(stack);
 
