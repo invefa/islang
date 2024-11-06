@@ -372,7 +372,7 @@ void* led_fncall_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token curtoken = advance(this);
     ist_astnode_defineby_full(node, FNCALL_EXPR, curtoken.location);
 
-    node->fnentity = lhs;
+    node->fn_entity = lhs;
     node->arglist  = ist_astnodeptr_list_consc(2);
 
     /* if the pair closed immediately, then the parsing over! */
@@ -409,7 +409,7 @@ void* led_wrap_expr(ist_parser* this, ist_astnode* lhs) {
     ist_astnodeptr_list_addc(&node->arglist, lhs);
 
     /* catch the fn-entity that will be called */
-    node->fnentity = parse_expr(this, ledoptattrs[curtoken.type].rbp);
+    node->fn_entity = parse_expr(this, ledoptattrs[curtoken.type].rbp);
     handle_pstate_force(
         this,
         ((node)),

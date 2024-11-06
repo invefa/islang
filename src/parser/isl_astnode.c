@@ -79,7 +79,7 @@ void ist_ast_delete(void* this) {
         }
         case ISL_ASTNT_FNCALL_EXPR: {
             IST_ASTNODE_FNCALL_EXPR* fncall = this;
-            ist_ast_delete(fncall->fnentity);
+            ist_ast_delete(fncall->fn_entity);
             ist_astnodeptr_list_clean(&fncall->arglist);
             break;
         }
@@ -164,8 +164,8 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
 
         case ISL_ASTNT_FNCALL_EXPR: {
             IST_ASTNODE_FNCALL_EXPR* fncall = this;
-            ist_strbuf_sprintf(buffer, idxptr, "\"fnentity\":");
-            ist_ast_dump_json(fncall->fnentity, buffer, idxptr);
+            ist_strbuf_sprintf(buffer, idxptr, "\"fn_entity\":");
+            ist_ast_dump_json(fncall->fn_entity, buffer, idxptr);
             ist_strbuf_append_raw(buffer, idxptr, ",\"arglist\":[");
             isg_list_foreach (nodepp, fncall->arglist) {
                 ist_ast_dump_json(*nodepp, buffer, idxptr);

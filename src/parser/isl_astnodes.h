@@ -38,7 +38,7 @@ manifest(TERNARY_EXPR, (struct {
 
 manifest(FNCALL_EXPR, (struct {
              ist_astnode         base;
-             ist_astnode*        fnentity;
+             ist_astnode*        fn_entity;
              ist_astnodeptr_list arglist;
          }))
 
