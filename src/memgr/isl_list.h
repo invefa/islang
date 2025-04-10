@@ -94,7 +94,15 @@
     } while (0)
 
 
-
+/**
+ * nse_newcap: new capacity value of No-Side-Effects (NSE).
+ *
+ * why suffix with 'V', what this macro do?
+ * if you want to resize a list, you must provide the new capacity value,
+ * but if the newcap expression is a side effect expression, you can't provide it to the macro
+ * directly, so we provide other macro:__ISL_LIST_RESIZEX to solve this problem, and this is the
+ * primitive macro of it.
+ */
 #define __ISL_LIST_RESIZXV(_x, _ptrv, _nse_newcap)                                               \
     do {                                                                                         \
         typedef typeof(*(_ptrv)) isl_list_resizev_element_type;                                  \
@@ -141,7 +149,10 @@
 #define isl_list_resizc(_ptr, _newcap, _stv...) __ISL_LIST_RESIZX(c, _ptr, _newcap, ##_stv)
 #define isl_list_resizm(_ptr, _newcap, _stv...) __ISL_LIST_RESIZX(m, _ptr, _newcap, ##_stv)
 
-
+/**
+ * nse_size:    size value of No-Side-Effects (NSE).
+ * nse_require: require size value of No-Side-Effects (NSE).
+ */
 #define __ISL_LIST_ENSUREXV(_x, _ptrv, _nse_size, _nse_require)                                 \
     do {                                                                                        \
         ist_usize isl_list_ensurev_capacity = isl_list_ptr_get_capacity(_ptrv);                 \
