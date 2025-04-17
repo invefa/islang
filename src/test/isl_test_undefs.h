@@ -1,0 +1,4 @@
+#undef ISL_CONCAT
+#undef ISL_CONCAT_IMPL
+#undef ISL_TEST_FN_NAME
+#undef ISL_TEST_UNIT_NAME

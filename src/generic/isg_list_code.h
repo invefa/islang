@@ -33,10 +33,18 @@ inline ISG_STRUCT_NAME* ISG_FN_NAME(create)(ist_usize _capacity, ist_bool _docle
 }
 
 inline void ISG_FN_NAME(resizm)(ISG_STRUCT_NAME* this, ist_usize _newcap) {
-    isl_list_resizmv(this->data, _newcap);
+    if (this->data) isl_list_resizmv(this->data, _newcap);
+    else {
+        this->data = isl_list_malloc(ISG_VALUE_TYPE, _newcap);
+        this->size = 0;
+    }
 }
 inline void ISG_FN_NAME(resizc)(ISG_STRUCT_NAME* this, ist_usize _newcap) {
-    isl_list_resizcv(this->data, _newcap);
+    if (this->data) isl_list_resizcv(this->data, _newcap);
+    else {
+        this->data = isl_list_calloc(ISG_VALUE_TYPE, _newcap);
+        this->size = 0;
+    }
 }
 
 inline ist_usize ISG_FN_NAME(addm)(ISG_STRUCT_NAME* this, ISG_VALUE_TYPE _value) {
@@ -57,7 +65,7 @@ void ISG_FN_NAME(clean)(ISG_STRUCT_NAME* this) {
         ISG_VALUE_FN_CLEAN(valuep);
 #endif
 #endif
-    isl_list_freev(this->data);
+    if (this->data) isl_list_freev(this->data);
     this->size = 0;
 }
 

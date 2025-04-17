@@ -1,0 +1,11 @@
+import std:string;
+import std:option;
+import std:io;
+
+using string_consume_fn = fn(int, String) = > Option<String>;
+using fibbnacci = fn(x): x == 1 ? 1 : x == 2 ? 1 : fibbnacci(x - 1) + fibbnacci(x - 2);
+
+int main(void) {
+    println(fibbnacci(10)); // 55
+    return 0;
+}

@@ -59,4 +59,7 @@ ist_string ist_token_dump_json(ist_token* this, ist_string* buffer, ist_usize* i
 */
 ist_token_type ist_string_is_keyword(ist_cstring this, ist_usize length);
 
+#define ISG_VALUE_TYPE ist_token
+#include "isg_list_head.h"
+
 #endif // ISC_TOKEN_H

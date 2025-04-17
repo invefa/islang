@@ -3,7 +3,6 @@
 /*
     This header suplies some ANSI control character string.
     It can make the logger's output more colorful.
-    Written by invefa.
 */
 
 

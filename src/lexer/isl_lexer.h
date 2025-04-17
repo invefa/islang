@@ -1,8 +1,10 @@
 #ifndef ISC_LEXER_H
 #define ISC_LEXER_H
 
+#include "isg_list.h"
 #include "isl_codepage.h"
 #include "isl_token.h"
+
 
 // TODO: add an error signal.
 typedef struct ist_lexer {
@@ -21,6 +23,10 @@ typedef struct ist_lexer {
 
     ist_usize* ahead_backup_stack; /*  the stack of backup index           */
     ist_usize  ahead_backup_count; /*  the count of backup index           */
+
+    ist_token_list _ahead_token_list;
+    ist_usize      _ahead_token_index;
+    ist_usize_list _ahead_backup_stack;
 
 } ist_lexer;
 

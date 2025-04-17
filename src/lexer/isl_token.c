@@ -91,3 +91,7 @@ ist_token_type ist_string_is_keyword(ist_cstring this, ist_usize length) {
         else if (!strncmp(this, ist_token_reflects[i], length)) return i;
     return ISL_TOKENT_ID;
 }
+
+#define ISG_VALUE_TYPE ist_token
+#define ISG_VALUE_DONT_CLEAN
+#include "isg_list_code.h"
