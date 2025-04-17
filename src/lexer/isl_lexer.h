@@ -17,9 +17,9 @@ typedef struct ist_lexer {
         nex_token,                      /*  next token, the token after the current token        */
         sec_token;                      /*  second token, the token after the next token         */
 
-    ist_token_list _ahead_token_list;   /*  the list of ahead tokens            */
-    ist_usize      _ahead_token_index;  /*  the index of current ahead token    */
-    ist_usize_list _ahead_backup_stack; /*  the stack of backup index           */
+    ist_token_list ahead_token_list;   /*  the list of ahead tokens            */
+    ist_usize      ahead_token_index;  /*  the index of current ahead token    */
+    ist_usize_list ahead_backup_stack; /*  the stack of backup index           */
 
 } ist_lexer;
 
