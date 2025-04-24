@@ -160,10 +160,14 @@ ist_bool match_token(ist_parser* this, ist_token_type _type) {
     return true;
 }
 
-
+/**
+ * Operator binding power, the higher the value, the higher the priority.
+ * The values ​​of two adjacent enumerations must differ by at least two, in order to ensure
+ * that there is room for the associative adjustment.
+ */
 enum ist_optbindpower {
     OBP_NONE    = 0x0,
-    OBP_LOWEST  = 0x1,
+    OBP_LOWEST  = 0x2,
     OBP_ASSIGN  = 0x20,
     OBP_ARITH   = 0x30,
     OBP_TERM    = 0x40,
@@ -175,9 +179,15 @@ enum ist_optbindpower {
 };
 
 
+/**
+ * This concept come form TDOP(aka Top Down Operator Precedence / Pratt Parser)
+ * pletnud: parselet of nud (null denotation)
+ * pletled: parselet of led (left denotation)
+ */
 typedef void* (*ist_pletnud_fn)(ist_parser*);
 typedef void* (*ist_pletled_fn)(ist_parser*, ist_astnode*);
 
+/* nud operator attributes */
 struct ist_nudoptattr {
 
     ist_pletnud_fn   nud;
@@ -201,6 +211,7 @@ struct ist_nudoptattr {
 
 };
 
+/* led operator attributes */
 struct ist_ledoptattr {
 
     ist_pletled_fn   led;
@@ -373,7 +384,7 @@ void* led_fncall_expr(ist_parser* this, ist_astnode* lhs) {
     ist_astnode_defineby_full(node, FNCALL_EXPR, curtoken.location);
 
     node->fn_entity = lhs;
-    node->arglist  = ist_astnodeptr_list_consc(2);
+    node->arglist   = ist_astnodeptr_list_consc(2);
 
     /* if the pair closed immediately, then the parsing over! */
     if (match_token(this, ISL_TOKENT_RPARE)) return node;
