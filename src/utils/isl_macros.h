@@ -28,7 +28,7 @@
 */
 #define __ISL_MACRO_UNPACKAGER(_args_series...) _args_series
 
-/* to avoid some tricky case, mute the noisy warning notice... */
+/* to avoid some trivial case, mute the noisy warning notice... */
 #define __ISL_MACRO_MAYBE_UNUSED(_some) (void)(_some)
 
 #endif // ISC_MACROS_H

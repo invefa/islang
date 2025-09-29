@@ -166,16 +166,26 @@ ist_bool match_token(ist_parser* this, ist_token_type _type) {
  * that there is room for the associative adjustment.
  */
 enum ist_optbindpower {
-    OBP_NONE    = 0x0,
-    OBP_LOWEST  = 0x2,
-    OBP_ASSIGN  = 0x20,
-    OBP_ARITH   = 0x30,
-    OBP_TERM    = 0x40,
-    OBP_FACTOR  = 0x50,
-    OBP_PREFIX  = 0x60,
-    OBP_SUFFIX  = 0x70,
-    OBP_ATOM    = 0xFF,
-    OBP_HIGHEST = INT16_MAX,
+    OBP_NONE      = 0x0,       // reserved for certain suffix operator.
+    OBP_LOWEST    = 0x1,       // reserved for parse enterance.
+    OBP_RPARE     = 0x2,       // reserved for rpare.
+    OBP_ASSIGN    = 0x10,      // = += -= *= /= %= ^= |= &= ...
+    OBP_CONDITION = 0x20,      // ?:
+    OBP_LOGIC_OR  = 0x30,      // ||
+    OBP_LOGIC_AND = 0x40,      // &&
+    OBP_EQUALITY  = 0x50,      // == !=
+    OBP_COMPARE   = 0x60,      // < > <= >= <=>
+    OBP_BIT_OR    = 0x70,      // |
+    OBP_BIT_AND   = 0x80,      // &
+    BOP_BIT_SHIFT = 0x90,      // << >>
+    OBP_ARITH     = 0xA0,      // + -
+    OBP_TERM      = 0xB0,      // * / %
+    OBP_FACTOR    = 0xC0,      // ^
+    OBP_PREFIX    = 0xD0,      // ++ -- * & ! ~
+    OBP_SUFFIX    = 0xE0,      // ++ -- * & ^
+    OBP_CALL      = 0xF0,      // (...) [...] . ->
+    OBP_ATOM      = 0XFFF,     // reserved for identifier or unit.
+    OBP_HIGHEST   = INT16_MAX, // highest of i16.
 };
 
 
@@ -219,6 +229,8 @@ struct ist_ledoptattr {
     ist_optbindpower rbp: 16;
 
 } ledoptattrs[] = {
+
+    [ISL_TOKENT_RPARE] = {NULL, OBP_RPARE, OBP_NONE},
 
     [ISL_TOKENT_ASSIGN]     = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
     [ISL_TOKENT_ADD_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},

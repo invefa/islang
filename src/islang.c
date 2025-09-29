@@ -40,6 +40,8 @@
 #include "isl_xssert.h"
 
 
+#include "test_list.h"
+
 void isl_test_overload(void);
 void isl_test_xssert(void);
 void isl_test_list(void);
@@ -64,7 +66,7 @@ int main(int argc, char* argv[]) {
     // isl_test_generic();
     // isl_test_astnode();
     isl_test_parser();
-
+    test_isg_list();
     return 0;
 }
 
@@ -410,6 +412,8 @@ void isl_test_memgr(void) {
 }
 
 void isl_test_list(void) {
+
+
 
     ist_i32* list = isl_list_calloc(ist_i32, 10);
     // ist_i32* new_list = NULL;

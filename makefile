@@ -124,6 +124,7 @@ rebuild: clean-all depend build
 #pre-define rule for recipes of depend files
 $(build_dir)/%.o: %.c | mkdirs
 	@$(echo_cmd) building object: $@
+# 	@$(echo_cmd) $(compile_header) -MQ $@ -MF $(@convert-to-depend) -MP -MMD -c $< -o $@
 	@$(compile_header) -MQ $@ -MF $(@convert-to-depend) -MP -MMD -c $< -o $@
 #make the phony targets for depend files
 $(depend_files):
