@@ -57,8 +57,8 @@ void* parse_arglist_patt(ist_parser* this);
 /* parse expression */
 void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp);
 
-void* nud_literal_entity(ist_parser* this);
-void* nud_name_entity(ist_parser* this);
+void* nud_literal_parsent(ist_parser* this);
+void* nud_name_parsent(ist_parser* this);
 void* nud_prefix_expr(ist_parser* this);
 
 void* led_suffix_expr(ist_parser* this, ist_astnode* lhs);
@@ -67,17 +67,17 @@ void* led_fncall_expr(ist_parser* this, ist_astnode* lhs);
 void* led_wrap_expr(ist_parser* this, ist_astnode* lhs);
 
 
-/* parse comptime-entity */
-void* parse_name_entity(ist_parser* this);
-void* parse_reference_entity(ist_parser* this);
+/* parse parsetime-entity */
+void* parse_name_parsent(ist_parser* this);
+void* parse_reference_parsent(ist_parser* this);
 
-void* parse_fn_entity(ist_parser* this);
-void* parse_fn_prototype_entity(ist_parser* this);
-void* parse_type_entity(ist_parser* this);
+void* parse_fn_parsent(ist_parser* this);
+void* parse_fnproto_parsent(ist_parser* this);
+void* parse_type_parsent(ist_parser* this);
 
-void* parse_regist_entity(ist_parser* this);
-void* parse_slot_entity(ist_parser* this);
-void* parse_literal_entity(ist_parser* this);
+void* parse_regist_parsent(ist_parser* this);
+void* parse_slot_parsent(ist_parser* this);
+void* parse_literal_parsent(ist_parser* this);
 
 
 
@@ -210,12 +210,12 @@ struct ist_nudoptattr {
     [ISL_TOKENT_SELFADD] = {nud_prefix_expr, OBP_PREFIX},
     [ISL_TOKENT_SELFSUB] = {nud_prefix_expr, OBP_PREFIX},
 
-    [ISL_TOKENT_VL_INT]    = {nud_literal_entity, OBP_NONE},
-    [ISL_TOKENT_VL_REAL]   = {nud_literal_entity, OBP_NONE},
-    [ISL_TOKENT_VL_STRING] = {nud_literal_entity, OBP_NONE},
-    [ISL_TOKENT_BV_FALSE]  = {nud_literal_entity, OBP_NONE},
-    [ISL_TOKENT_BV_TRUE]   = {nud_literal_entity, OBP_NONE},
-    [ISL_TOKENT_ID]        = {nud_name_entity, OBP_NONE},
+    [ISL_TOKENT_VL_INT]    = {nud_literal_parsent, OBP_NONE},
+    [ISL_TOKENT_VL_REAL]   = {nud_literal_parsent, OBP_NONE},
+    [ISL_TOKENT_VL_STRING] = {nud_literal_parsent, OBP_NONE},
+    [ISL_TOKENT_BV_FALSE]  = {nud_literal_parsent, OBP_NONE},
+    [ISL_TOKENT_BV_TRUE]   = {nud_literal_parsent, OBP_NONE},
+    [ISL_TOKENT_ID]        = {nud_name_parsent, OBP_NONE},
 
     [ISL_TOKENT_LATEST] = {NULL, OBP_NONE},
 
@@ -313,7 +313,7 @@ void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
 }
 
 
-void* nud_literal_entity(ist_parser* this) {
+void* nud_literal_parsent(ist_parser* this) {
     ist_token curtoken = advance(this);
 
     return ist_astnode_createby_full(LITERAL_ENT, curtoken.location, {
@@ -322,7 +322,7 @@ void* nud_literal_entity(ist_parser* this) {
     });
 }
 
-void* nud_name_entity(ist_parser* this) {
+void* nud_name_parsent(ist_parser* this) {
     ist_token curtoken = advance(this);
 
     ist_string name = ist_string_consby_ref(curtoken.extract, curtoken.length);

@@ -39,14 +39,31 @@ symbol_empty    :=
 symbol_space    := $(symbol_empty) $(symbol_empty)
 symbol_comma    := ,
 
+ifdef dt # quickly indicate to debug-tester
+build_target    := tester
+source_subdirs	:= $(source_subdirs) tester
+build_version_flags := $(todebug_version_flags)
+build_dir           := $(build_base_dir)/debug
+else ifndef target
+build_target    := is
+source_subdirs	:= $(source_subdirs) driver
+else ifeq ($(target),driver)
+build_target    := is
+source_subdirs	:= $(source_subdirs) driver
+else ifeq ($(target),tester)
+build_target    := tester
+source_subdirs	:= $(source_subdirs) tester
+else
+$(error You must indicate a value between driver and tester for target!)
+endif
+
 #options for Compatibility (different from OS, capable for Windows / Linux / MacOS)
 ifeq ($(OS),Windows_NT)
-    build_target    := is.exe
+    build_target    := $(build_target).exe
     dir_slash       := $(symbol_empty)\$(symbol_empty)
     rmfile_cmd      := del /Q
     rmdir_cmd       := rmdir /Q /S
 else
-    build_target    := is
     rmfile_cmd      := rm -rf
     rmdir_cmd       := rm -rf
     dir_slash       := $(symbol_empty)/$(symbol_empty)
@@ -63,12 +80,18 @@ echo_cmd        := echo
 
 build_depend_dir:= $(build_base_dir)/$(build_depend_dir)
 
-ifeq ($(mode),debug)
-    build_version_flags := $(todebug_version_flags)
-    build_dir           := $(build_base_dir)/debug
+ifdef dt # quickly indicate to debug-tester
+else ifndef mode
+build_version_flags := $(release_version_flags)
+build_dir           := $(build_base_dir)/release
+else ifeq ($(mode),debug)
+build_version_flags := $(todebug_version_flags)
+build_dir           := $(build_base_dir)/debug
+else ifeq ($(mode),release)
+build_version_flags := $(release_version_flags)
+build_dir           := $(build_base_dir)/release
 else
-    build_version_flags := $(release_version_flags)
-    build_dir           := $(build_base_dir)/release
+$(error You must indicate a value between release and debug for mode!)
 endif
 
 build_target_dir:= $(build_dir)/$(build_target_dir)

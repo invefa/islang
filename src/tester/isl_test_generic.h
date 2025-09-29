@@ -1,0 +1,75 @@
+#include "isg_list.h"
+#include "isl_module.h"
+#include "isl_value.h"
+#include <inttypes.h>
+
+void isl_test_generic(void) {
+    isl_report(rid_custom_core_warn, "start testing generic...");
+    isl_max_allocated_length = 0;
+
+    // isp_report_option_enable(ISP_ROPTM_NO_CORE_INFO);
+
+    ist_value_list* value_list = ist_value_list_create(10, 1);
+
+    struct timespec start, end;
+    clock_gettime(CLOCK_REALTIME, &start);
+
+    for (ist_usize i = 0; i < 123456; ++i)
+        ist_value_list_addm(value_list, ist_value_consby_i64(i * 13));
+
+    clock_gettime(CLOCK_REALTIME, &end);
+
+    printf(
+        "time cost: %lfs\n",
+        (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1000000000.
+    );
+
+    ist_value_list_addc(value_list, ist_value_consby_i64(1234567890));
+
+    // isg_list_foreach (iterp, *value_list, idx)
+    //     printf("value[%zu] = %" PRId64 "\n", idx, iterp->int_value);
+
+
+    ist_module_list* module_list = ist_module_list_calloc(10);
+    ist_module_list_addc(
+        module_list, ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is"))
+    );
+    ist_module_list_addc(
+        module_list, ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is"))
+    );
+    ist_module_list_addc(
+        module_list, ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is"))
+    );
+
+    ist_string buffer = ist_string_cons_buffer(142);
+
+    isg_list_foreach (iterp, *module_list, idx) {
+        printf("module[%zu] = %s\n", idx, ist_module_dump_json(iterp, &buffer, NULL));
+    }
+
+    ist_string_clean(&buffer);
+    ist_module_list_delete(module_list);
+    ist_value_list_delete(value_list);
+
+    // isp_report_option_disable(ISP_ROPTM_NO_CORE_INFO);
+
+    ist_value_stack* stack = ist_value_stack_calloc(16);
+    for (ist_usize i = 0; i < 18; ++i) {
+        ist_value_stack_pushc(stack, ist_value_consby_u64(i));
+    }
+
+    isg_list_foreach (vp, *stack) {
+        printf("%" PRIu64 " ", vp->uint_value);
+    }
+    printf("\n");
+
+    for (ist_usize i = 0; i < 18; ++i) {
+        isl_assert(ist_value_stack_pop(stack).uint_value == 17 - i);
+    }
+    // ist_value_stack_pop(stack);
+
+    ist_value_stack_delete(stack);
+
+    isl_report(rid_custom_core_info, "max allocated-length = %zu.", isl_max_allocated_length);
+    isl_report(rid_inform_end_testing, "generic");
+}
