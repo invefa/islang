@@ -147,7 +147,11 @@ void isl_report(isp_repid _rid, ...);
     } while (0)
 
 
+#ifdef ISL_DEBUG
 /* catch the core location for attribute:CORELOC of report */
 #define isp_catch_coreloc __FILE__, __func__, (ist_usize)__LINE__
+#else
+#define isp_catch_coreloc NULL
+#endif
 
 #endif // ISC_REPORT_H

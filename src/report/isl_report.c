@@ -91,23 +91,33 @@ void isl_report(isp_repid rid, ...) {
     /* if reploc.attribute == ISP_ATTR_CORELOC, then we will obtain the core location to report */
     else if (reploc.attribute == ISP_ATTR_CORELOC)
     {
+#ifdef ISL_DEBUG
         ist_cstring file_name = va_arg(vargs, ist_cstring);
         ist_cstring func_name = va_arg(vargs, ist_cstring);
         ist_usize   line      = va_arg(vargs, ist_usize);
-
+#else
+        va_arg(vargs, void*);
+#endif
         snprintf(
             buffer,
             ISP_BUFFER_SIZE,
-            "%s%s %s:\n"
+            "%s%s %s:"
+#ifdef ISL_DEBUG
+            "\n"
             "\tin file '%s':\n"
             "\tat fn %s(...) <line:%zu>:\n"
+#else
+            " "
+#endif
             "%s" ANSI_RST "\n",
             level_colors[reploc.level],
             domain_fmts[reploc.domain],
             level_fmts[reploc.level],
+#ifdef ISL_DEBUG
             file_name,
             func_name,
             line,
+#endif
             isp_fmts[rid]
         );
 
