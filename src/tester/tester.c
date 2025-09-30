@@ -53,6 +53,6 @@ int main(int argc, char* argv[]) {
     // isl_test_generic();
     isl_test_lexer();
     // isl_test_astnode();
-    // isl_test_parser();
+    isl_test_parser();
     return 0;
 }

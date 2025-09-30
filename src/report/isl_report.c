@@ -37,7 +37,7 @@ ist_cstring level_fmts[] = {
 
 ist_cstring level_colors[] = {
     [ISP_LEVEL_INFO]    = ANSI_GRE,
-    [ISP_LEVEL_NOTE]    = ANSI_MAG,
+    [ISP_LEVEL_NOTE]    = ANSI_CLY,
     [ISP_LEVEL_WARNING] = ANSI_YEL,
     [ISP_LEVEL_ERROR]   = ANSI_HIR,
     [ISP_LEVEL_PANIC]   = ANSI_MAG,
