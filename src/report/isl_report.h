@@ -4,14 +4,16 @@
 /*
     report system was the important part of islang.
     It is used to report some information to the user.
-    And the report was divided into 5 levels:
+    And the report was divided into 6 levels:
         1. info:    it was used to notify user some thing is going on,
-                    and supplied with someinformation.
-        2. warning: used to notify the user that something should not
+                    and supplied with some information.
+        2. note:    it was used to notify user some thing is going on,
+                    and supplied with some information with significant color.
+        3. warning: used to notify the user that something should not
                     happen and needs to be fixed.
-        3. error:   notify user some thing can't be done.
-        4. panic:   something is about to crash the program.
-        5. fatal:   hell word, crash program.
+        4. error:   notify user some thing can't be done.
+        5. panic:   something is about to crash the program.
+        6. fatal:   hell word, crash program.
     Written by invefa.
 */
 
@@ -130,7 +132,7 @@ enum isp_reoprt_option_mask {
 #define isp_report_option_get(_roptm)     (isp_report_option & (_roptm))
 
 /* the only function of the reporting system */
-void isl_report(isp_repid _rid, ...);
+void isl_report(isp_repid rid, ...);
 
 
 /* if expr is false, then report */
@@ -148,7 +150,7 @@ void isl_report(isp_repid _rid, ...);
 
 
 #ifdef ISL_DEBUG
-/* catch the core location for attribute:CORELOC of report */
+/* catch the core location for attribute:CORELOC of report, just suplied for debug mode of islang */
 #define isp_catch_coreloc __FILE__, __func__, (ist_usize)__LINE__
 #else
 #define isp_catch_coreloc NULL

@@ -37,7 +37,7 @@ ist_cstring level_fmts[] = {
 
 ist_cstring level_colors[] = {
     [ISP_LEVEL_INFO]    = ANSI_GRE,
-    [ISP_LEVEL_NOTE]    = ANSI_YEL,
+    [ISP_LEVEL_NOTE]    = ANSI_MAG,
     [ISP_LEVEL_WARNING] = ANSI_YEL,
     [ISP_LEVEL_ERROR]   = ANSI_HIR,
     [ISP_LEVEL_PANIC]   = ANSI_MAG,
@@ -62,6 +62,10 @@ void isl_report(isp_repid rid, ...) {
     if (isp_report_option & ISP_ROPTM_NO_CORE_INFO)
         if (reploc.domain == ISP_DOMAIN_CORE)
             if (reploc.level == ISP_LEVEL_INFO) return;
+    if (isp_report_option & ISP_ROPTM_NO_NOTE)
+        if (reploc.level == ISP_LEVEL_NOTE) return;
+    if (isp_report_option & ISP_ROPTM_NO_WARN)
+        if (reploc.level == ISP_LEVEL_WARNING) return;
 
     va_list vargs;
     va_start(vargs, rid);
@@ -88,9 +92,13 @@ void isl_report(isp_repid rid, ...) {
 
     }
 
-    /* if reploc.attribute == ISP_ATTR_CORELOC, then we will obtain the core location to report */
+    /**
+     * if reploc.attribute == ISP_ATTR_CORELOC, then we will obtain the core location to report
+     * when the compile mode was release, the core location will not show at reporting message.
+     */
     else if (reploc.attribute == ISP_ATTR_CORELOC)
     {
+
 #ifdef ISL_DEBUG
         ist_cstring file_name = va_arg(vargs, ist_cstring);
         ist_cstring func_name = va_arg(vargs, ist_cstring);

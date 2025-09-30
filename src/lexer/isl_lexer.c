@@ -300,7 +300,7 @@ inline void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage) 
             buffer,
             &index,
             this->codepage->location.pagename,
-            ".",
+            ":",
             _codepage->location.pagename,
             NULL
         );
