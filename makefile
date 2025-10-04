@@ -42,8 +42,6 @@ symbol_comma    := ,
 ifdef dt # quickly indicate to debug-tester
 build_target    := tester
 source_subdirs	:= $(source_subdirs) tester
-build_version_flags := $(todebug_version_flags)
-build_dir           := $(build_base_dir)/debug
 else ifndef target
 build_target    := is
 source_subdirs	:= $(source_subdirs) driver
@@ -81,6 +79,8 @@ echo_cmd        := echo
 build_depend_dir:= $(build_base_dir)/$(build_depend_dir)
 
 ifdef dt # quickly indicate to debug-tester
+build_version_flags := $(todebug_version_flags)
+build_dir           := $(build_base_dir)/debug
 else ifndef mode
 build_version_flags := $(release_version_flags)
 build_dir           := $(build_base_dir)/release
@@ -147,7 +147,9 @@ rebuild: clean-all depend build
 #pre-define rule for recipes of depend files
 $(build_dir)/%.o: %.c | mkdirs
 	@$(echo_cmd) building object: $@
-# 	@$(echo_cmd) $(compile_header) -MQ $@ -MF $(@convert-to-depend) -MP -MMD -c $< -o $@
+ifdef show
+	@$(echo_cmd) $(compile_header) -MQ $@ -MF $(@convert-to-depend) -MP -MMD -c $< -o $@
+endif
 	@$(compile_header) -MQ $@ -MF $(@convert-to-depend) -MP -MMD -c $< -o $@
 #make the phony targets for depend files
 $(depend_files):
@@ -184,6 +186,9 @@ depend: $(phony_depend_files)
 #it never be find out at this project.
 $(phony_depend_files): phony$(build_depend_dir)/%.d : %.c | mkdirs
 	@$(echo_cmd) freashing depend file: $(@deprefix-phony)
+ifdef show
+	@$(echo_cmd) $(compile_header) $< -MP -MM -MF $(@deprefix-phony) -MQ $(@deprefix-phony:.d=.o)
+endif
 	@$(compile_header) $< -MP -MM -MF $(@deprefix-phony) -MQ $(@deprefix-phony:.d=.o)
 
 mkdirs: $(build_dirs)
@@ -223,7 +228,7 @@ echo:
 	@$(echo_cmd) test_escapes: $(test_escapes)
 
 help:
-	@$(echo_cmd) usage: make [option]
+	@$(echo_cmd) usage: make [option] [definition=[value] / definition=[any]]
 	@$(echo_cmd)   option:
 	@$(echo_cmd)      build-run    : build and run project build-target (default)
 	@$(echo_cmd)      build-debug  : build and run project build-target with debugger
@@ -235,6 +240,11 @@ help:
 	@$(echo_cmd)      clean        : clean object files
 	@$(echo_cmd)      clean-x      : clean files (x can be 'all','target','object','depend','dirs')
 	@$(echo_cmd)      echo         : echo infomations to debug for this makfile
+	@$(echo_cmd)   definition:
+	@$(echo_cmd)      mode         = release /debug
+	@$(echo_cmd)      target       = driver / tester
+	@$(echo_cmd)      dt           : quickly indicate to debug-tester
+	@$(echo_cmd)      show         : show the compiling command
 	@$(echo_cmd) write by invefa.
 
 #set phony targets
