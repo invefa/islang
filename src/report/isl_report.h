@@ -147,11 +147,22 @@ void isl_report(isp_repid rid, ...);
         if (!(_expr)) isl_report(_vargs); \
     } while (0)
 
-
 /* if expr is true, then report */
 #define isl_ifreport(_expr, _vargs...) \
     do {                               \
         if (_expr) isl_report(_vargs); \
+    } while (0)
+
+/* if expr is false, then debug-report */
+#define isl_ifndreport(_expr, _vargs...)   \
+    do {                                   \
+        if (!(_expr)) isl_dreport(_vargs); \
+    } while (0)
+
+/* if expr is true, then debug-report */
+#define isl_ifdreport(_expr, _vargs...) \
+    do {                                \
+        if (_expr) isl_dreport(_vargs); \
     } while (0)
 
 
