@@ -30,10 +30,14 @@ inline void* isl_allocate(ist_usize _size, ist_bool _clean) {
 inline void isl_release(void* _ptr, ist_usize _size) {
     isl_assert(_ptr);
 #ifdef ISL_ENABLE_INFORM_RELEASED
-    isl_report(rid_inform_released, (size_t)_ptr, _size, isl_allocated_length);
+    size_t address = (size_t)_ptr;
 #endif
     free(_ptr);
     isl_allocated_length -= _size;
+
+#ifdef ISL_ENABLE_INFORM_RELEASED
+    isl_report(rid_inform_released, address, _size, isl_allocated_length);
+#endif
 }
 
 inline void* _isl_set_adr_usize_value(void* _adr, ist_usize _value) {

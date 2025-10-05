@@ -2,10 +2,9 @@
 #include "isl_module.h"
 #include "isl_value.h"
 #include <inttypes.h>
-
-void isl_test_generic(void) {
-    isl_report(rid_custom_core_warn, "start testing generic...");
-    isl_max_allocated_length = 0;
+#define ISL_TEST_ITEM generic
+#include "isg_test_defines.h"
+ISL_TEST_HEAD {
 
     // isp_report_option_enable(ISP_ROPTM_NO_CORE_INFO);
 
@@ -69,7 +68,6 @@ void isl_test_generic(void) {
     // ist_value_stack_pop(stack);
 
     ist_value_stack_delete(stack);
-
-    isl_report(rid_custom_core_info, "max allocated-length = %zu.", isl_max_allocated_length);
-    isl_report(rid_inform_end_testing, "generic");
 }
+ISL_TEST_TAIL
+#include "isg_test_undefs.h"

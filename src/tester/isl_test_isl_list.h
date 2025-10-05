@@ -1,21 +1,14 @@
 #include "isl_list.h"
+#define ISL_TEST_ITEM isl_list
+#include "isg_test_defines.h"
+ISL_TEST_HEAD {
 
-
-typedef struct ist_i32_list {
-    ist_i32*  data;
-    ist_usize size;
-} ist_i32_list;
-
-ist_i32* isl_emit_i32_list() {
-    ist_i32* list = isl_list_malloc(ist_i32, 10);
-    list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5;
-    list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
-    return list;
-}
-
-void isl_test_list(void) {
-
-
+    ist_i32* isl_emit_i32_list() {
+        ist_i32* list = isl_list_malloc(ist_i32, 10);
+        list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5;
+        list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
+        return list;
+    }
 
     ist_i32* list = isl_list_calloc(ist_i32, 10);
     // ist_i32* new_list = NULL;
@@ -56,3 +49,5 @@ void isl_test_list(void) {
 
     isl_list_freev(list);
 }
+ISL_TEST_TAIL
+#include "isg_test_undefs.h"

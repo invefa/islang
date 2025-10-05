@@ -1,8 +1,8 @@
 #include "isl_parser.h"
 
-void isl_test_parser(void) {
-    isl_report(rid_inform_start_testing, "parser");
-    isl_max_allocated_length = 0;
+#define ISL_TEST_ITEM parser
+#include "isg_test_defines.h"
+ISL_TEST_HEAD {
 
     ist_string filepath = ist_string_consby_raw("./scripts/test.is");
     ist_module module   = ist_module_consby_filepath(filepath);
@@ -21,6 +21,6 @@ void isl_test_parser(void) {
     ist_parser_clean(&parser);
     ist_string_delete(dump_buffer);
 
-    isl_report(rid_custom_core_info, "max allocated-length = %zu.", isl_max_allocated_length);
-    isl_report(rid_inform_end_testing, "parser");
 }
+ISL_TEST_TAIL
+#include "isg_test_undefs.h"

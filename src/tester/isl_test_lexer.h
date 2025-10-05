@@ -1,15 +1,14 @@
 #include "isl_lexer.h"
 
+#define ISL_TEST_ITEM lexer
+#include "isg_test_defines.h"
+ISL_TEST_HEAD {
 
 #define lexer_switch_codepage(_pagename, _pagesrc)                                                \
     ist_lexer_switch_codepage(                                                                    \
         &lexer, ist_codepage_createby_source(&module, ist_string_consby_raw(_pagename), _pagesrc) \
     )
 
-
-void isl_test_lexer(void) {
-    isl_report(rid_inform_start_testing, "lexer");
-    isl_max_allocated_length = 0;
 
     /* init some basic information */
     ist_string filepath            = ist_string_consby_raw("./scripts/test.is");
@@ -75,7 +74,6 @@ void isl_test_lexer(void) {
     ist_lexer_clean(&lexer);
     ist_module_clean(&module);
     ist_string_delete(dumpbuf);
-
-    isl_report(rid_custom_core_info, "max allocated-length = %zu.", isl_max_allocated_length);
-    isl_report(rid_inform_end_testing, "lexer");
 }
+ISL_TEST_TAIL
+#include "isg_test_undefs.h"

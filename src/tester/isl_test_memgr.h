@@ -1,7 +1,18 @@
 #include "isl_memgr.h"
+#define ISL_TEST_ITEM memgr
+#include "isg_test_defines.h"
+ISL_TEST_HEAD {
+    typedef struct ist_i32_list {
+        ist_i32*  data;
+        ist_usize size;
+    } ist_i32_list;
 
-void isl_test_memgr(void) {
-    printf("test for memgr\n");
+    ist_i32* isl_emit_i32_list() {
+        ist_i32* list = isl_list_malloc(ist_i32, 10);
+        list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5;
+        list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
+        return list;
+    }
     ist_i32* list = isl_list_calloc(ist_i32, 10);
     list[0] = 1, list[1] = 2, list[2] = 3, list[3] = 4, list[4] = 5;
     list[5] = 6, list[6] = 7, list[7] = 8, list[8] = 9, list[9] = 10;
@@ -25,3 +36,5 @@ void isl_test_memgr(void) {
     isl_list_resizc(isl_emit_i32_list(), 100, list);
     isl_list_free(list);
 }
+ISL_TEST_TAIL
+#include "isg_test_undefs.h"
