@@ -8,6 +8,8 @@ void isl_test_parser(void) {
     ist_module module   = ist_module_consby_filepath(filepath);
     ist_parser parser   = ist_parser_consby_module(&module);
 
+    printf("file context:\n%s\n", parser.lexer.codepage->source);
+
     ist_parser_parse(&parser);
 
     ist_string* dump_buffer = ist_string_create_buffer(1024);
