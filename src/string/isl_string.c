@@ -67,6 +67,7 @@ inline void ist_strbuf_ensure(ist_string* this, ist_usize size, ist_usize _reqle
     /* check buffer remaining length */
     if (isl_list_catch_length(*this) - size >= _reqlen) return;
 
+#ifdef ISL_ENABLE_INFORM_RESIZE
     /* inform buffer will be reiszed */
     isl_report(
         rid_inform_buffer_reisze,
@@ -76,6 +77,7 @@ inline void ist_strbuf_ensure(ist_string* this, ist_usize size, ist_usize _reqle
         _reqlen,
         ceil_upon_powertwo(size + _reqlen)
     );
+#endif
 
     /* resize buffer */
     isl_list_resizc(*this, ceil_upon_powertwo(size + _reqlen));
