@@ -149,12 +149,6 @@
 #define isl_list_resizc(_ptr, _newcap, _stv...) __ISL_LIST_RESIZX(c, _ptr, _newcap, ##_stv)
 #define isl_list_resizm(_ptr, _newcap, _stv...) __ISL_LIST_RESIZX(m, _ptr, _newcap, ##_stv)
 
-#ifdef ISL_ENABLE_INFORM_RESIZE
-#define __ISL_LIST_ENSURE_REPORT(_ptr, _prevcap, _remsize, _reqsize, _nextsize) \
-    isl_report(rid_inform_list_reisze, _ptr, _prevcap, _remsize, _reqsize, _nextsize)
-#else
-#define __ISL_LIST_ENSURE_REPORT(_ptr, _prevcap, _remsize, _reqsize, _nextsize) NULL
-#endif
 /**
  * nse_size:    size value of No-Side-Effects (NSE).
  * nse_require: require size value of No-Side-Effects (NSE).
@@ -166,7 +160,8 @@
             isl_list_ensurev_capacity < (_nse_size), rid_catch_size_overflow, isp_catch_coreloc \
         );                                                                                      \
         if (isl_list_ensurev_capacity - (_nse_size) < (_nse_require)) {                         \
-            __ISL_LIST_ENSURE_REPORT(                                                           \
+            isl_dreport(                                                                        \
+                rid_inform_list_reisze,                                                         \
                 _ptrv,                                                                          \
                 isl_list_ensurev_capacity,                                                      \
                 isl_list_ensurev_capacity - (_nse_size),                                        \
