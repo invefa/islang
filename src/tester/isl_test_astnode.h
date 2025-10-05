@@ -1,8 +1,7 @@
 #include "isl_parser.h"
-
-void isl_test_astnode(void) {
-    isl_report(rid_inform_start_testing, "astnode");
-    isl_max_allocated_length = 0;
+#define ISL_TEST_ITEM astnode
+#include "isg_test_defines.h"
+ISL_TEST_HEAD {
 
     isl_report(
         rid_custom_core_warn,
@@ -45,7 +44,6 @@ void isl_test_astnode(void) {
 
     ist_string_delete(buffer);
     ist_ast_delete(module_node);
-
-    isl_report(rid_custom_core_info, "max allocated-length = %zu.", isl_max_allocated_length);
-    isl_report(rid_inform_end_testing, "astnode");
 }
+ISL_TEST_TAIL
+#include "isg_test_undefs.h"

@@ -1,8 +1,10 @@
 #include "isg_list.h"
 #include "isl_list.h"
 
+#define ISL_TEST_ITEM isg_list
+#include "isg_test_defines.h"
+ISL_TEST_HEAD {
 
-void test_isg_list() {
     ist_usize_list* list = ist_usize_list_calloc(128);
 
     isg_list_foreach (itemp, *list, index) *itemp = index;
@@ -14,3 +16,5 @@ void test_isg_list() {
 
     ist_usize_list_delete(list);
 }
+ISL_TEST_TAIL
+#include "isg_test_undefs.h"

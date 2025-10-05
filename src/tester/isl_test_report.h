@@ -1,6 +1,7 @@
 #include "isl_report.h"
-
-void isl_test_report(void) {
+#define ISL_TEST_ITEM report
+#include "isg_test_defines.h"
+ISL_TEST_HEAD {
 
     isl_report(rid_unknown);
     isl_report(rid_custom_core_info, "the second arg was %d.", 123);
@@ -16,3 +17,5 @@ void isl_test_report(void) {
 
     isl_wssert(0);
 }
+ISL_TEST_TAIL
+#include "isg_test_undefs.h"

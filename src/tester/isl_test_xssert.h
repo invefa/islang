@@ -1,6 +1,8 @@
 #include "isl_xssert.h"
 
-void isl_test_xssert(void) {
+#define ISL_TEST_ITEM xssert
+#include "isg_test_defines.h"
+ISL_TEST_HEAD {
 
     int num = 1;
     isl_wssert(num != 1);
@@ -10,3 +12,5 @@ void isl_test_xssert(void) {
     num = 2;
     (void)num;
 }
+ISL_TEST_TAIL
+#include "isg_test_undefs.h"

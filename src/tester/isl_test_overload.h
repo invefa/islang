@@ -1,6 +1,8 @@
 #include "isl_overload.h"
+#define ISL_TEST_ITEM overload
+#include "isg_test_defines.h"
+ISL_TEST_HEAD {
 
-void isl_test_overload(void) {
 
 #define test_overload(_vargs...) _isl_overload(test_overload, ##_vargs)
 
@@ -13,3 +15,5 @@ void isl_test_overload(void) {
     test_overload(123456);
     test_overload(123, 456);
 }
+ISL_TEST_TAIL
+#include "isg_test_undefs.h"

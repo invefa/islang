@@ -1,0 +1,7 @@
+#undef ISG_UCAT_IMPL
+#undef ISG_UCAT
+#undef ISG_STRING
+
+#undef ISL_TEST_ITEM
+#undef ISL_TEST_HEAD
+#undef ISL_TEST_TAIL

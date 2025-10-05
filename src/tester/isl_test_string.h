@@ -1,10 +1,13 @@
-#include "isl_string.h"
-#include "isl_report.h"
-#include "isl_list.h"
 #include "isl_dbgutils.h"
+#include "isl_list.h"
+#include "isl_report.h"
+#include "isl_string.h"
 
 
-void isl_test_string(void) {
+#define ISL_TEST_ITEM string
+#include "isg_test_defines.h"
+ISL_TEST_HEAD {
+
     ist_string* str1 = ist_string_createby_ref(u8"abcdef", 6);
     ist_string* str2 = ist_string_createby_ref(u8"world", 5);
 
@@ -76,3 +79,5 @@ void isl_test_string(void) {
     ist_string_delete(buffer);
     ist_string_delete(tmp_buffer);
 }
+ISL_TEST_TAIL
+#include "isg_test_undefs.h"
