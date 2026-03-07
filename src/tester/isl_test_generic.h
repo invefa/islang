@@ -1,6 +1,7 @@
 #include "isg_list.h"
 #include "isl_module.h"
 #include "isl_value.h"
+#include <time.h>
 #include <inttypes.h>
 #define ISL_TEST_ITEM generic
 #include "isg_test_defines.h"

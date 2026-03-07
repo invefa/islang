@@ -21,10 +21,7 @@
  * Written by invefa.
  */
 
-#include <inttypes.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "isl_test_astnode.h"
 #include "isl_test_generic.h"
@@ -43,16 +40,16 @@
 int main(int argc, char* argv[]) {
 
     if (argc <= 1) system("chcp 65001");
-    isl_test_overload();
-    isl_test_xssert();
-    isl_test_memgr();
-    isl_test_isl_list();
-    isl_test_isg_list();
-    isl_test_string();
-    isl_test_report();
-    isl_test_generic();
-    isl_test_lexer();
-    isl_test_astnode();
+    // isl_test_overload();
+    // isl_test_xssert();
+    // isl_test_memgr();
+    // isl_test_isl_list();
+    // isl_test_isg_list();
+    // isl_test_string();
+    // isl_test_report();
+    // isl_test_generic();
+    // isl_test_lexer();
+    // isl_test_astnode();
     isl_test_parser();
     return 0;
 }

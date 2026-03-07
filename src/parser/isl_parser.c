@@ -115,6 +115,7 @@ void* parse_literal_parsent(ist_parser* this);
             case PRS_FUNREPROTED:                            \
                 handle_aheading(this, _node);                \
                 isl_report(_rid, _rptvargs);                 \
+                (this)->pstate = PRS_FREPROTED;              \
             case PRS_FREPROTED:                              \
             case PRS_FAHEAD:                                 \
                 return _node;                                \
@@ -272,6 +273,13 @@ void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
         /* handle paren */
         advance(this);
         node = parse_expr(this, OBP_LOWEST);
+        handle_pstate_force(
+            this,
+            node,
+            rid_expect_expression_after,
+            curtoken.location,
+            ist_token_names[curtoken.type]
+        );
         assert_token(this, node, ISL_TOKENT_RPARE);
 
     } else if (nudoptattrs[curtoken.type].nud) {
@@ -284,7 +292,7 @@ void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
         raise_parsing_failed(
             ((this)),
             ((NULL)),
-            rid_not_expression,
+            rid_expect_nud_failed,
             curtoken.location,
             ist_token_names[curtoken.type]
         );

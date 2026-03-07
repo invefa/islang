@@ -114,8 +114,8 @@ manifest(
 )
 
 
-manifest(assert_tokentype_failed, (PARSER, ERROR, USERLOC), "expect token: <%s>, but got: <%s>.")
-manifest(unexpected_token, (PARSER, ERROR, USERLOC), "expect token:<%s>.")
+manifest(assert_tokentype_failed, (PARSER, ERROR, USERLOC), "expect token:%s, but got token:%s.")
+manifest(unexpected_token, (PARSER, ERROR, USERLOC), "expect token:%s.")
 manifest(expect_expression, (PARSER, ERROR, USERLOC), "expect an expression!")
 manifest(
     expect_expression_after,
@@ -128,4 +128,5 @@ manifest(
     "expect an expression before token:<%s>!"
 )
 manifest(not_expression, (PARSER, ERROR, USERLOC), "this is not an expression!")
+manifest(expect_nud_failed, (PARSER, ERROR, USERLOC), "expect a expression, but get the token:%s.")
 manifest(expect_fn_entity_after, (PARSER, ERROR, USERLOC), "expect an fn-entity after token:<%s>!")

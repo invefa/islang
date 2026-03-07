@@ -46,10 +46,10 @@ ist_cstring level_colors[] = {
 
 ist_cstring domain_fmts[] = {
     [ISP_DOMAIN_CORE]     = "core",
-    [ISP_DOMAIN_LEXER]    = "lexer",
-    [ISP_DOMAIN_PARSER]   = "parser",
-    [ISP_DOMAIN_COMPILER] = "compiler",
-    [ISP_DOMAIN_VM]       = "vm",
+    [ISP_DOMAIN_LEXER]    = "lexing",
+    [ISP_DOMAIN_PARSER]   = "syntax",
+    [ISP_DOMAIN_COMPILER] = "semantic",
+    [ISP_DOMAIN_VM]       = "runtime",
 };
 
 
@@ -140,9 +140,7 @@ void isl_report(isp_repid rid, ...) {
         snprintf(
             buffer,
             ISP_BUFFER_SIZE,
-            "%s%s %s:\n"
-            "\tin module <%s:%s>:<%zu:%zu>\n"
-            "%s" ANSI_RST "\n",
+            "%s%s %s:" ANSI_RST " in module %s:%s<%zu:%zu>: %s\n",
             level_colors[reploc.level],
             domain_fmts[reploc.domain],
             level_fmts[reploc.level],
