@@ -4,19 +4,19 @@
 #include "isl_types.h"
 
 
-typedef struct ist_compent_ref {
+typedef struct ist_ref_compent {
     ist_usize ref_index;
-}
+} ist_ref_compent;
 
-typedef struct ist_compent_name {
+typedef struct ist_name_compent {
     ist_string name;
     ist_usize  index;
     void*      space;
-}
+} ist_name_compent;
 
-typedef struct ist_compent_fn {
-    ist_usize ;
-}
+typedef struct ist_fn_compent {
+    ist_usize index;
+} ist_fn_compent;
 
 
 
