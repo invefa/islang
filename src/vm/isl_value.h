@@ -14,7 +14,9 @@ typedef ist_u64     ist_value_uint;
 typedef ist_f64     ist_value_real;
 typedef ist_byte    ist_value_byte;
 typedef ist_bool    ist_value_bool;
+typedef ist_usize   ist_value_usize;
 typedef ist_string* ist_value_strbuf;
+typedef ist_string* ist_value_string;
 
 typedef union ist_value {
     ist_value_int    int_value;
@@ -22,16 +24,18 @@ typedef union ist_value {
     ist_value_real   real_value;
     ist_value_byte   byte_value;
     ist_value_bool   bool_value;
+    ist_value_usize  usize_value;
     ist_value_strbuf strbuf_value;
-    ist_string       string_value;
+    ist_value_string string_value;
 } ist_value;
 
 #define ist_value_consby_null()          ((ist_value){.int_value = 0})
 #define ist_value_consby_i64(_i64)       ((ist_value){.int_value = (_i64)})
 #define ist_value_consby_u64(_u64)       ((ist_value){.uint_value = (_u64)})
-#define ist_value_consby_double(_double) ((ist_value){.real_value = (_double)})
+#define ist_value_consby_f64(_f64)       ((ist_value){.real_value = (_f64)})
 #define ist_value_consby_bool(_bool)     ((ist_value){.bool_value = (_bool)})
 #define ist_value_consby_byte(_byte)     ((ist_value){.byte_value = (_byte)})
+#define ist_value_consby_usize(_usize)   ((ist_value){.usize_value = (_usize)})
 #define ist_value_consby_strbuf(_string) ((ist_value){.strbuf_value = (_string)})
 
 ist_string ist_value_dump_json(
