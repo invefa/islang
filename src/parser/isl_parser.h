@@ -11,7 +11,7 @@ typedef enum ist_pstate {
     PRS_FAHEAD      = 3,
 } ist_pstate;
 
-typedef struct isl_parser {
+typedef struct ist_parser {
     ist_lexer    lexer;
     ist_astnode* root;
 
