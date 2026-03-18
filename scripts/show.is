@@ -10,3 +10,4 @@ int main() {
     println(fibbnacci(10)); // 55
     return 0;
 }
+use ConvertorFnCollection = fn(int,float):str*`[12];
