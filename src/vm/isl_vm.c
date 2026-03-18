@@ -18,34 +18,42 @@ void ist_vm_run(ist_vm vm) {
     while (*ip != ist_inst_end) {
         switch (*ip++) {
             case ist_inst_add:
-                rtmp = ist_value_stack_pop(vm.stack);
-                ltmp = ist_value_stack_pop(vm.stack);
-                ist_value_stack_pushm(
-                    vm.stack, ist_value_consby_i64(ltmp.int_value + rtmp.int_value)
-                );
+                vm.stack->data[vm.stack->size - 2].int_value =
+                    vm.stack->data[vm.stack->size - 1].int_value
+                    + vm.stack->data[vm.stack->size - 2].int_value;
+                --vm.stack->size;
                 break;
             case ist_inst_sub:
-                rtmp = ist_value_stack_pop(vm.stack);
-                ltmp = ist_value_stack_pop(vm.stack);
-                ist_value_stack_pushm(
-                    vm.stack, ist_value_consby_i64(ltmp.int_value - rtmp.int_value)
-                );
+                vm.stack->data[vm.stack->size - 2].int_value =
+                    vm.stack->data[vm.stack->size - 1].int_value
+                    - vm.stack->data[vm.stack->size - 2].int_value;
+                --vm.stack->size;
                 break;
             case ist_inst_mul:
-                rtmp = ist_value_stack_pop(vm.stack);
-                ltmp = ist_value_stack_pop(vm.stack);
-                ist_value_stack_pushm(
-                    vm.stack, ist_value_consby_i64(ltmp.int_value * rtmp.int_value)
-                );
+                vm.stack->data[vm.stack->size - 2].int_value =
+                    vm.stack->data[vm.stack->size - 1].int_value
+                    * vm.stack->data[vm.stack->size - 2].int_value;
+                --vm.stack->size;
                 break;
             case ist_inst_div:
-                rtmp = ist_value_stack_pop(vm.stack);
-                ltmp = ist_value_stack_pop(vm.stack);
-                ist_value_stack_pushm(
-                    vm.stack, ist_value_consby_i64(ltmp.int_value / rtmp.int_value)
-                );
+                vm.stack->data[vm.stack->size - 2].int_value =
+                    vm.stack->data[vm.stack->size - 1].int_value
+                    / vm.stack->data[vm.stack->size - 2].int_value;
+                --vm.stack->size;
                 break;
 
+            case ist_inst_addr:
+                vm.regist[*ip++].int_value += vm.regist[*ip++].int_value;
+                break;
+            case ist_inst_subr:
+                vm.regist[*ip++].int_value -= vm.regist[*ip++].int_value;
+                break;
+            case ist_inst_mulr:
+                vm.regist[*ip++].int_value *= vm.regist[*ip++].int_value;
+                break;
+            case ist_inst_divr:
+                vm.regist[*ip++].int_value /= vm.regist[*ip++].int_value;
+                break;
             default:
                 isl_report(rid_unreachable_brench, isp_catch_coreloc);
         }
