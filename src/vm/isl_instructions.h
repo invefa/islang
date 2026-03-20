@@ -6,11 +6,11 @@ manifest(ext, -1, 0)
 
 
 manifest(jmp, 1, 0)
-manifest(cjmp, 1, 0)
-manifest(ncjmp, 1, 0)
+manifest(cjmp, 1, -1)
+manifest(ncjmp, 1, -1)
 manifest(goto, 1, 0)
-manifest(cgoto, 1, 0)
-manifest(ncgoto, 1, 0)
+manifest(cgoto, 1, -1)
+manifest(ncgoto, 1, -1)
 
 
 manifest(call, 2, -1)
@@ -36,6 +36,9 @@ manifest(modu, 0, -1)
 manifest(i64to32, 0, 0)
 manifest(i64to16, 0, 0)
 manifest(i64to8, 0, 0)
+manifest(u64to32, 0, 0)
+manifest(u64to16, 0, 0)
+manifest(u64to8, 0, 0)
 
 manifest(addf, 0, -1)
 manifest(subf, 0, -1)

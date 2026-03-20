@@ -60,7 +60,22 @@ void ist_vm_run(ist_vm vm) {
                 --vm.sp;
                 break;
             case ist_inst_jmp:
-                vm.ip += *(ist_i16*)vm.ip;
+                vm.ip += *(ist_i16*)vm.ip - 1;
+                break;
+            case ist_inst_cjmp:
+                if (vm.sp--[0].as_bool) vm.ip += *(ist_i16*)vm.ip - 1;
+                break;
+            case ist_inst_ncjmp:
+                if (!vm.sp--[0].as_bool) vm.ip += *(ist_i16*)vm.ip - 1;
+                break;
+            case ist_inst_goto:
+                vm.ip = vm.instream.data + *(ist_i32*)vm.ip;
+                break;
+            case ist_inst_cgoto:
+                if (vm.sp--[0].as_bool) vm.ip = vm.instream.data + *(ist_i32*)vm.ip;
+                break;
+            case ist_inst_ncgoto:
+                if (!vm.sp--[0].as_bool) vm.ip = vm.instream.data + *(ist_i32*)vm.ip;
                 break;
             default:
                 isl_report(rid_unreachable_brench, isp_catch_coreloc);
