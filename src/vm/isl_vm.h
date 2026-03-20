@@ -10,6 +10,7 @@ typedef struct ist_vm {
     ist_instruction* ip;
     ist_value*       sp;
     ist_value*       fp;
+    ist_value        px;
     ist_value_stack* stack;
 } ist_vm;
 

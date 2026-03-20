@@ -7,6 +7,7 @@ ist_vm ist_vm_consby_full(ist_instream _instream, ist_value_stack* _stack) {
         .stack    = _stack,
         .sp       = _stack->data,
         .fp       = _stack->data,
+        .px       = ist_value_consby_null(),
     };
 }
 ist_vm* ist_vm_initby_full(ist_vm* this, ist_instream _instream, ist_value_stack* _stack) {
@@ -29,8 +30,47 @@ ist_vm* ist_vm_createby_instream(ist_instream _instream) {
 }
 
 void ist_vm_run(ist_vm vm) {
+
+    /** just a code highlight provider */
+    enum __isl_typesign { i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, bool, str, strbuf };
+
+#define ip_as(ipv, _typesign)           (ist_##_typesign*)(ipv)
+#define ip_asv(ipv, _typesign)          (*ip_as(ipv, _typesign))
+#define ip_read_operand(ipv, _typesign) (*(ip_as(ipv, _typesign)++))
+#define ip_read_opcode(ipv)             (*(ipv)++)
+#define sp_pop(spv)                     (*(spv)--)
+#define sp_psh(spv, _value)             (*++(spv) = (_value))
+#define sp_pshas(spv, _as, _value)      ((++(spv))->as_##_as = (_value))
+
+
     while (*vm.ip != ist_inst_end) {
-        switch (*vm.ip++) {
+        switch (ip_read_opcode(vm.ip)) {
+            case ist_inst_pass:
+                break;
+            case ist_inst_pshc:
+                break;
+            case ist_inst_pshi:
+                sp_pshas(vm.sp, i64, ip_read_operand(vm.ip, i64));
+                break;
+            case ist_inst_pshu:
+                sp_pshas(vm.sp, u64, ip_read_operand(vm.ip, u64));
+                break;
+            case ist_inst_pshf:
+                sp_pshas(vm.sp, f32, ip_read_operand(vm.ip, f32));
+                break;
+            case ist_inst_pshd:
+                sp_pshas(vm.sp, f64, ip_read_operand(vm.ip, f64));
+                break;
+            case ist_inst_pop:
+                vm.px = sp_pop(vm.sp);
+                break;
+            case ist_inst_ldv:
+                sp_psh(vm.sp, vm.fp[ip_read_operand(vm.ip, i16)]);
+                break;
+            case ist_inst_stv:
+                vm.fp[ip_read_operand(vm.ip, i16)] = sp_pop(vm.sp);
+                break;
+
             case ist_inst_addi:
                 vm.sp[-1].as_i64 += vm.sp[0].as_i64;
                 --vm.sp;
@@ -59,24 +99,184 @@ void ist_vm_run(ist_vm vm) {
                 vm.sp[-1].as_u64 %= vm.sp[0].as_u64;
                 --vm.sp;
                 break;
+
+            case ist_inst_addf:
+                vm.sp[-1].as_f32 += vm.sp[0].as_f32;
+                --vm.sp;
+                break;
+            case ist_inst_subf:
+                vm.sp[-1].as_f32 -= vm.sp[0].as_f32;
+                --vm.sp;
+                break;
+            case ist_inst_mulf:
+                vm.sp[-1].as_f32 *= vm.sp[0].as_f32;
+                --vm.sp;
+                break;
+            case ist_inst_divf:
+                vm.sp[-1].as_f32 /= vm.sp[0].as_f32;
+                --vm.sp;
+                break;
+
+            case ist_inst_addd:
+                vm.sp[-1].as_f64 += vm.sp[0].as_f64;
+                --vm.sp;
+                break;
+            case ist_inst_subd:
+                vm.sp[-1].as_f64 -= vm.sp[0].as_f64;
+                --vm.sp;
+                break;
+            case ist_inst_muld:
+                vm.sp[-1].as_f64 *= vm.sp[0].as_f64;
+                --vm.sp;
+                break;
+            case ist_inst_divd:
+                vm.sp[-1].as_f64 /= vm.sp[0].as_f64;
+                --vm.sp;
+                break;
+
+            case ist_inst_i64t32:
+                vm.sp[0].as_i64 = vm.sp[0].as_i32;
+                break;
+            case ist_inst_i64t16:
+                vm.sp[0].as_i64 = vm.sp[0].as_i16;
+                break;
+            case ist_inst_i64t8:
+                vm.sp[0].as_i64 = vm.sp[0].as_i8;
+                break;
+            case ist_inst_u64t32:
+                vm.sp[0].as_u64 = vm.sp[0].as_u32;
+                break;
+            case ist_inst_u64t16:
+                vm.sp[0].as_u64 = vm.sp[0].as_u16;
+                break;
+            case ist_inst_u64t8:
+                vm.sp[0].as_u64 = vm.sp[0].as_u8;
+                break;
+
+            case ist_inst_band:
+                vm.sp[-1].as_u64 &= vm.sp[0].as_u64;
+                --vm.sp;
+                break;
+            case ist_inst_bor:
+                vm.sp[-1].as_u64 |= vm.sp[0].as_u64;
+                --vm.sp;
+                break;
+            case ist_inst_bxor:
+                vm.sp[-1].as_u64 ^= vm.sp[0].as_u64;
+                --vm.sp;
+                break;
+            case ist_inst_bnot:
+                vm.sp[0].as_u64 = ~vm.sp[0].as_u64;
+                break;
+
+            case ist_inst_land:
+                vm.sp[-1].as_bool = vm.sp[-1].as_bool && vm.sp[0].as_bool;
+                --vm.sp;
+                break;
+            case ist_inst_lor:
+                vm.sp[-1].as_bool = vm.sp[-1].as_bool && vm.sp[0].as_bool;
+                --vm.sp;
+                break;
+            case ist_inst_lnot:
+                vm.sp[0].as_bool = !vm.sp[0].as_bool;
+                break;
+
+            case ist_inst_eq:
+                vm.sp[-1].as_bool = vm.sp[-1].as_u64 == vm.sp[0].as_u64;
+                --vm.sp;
+                break;
+            case ist_inst_neq:
+                vm.sp[-1].as_bool = vm.sp[-1].as_u64 != vm.sp[0].as_u64;
+                --vm.sp;
+                break;
+
+            case ist_inst_lti:
+                vm.sp[-1].as_bool = vm.sp[-1].as_i64 < vm.sp[0].as_i64;
+                --vm.sp;
+                break;
+            case ist_inst_gti:
+                vm.sp[-1].as_bool = vm.sp[-1].as_i64 > vm.sp[0].as_i64;
+                --vm.sp;
+                break;
+            case ist_inst_leti:
+                vm.sp[-1].as_bool = vm.sp[-1].as_i64 <= vm.sp[0].as_i64;
+                --vm.sp;
+                break;
+            case ist_inst_geti:
+                vm.sp[-1].as_bool = vm.sp[-1].as_i64 >= vm.sp[0].as_i64;
+                --vm.sp;
+                break;
+
+            case ist_inst_ltu:
+                vm.sp[-1].as_bool = vm.sp[-1].as_u64 < vm.sp[0].as_u64;
+                --vm.sp;
+                break;
+            case ist_inst_gtu:
+                vm.sp[-1].as_bool = vm.sp[-1].as_u64 > vm.sp[0].as_u64;
+                --vm.sp;
+                break;
+            case ist_inst_letu:
+                vm.sp[-1].as_bool = vm.sp[-1].as_u64 <= vm.sp[0].as_u64;
+                --vm.sp;
+                break;
+            case ist_inst_getu:
+                vm.sp[-1].as_bool = vm.sp[-1].as_u64 >= vm.sp[0].as_u64;
+                --vm.sp;
+                break;
+
+            case ist_inst_ltf:
+                vm.sp[-1].as_bool = vm.sp[-1].as_f32 < vm.sp[0].as_f32;
+                --vm.sp;
+                break;
+            case ist_inst_gtf:
+                vm.sp[-1].as_bool = vm.sp[-1].as_f32 > vm.sp[0].as_f32;
+                --vm.sp;
+                break;
+            case ist_inst_letf:
+                vm.sp[-1].as_bool = vm.sp[-1].as_f32 <= vm.sp[0].as_f32;
+                --vm.sp;
+                break;
+            case ist_inst_getf:
+                vm.sp[-1].as_bool = vm.sp[-1].as_f32 >= vm.sp[0].as_f32;
+                --vm.sp;
+                break;
+
+            case ist_inst_ltd:
+                vm.sp[-1].as_bool = vm.sp[-1].as_f64 < vm.sp[0].as_f64;
+                --vm.sp;
+                break;
+            case ist_inst_gtd:
+                vm.sp[-1].as_bool = vm.sp[-1].as_f64 > vm.sp[0].as_f64;
+                --vm.sp;
+                break;
+            case ist_inst_letd:
+                vm.sp[-1].as_bool = vm.sp[-1].as_f64 <= vm.sp[0].as_f64;
+                --vm.sp;
+                break;
+            case ist_inst_getd:
+                vm.sp[-1].as_bool = vm.sp[-1].as_f64 >= vm.sp[0].as_f64;
+                --vm.sp;
+                break;
+
             case ist_inst_jmp:
-                vm.ip += *(ist_i16*)vm.ip - 1;
+                vm.ip += ip_asv(vm.ip, i16) - 1;
                 break;
             case ist_inst_cjmp:
-                if (vm.sp--[0].as_bool) vm.ip += *(ist_i16*)vm.ip - 1;
+                if (sp_pop(vm.sp).as_bool) vm.ip += ip_asv(vm.ip, i16) - 1;
                 break;
             case ist_inst_ncjmp:
-                if (!vm.sp--[0].as_bool) vm.ip += *(ist_i16*)vm.ip - 1;
+                if (!sp_pop(vm.sp).as_bool) vm.ip += ip_asv(vm.ip, i16) - 1;
                 break;
             case ist_inst_goto:
-                vm.ip = vm.instream.data + *(ist_i32*)vm.ip;
+                vm.ip = vm.instream.data + ip_asv(vm.ip, i32);
                 break;
             case ist_inst_cgoto:
-                if (vm.sp--[0].as_bool) vm.ip = vm.instream.data + *(ist_i32*)vm.ip;
+                if (sp_pop(vm.sp).as_bool) vm.ip = vm.instream.data + ip_asv(vm.ip, i32);
                 break;
             case ist_inst_ncgoto:
-                if (!vm.sp--[0].as_bool) vm.ip = vm.instream.data + *(ist_i32*)vm.ip;
+                if (!sp_pop(vm.sp).as_bool) vm.ip = vm.instream.data + ip_asv(vm.ip, i32);
                 break;
+
             default:
                 isl_report(rid_unreachable_brench, isp_catch_coreloc);
         }
