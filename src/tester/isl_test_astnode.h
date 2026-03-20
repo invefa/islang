@@ -19,7 +19,7 @@ ISL_TEST_HEAD {
     unopt_node->sub_node = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
     unopt_node->onlhs    = true;
     ISL_AS_LITERAL_ENT(unopt_node->sub_node)->litype          = ISL_TOKENT_VL_INT;
-    ISL_AS_LITERAL_ENT(unopt_node->sub_node)->value.int_value = 123;
+    ISL_AS_LITERAL_ENT(unopt_node->sub_node)->value.as_i64 = 123;
 
 
     IST_ASTNODE_BINARY_EXPR* binopt_node =
@@ -29,8 +29,8 @@ ISL_TEST_HEAD {
     binopt_node->rhs_node = ist_astnode_createby_full(LITERAL_ENT, ist_location_consby_null());
     ISL_AS_LITERAL_ENT(binopt_node->lhs_node)->litype          = ISL_TOKENT_VL_INT;
     ISL_AS_LITERAL_ENT(binopt_node->rhs_node)->litype          = ISL_TOKENT_VL_INT;
-    ISL_AS_LITERAL_ENT(binopt_node->lhs_node)->value.int_value = -123;
-    ISL_AS_LITERAL_ENT(binopt_node->rhs_node)->value.int_value = -456;
+    ISL_AS_LITERAL_ENT(binopt_node->lhs_node)->value.as_i64 = -123;
+    ISL_AS_LITERAL_ENT(binopt_node->rhs_node)->value.as_i64 = -456;
 
     IST_ASTNODE_MODULE_ENT* module_node =
         ist_astnode_createby_full(MODULE_ENT, ist_location_consby_null());

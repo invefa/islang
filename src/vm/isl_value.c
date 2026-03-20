@@ -15,11 +15,11 @@ ist_string ist_value_dump_json(
 
     switch (type) {
         case ISL_TOKENT_VL_INT:
-            return ist_strbuf_sprintf(buffer, idxptr, "%" PRId64, this->int_value);
+            return ist_strbuf_sprintf(buffer, idxptr, "%" PRId64, this->as_i64);
         case ISL_TOKENT_VL_REAL:
-            return ist_strbuf_sprintf(buffer, idxptr, "%g", this->real_value);
+            return ist_strbuf_sprintf(buffer, idxptr, "%g", this->as_f64);
         case ISL_TOKENT_VL_STRING:
-            return ist_strbuf_sprintf(buffer, idxptr, "\"%s\"", this->string_value);
+            return ist_strbuf_sprintf(buffer, idxptr, "\"%s\"", this->as_str);
         default:
             return ist_strbuf_sprintf(buffer, idxptr, "null");
     }

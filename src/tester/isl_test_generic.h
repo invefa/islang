@@ -59,12 +59,12 @@ ISL_TEST_HEAD {
     }
 
     isg_list_foreach (vp, *stack) {
-        printf("%" PRIu64 " ", vp->uint_value);
+        printf("%" PRIu64 " ", vp->as_u64);
     }
     printf("\n");
 
     for (ist_usize i = 0; i < 18; ++i) {
-        isl_assert(ist_value_stack_pop(stack).uint_value == 17 - i);
+        isl_assert(ist_value_stack_pop(stack).as_u64 == 17 - i);
     }
     // ist_value_stack_pop(stack);
 

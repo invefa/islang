@@ -29,14 +29,14 @@ typedef struct ist_token {
 
 #define ist_token_consby_null()              \
     ((ist_token                              \
-    ){.value.int_value = 0,                  \
+    ){.value.as_i64 = 0,                  \
       .type            = ISL_TOKENT_UNKNOWN, \
       .extract         = NULL,               \
       .length          = 0,                  \
       .location        = {.pagename = NULL, .line = 1, .column = 1}})
 #define ist_token_consby_location(_location) \
     ((ist_token                              \
-    ){.value.int_value = 0,                  \
+    ){.value.as_i64 = 0,                  \
       .type            = ISL_TOKENT_UNKNOWN, \
       .extract         = NULL,               \
       .length          = 0,                  \

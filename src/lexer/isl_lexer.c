@@ -371,8 +371,8 @@ void ist_lexer_parse_number(ist_lexer* this) {
                           - analysis_token.extract - this->codepage->decode_codepoint_length;
 
     /* convert the extract to number */
-    if (dot_count) analysis_token.value.real_value = atof(analysis_token.extract);
-    else analysis_token.value.int_value = atol(analysis_token.extract);
+    if (dot_count) analysis_token.value.as_f64 = atof(analysis_token.extract);
+    else analysis_token.value.as_i64 = atol(analysis_token.extract);
 }
 
 inline void ist_lexer_parse_string(ist_lexer* this) {
@@ -405,10 +405,10 @@ inline void ist_lexer_parse_string(ist_lexer* this) {
     ist_lexer_advance_codepoint(this);
 
     /* extract the string literal, and register the string to the module */
-    analysis_token.value.string_value =
+    analysis_token.value.as_str =
         ist_string_consby_ref(analysis_token.extract, analysis_token.length);
     ist_module_register_strbuf(
-        this->module, analysis_token.value.string_value, ISL_STRBUFT_LITERAL
+        this->module, analysis_token.value.as_str, ISL_STRBUFT_LITERAL
     );
 }
 
