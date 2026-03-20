@@ -227,25 +227,41 @@ echo:
 	@$(echo_cmd) ---------------------------------------------
 	@$(echo_cmd) test_escapes: $(test_escapes)
 
+#such a stpid method for compatibility for Windows and Linux.
+ifeq ($(OS),Windows_NT)
+echo := $(echo_cmd)
+else
+echo :=
+endif
+
+define help_doc
+$(echo) usage: make [option] [definition=[value] / definition=[any]]
+$(echo)   option:
+$(echo)      build-run    : build and run project build-target (default)
+$(echo)      build-debug  : build and run project build-target with debugger
+$(echo)      run          : run     project build-target
+$(echo)      debug        : run     project build-target with debugger
+$(echo)      build        : build   project build-target
+$(echo)      rebuild      : rebuild project build-target
+$(echo)      depend       : check project depending relevants and freash *.d files
+$(echo)      clean        : clean object files
+$(echo)      clean-x      : clean files (x can be 'all','target','object','depend','dirs')
+$(echo)      echo         : echo infomations to debug for this makfile
+$(echo)   definition:
+$(echo)      mode         = release / debug
+$(echo)      target       = driver / tester
+$(echo)      dt           : quickly indicate to debug-tester
+$(echo)      show         : show the compiling command
+$(echo) write by invefa.
+endef
+
+
 help:
-	@$(echo_cmd) usage: make [option] [definition=[value] / definition=[any]]
-	@$(echo_cmd)   option:
-	@$(echo_cmd)      build-run    : build and run project build-target (default)
-	@$(echo_cmd)      build-debug  : build and run project build-target with debugger
-	@$(echo_cmd)      run          : run     project build-target
-	@$(echo_cmd)      debug        : run     project build-target with debugger
-	@$(echo_cmd)      build        : build   project build-target
-	@$(echo_cmd)      rebuild      : rebuild project build-target
-	@$(echo_cmd)      depend       : check project depending relevants and freash *.d files
-	@$(echo_cmd)      clean        : clean object files
-	@$(echo_cmd)      clean-x      : clean files (x can be 'all','target','object','depend','dirs')
-	@$(echo_cmd)      echo         : echo infomations to debug for this makfile
-	@$(echo_cmd)   definition:
-	@$(echo_cmd)      mode         = release / debug
-	@$(echo_cmd)      target       = driver / tester
-	@$(echo_cmd)      dt           : quickly indicate to debug-tester
-	@$(echo_cmd)      show         : show the compiling command
-	@$(echo_cmd) write by invefa.
+ifeq ($(OS),Windows_NT)
+	@$(help_doc)
+else
+	@$(echo_cmd) "$(help_doc)"
+endif
 
 #set phony targets
 .PHONY:                                 \
