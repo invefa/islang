@@ -19,10 +19,10 @@ typedef ist_i64     ist_value_i64;
 typedef ist_u64     ist_value_u64;
 typedef ist_f32     ist_value_f32;
 typedef ist_f64     ist_value_f64;
-typedef ist_bool    ist_value_bool;
+typedef ist_u64     ist_value_bool;
 typedef ist_usize   ist_value_usize;
 typedef ist_string* ist_value_strbuf;
-typedef ist_string* ist_value_str;
+typedef ist_string  ist_value_str;
 
 typedef union ist_value {
     ist_value_i8     as_i8;
