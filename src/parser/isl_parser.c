@@ -57,8 +57,8 @@ void* parse_arglist_patt(ist_parser* this);
 /* parse expression */
 void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp);
 
-void* nud_literal_parsent(ist_parser* this);
-void* nud_name_parsent(ist_parser* this);
+void* nud_literal(ist_parser* this);
+void* nud_name(ist_parser* this);
 void* nud_prefix_expr(ist_parser* this);
 
 void* led_suffix_expr(ist_parser* this, ist_astnode* lhs);
@@ -211,12 +211,12 @@ struct ist_nudoptattr {
     [ISL_TOKENT_SELFADD] = {nud_prefix_expr, OBP_PREFIX},
     [ISL_TOKENT_SELFSUB] = {nud_prefix_expr, OBP_PREFIX},
 
-    [ISL_TOKENT_VL_INT]    = {nud_literal_parsent, OBP_NONE},
-    [ISL_TOKENT_VL_REAL]   = {nud_literal_parsent, OBP_NONE},
-    [ISL_TOKENT_VL_STRING] = {nud_literal_parsent, OBP_NONE},
-    [ISL_TOKENT_BV_FALSE]  = {nud_literal_parsent, OBP_NONE},
-    [ISL_TOKENT_BV_TRUE]   = {nud_literal_parsent, OBP_NONE},
-    [ISL_TOKENT_ID]        = {nud_name_parsent, OBP_NONE},
+    [ISL_TOKENT_VL_INT]    = {nud_literal, OBP_NONE},
+    [ISL_TOKENT_VL_REAL]   = {nud_literal, OBP_NONE},
+    [ISL_TOKENT_VL_STRING] = {nud_literal, OBP_NONE},
+    [ISL_TOKENT_BV_FALSE]  = {nud_literal, OBP_NONE},
+    [ISL_TOKENT_BV_TRUE]   = {nud_literal, OBP_NONE},
+    [ISL_TOKENT_ID]        = {nud_name, OBP_NONE},
 
     [ISL_TOKENT_LATEST] = {NULL, OBP_NONE},
 
@@ -321,22 +321,22 @@ void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
 }
 
 
-void* nud_literal_parsent(ist_parser* this) {
+void* nud_literal(ist_parser* this) {
     ist_token curtoken = advance(this);
 
-    return ist_astnode_createby_full(literal, curtoken.location, {
-        __result__->value  = curtoken.value;
-        __result__->litype = curtoken.type;
+    return ist_astnode_createby_full(literal, curtoken.location, res, {
+        res->value  = curtoken.value;
+        res->litype = curtoken.type;
     });
 }
 
-void* nud_name_parsent(ist_parser* this) {
+void* nud_name(ist_parser* this) {
     ist_token curtoken = advance(this);
 
     ist_string name = ist_string_consby_ref(curtoken.extract, curtoken.length);
     ist_module_register_strbuf(this->lexer.module, name, ISL_STRBUFT_SYMBOL);
 
-    return ist_astnode_createby_full(name, curtoken.location, __result__->name = name);
+    return ist_astnode_createby_full(name, curtoken.location, res, res->name = name);
 }
 
 void* nud_prefix_expr(ist_parser* this) {

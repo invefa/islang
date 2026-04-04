@@ -77,9 +77,10 @@ typedef enum isp_domain {
     Attribute for repid.
     NONE:       no attribute.
     CUSTOM:     indicate the fmt of repid will be provided by user.
-    CORELOC:    signed the core code exact location will be provided, it consumes 3 args. (core code
-   location) USERLOC:    signed the user code file location will be provided by user at the second
-   arg of isl_report. (user file location)
+    CORELOC:    signed the core code exact location will be provided,
+                it consumes 3 args. (core code location)
+    USERLOC:    signed the user code file location will be provided by user at the second
+                arg of isl_report. (user file location)
 */
 typedef enum isp_attribute {
     ISP_ATTR_NONE,
@@ -141,29 +142,24 @@ void isl_report(isp_repid rid, ...);
 #define isl_dreport(_rid, _vargs...)
 #endif
 
-/* if expr is false, then report */
-#define isl_ifnreport(_expr, _vargs...)   \
-    do {                                  \
-        if (!(_expr)) isl_report(_vargs); \
-    } while (0)
-
 /* if expr is true, then report */
 #define isl_ifreport(_expr, _vargs...) \
     do {                               \
         if (_expr) isl_report(_vargs); \
     } while (0)
 
-/* if expr is false, then debug-report */
-#define isl_ifndreport(_expr, _vargs...)   \
-    do {                                   \
-        if (!(_expr)) isl_dreport(_vargs); \
-    } while (0)
+
+/* if expr is false, then report */
+#define isl_ifnreport(_expr, _vargs...) isl_ifreport(!(_expr), ##_vargs)
 
 /* if expr is true, then debug-report */
 #define isl_ifdreport(_expr, _vargs...) \
     do {                                \
         if (_expr) isl_dreport(_vargs); \
     } while (0)
+
+/* if expr is false, then debug-report */
+#define isl_ifndreport(_expr, _vargs...) isl_ifdreport(!(_expr), ##_vargs)
 
 
 #ifdef ISL_DEBUG
