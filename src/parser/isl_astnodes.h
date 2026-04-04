@@ -1,34 +1,44 @@
 
 /* unknown */
-manifest(UNKNOWN, (ist_astnode))
+manifest(unknown, (ist_astnode))
 
 
 /* tool node */
-manifest(NODE_LIST, (struct {
+manifest(node_list, (struct {
              ist_astnode         base;
-             ist_astnodeptr_list nodeptr_list;
+             ist_astnodeptr_list list;
          }))
 
 /* basic components, aka pattern */
-manifest(ARG_LIST_PATT, (IST_ASTNODE_NODE_LIST))
-manifest(PARAM_LIST_PATT, (IST_ASTNODE_NODE_LIST))
+manifest(arg_list_patt, (ist_astnode_node_list))
+manifest(params_list_patt, (ist_astnode_node_list))
 
-/* expressions */
-manifest(UNARY_EXPR, (struct {
+
+/* parsetime entities -> parsent */
+
+/* literal parsent */
+manifest(literal, (struct {
+             ist_astnode    base;
+             ist_token_type litype: 8;
+             ist_value      value;
+         }))
+
+/* expression parsents */
+manifest(unary_expr, (struct {
              ist_astnode    base;
              ist_token_type optype: 8;
              ist_bool       onlhs;
              ist_astnode*   sub_node;
          }))
 
-manifest(BINARY_EXPR, (struct {
+manifest(binary_expr, (struct {
              ist_astnode    base;
              ist_token_type optype: 8;
              ist_astnode*   lhs_node;
              ist_astnode*   rhs_node;
          }))
 
-manifest(TERNARY_EXPR, (struct {
+manifest(ternary_expr, (struct {
              ist_astnode    base;
              ist_token_type optype: 8;
              ist_astnode*   first_node;
@@ -36,33 +46,46 @@ manifest(TERNARY_EXPR, (struct {
              ist_astnode*   third_node;
          }))
 
-manifest(FNCALL_EXPR, (struct {
+manifest(fncall_expr, (struct {
              ist_astnode         base;
-             ist_astnode*        fn_entity;
+             ist_astnode*        fn;
              ist_astnodeptr_list arglist;
          }))
 
-/* comptime entities */
-manifest(LITERAL_ENT, (struct {
-             ist_astnode    base;
-             ist_token_type litype: 8;
-             ist_value      value;
-         }))
-
-manifest(NAME_ENT, (struct {
+/* name parsent */
+manifest(name, (struct {
              ist_astnode base;
              ist_string  name;
          }))
 
-manifest(REFERENCE_ENT, (struct {
+/* reference parsent */
+manifest(entref, (struct {
              ist_astnode base;
              ist_usize   index;
          }))
 
-manifest(SCOPE_ENT, (IST_ASTNODE_NODE_LIST))
-manifest(MODULE_ENT, (IST_ASTNODE_NODE_LIST))
+/* statement parsents */
 
-manifest(FN_ENT, (IST_ASTNODE_REFERENCE_ENT))
-manifest(VAR_ENT, (IST_ASTNODE_REFERENCE_ENT))
-manifest(REGIST_ENT, (IST_ASTNODE_REFERENCE_ENT))
-manifest(TYPE_ENT, (IST_ASTNODE_REFERENCE_ENT))
+manifest(import_stmt, (struct {
+             ist_astnode base;
+             ist_string  path;
+         }))
+
+manifest(use_stmt, (struct {
+             ist_astnode  base;
+             ist_astnode* expr;
+         }))
+
+manifest(do_stmt, (struct {
+             ist_astnode  base;
+             ist_astnode* expr;
+         }))
+
+/* other parsents */
+manifest(module, (ist_astnode_node_list))
+manifest(scope, (ist_astnode_node_list))
+manifest(space, (ist_astnode_node_list))
+manifest(fn, (ist_astnode_entref))
+manifest(span, (ist_astnode_entref))
+manifest(regist, (ist_astnode_entref))
+manifest(type, (ist_astnode_entref))

@@ -8,16 +8,16 @@
  * This enum only for hightlight the type of the astnode.
  * You can ignore it, it is unnecessary, and if there occurs some name conflict, remove it.
  */
-enum {
-#define manifest(_name, _struct) _name,
-#include "isl_astnodes.h"
-#undef manifest
-};
+// enum {
+// #define manifest(_name, _struct) _name,
+// #include "isl_astnodes.h"
+// #undef manifest
+// };
 
-/* define the type of the astnode */
-typedef ist_usize ist_astnode_type;
-enum ist_astnode_type {
-#define manifest(_name, _struct) ISL_ASTNT_##_name,
+/* define the type of the astnode, astnode-type enum */
+typedef ist_usize ist_astnode_typenum;
+enum ist_astnode_typenum {
+#define manifest(_name, _struct) isl_astnt_##_name,
 #include "isl_astnodes.h"
 #undef manifest
 };
@@ -28,8 +28,8 @@ extern const ist_string ist_astnode_type_names[];
 
 /* define the base struct of the astnode */
 typedef struct ist_astnode {
-    ist_astnode_type type;
-    ist_location     location;
+    ist_astnode_typenum type;
+    ist_location        location;
 } ist_astnode;
 
 /* define the list of the astnodeptr */
@@ -38,7 +38,7 @@ typedef struct ist_astnode {
 #include "isg_list_head.h"
 
 /* define all the astnode struct */
-#define manifest(_name, _struct) typedef __ISL_MACRO_UNPACKAGER _struct IST_ASTNODE_##_name;
+#define manifest(_name, _struct) typedef __ISL_MACRO_UNPACKAGER _struct ist_astnode_##_name;
 #include "isl_astnodes.h"
 #undef manifest
 
@@ -57,20 +57,20 @@ typedef struct ist_astnode {
  */
 #define ist_astnode_createby_full(_raw_type, _location, _cons...)                              \
     ({                                                                                         \
-        IST_ASTNODE_##_raw_type* __result__ = isl_calloc(IST_ASTNODE_##_raw_type);             \
-        *(ist_astnode*)__result__ = ist_astnode_consby_full(ISL_ASTNT_##_raw_type, _location); \
+        ist_astnode_##_raw_type* __result__ = isl_calloc(ist_astnode_##_raw_type);             \
+        *(ist_astnode*)__result__ = ist_astnode_consby_full(isl_astnt_##_raw_type, _location); \
         _cons;                                                                                 \
         (void*)__result__;                                                                     \
     })
 
 #define ist_astnode_defineby_full(varid, _raw_type, _location, _cons...) \
-    IST_ASTNODE_##_raw_type* varid = ist_astnode_createby_full(_raw_type, _location, _cons)
+    ist_astnode_##_raw_type* varid = ist_astnode_createby_full(_raw_type, _location, _cons)
 
 
 /**
  * Make the node as pointer of the specific type of astnode.
  */
-#define ist_astnode_as(_node, _raw_type) ((IST_ASTNODE_##_raw_type*)_node)
+#define ist_astnode_as(_node, _raw_type) ((ist_astnode_##_raw_type*)_node)
 
 /* just as void ptr to make it more easy to pass */
 #define isl_asvp(_adr) ((void*)_adr)
@@ -79,7 +79,7 @@ typedef struct ist_astnode {
  * Make the address as pointer of the specific type of astnode.
  * for all the astnode, you can use the fn to convert the address to the specific type.
  */
-#define manifest(_name, _struct) IST_ASTNODE_##_name* ISL_AS_##_name(void* adr);
+#define manifest(_name, _struct) ist_astnode_##_name* isl_as_##_name(void* adr);
 #include "isl_astnodes.h"
 #undef manifest
 
@@ -104,7 +104,7 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr);
  */
 
 
-void IST_ASTNODE_NODE_LIST_ADD(IST_ASTNODE_NODE_LIST* this, void* node);
+void ist_astnode_node_list_add(ist_astnode_node_list* this, void* node);
 
 
 #endif // ISC_ASTNODE_H

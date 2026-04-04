@@ -324,7 +324,7 @@ void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
 void* nud_literal_parsent(ist_parser* this) {
     ist_token curtoken = advance(this);
 
-    return ist_astnode_createby_full(LITERAL_ENT, curtoken.location, {
+    return ist_astnode_createby_full(literal, curtoken.location, {
         __result__->value  = curtoken.value;
         __result__->litype = curtoken.type;
     });
@@ -336,13 +336,13 @@ void* nud_name_parsent(ist_parser* this) {
     ist_string name = ist_string_consby_ref(curtoken.extract, curtoken.length);
     ist_module_register_strbuf(this->lexer.module, name, ISL_STRBUFT_SYMBOL);
 
-    return ist_astnode_createby_full(NAME_ENT, curtoken.location, __result__->name = name);
+    return ist_astnode_createby_full(name, curtoken.location, __result__->name = name);
 }
 
 void* nud_prefix_expr(ist_parser* this) {
     ist_token curtoken = advance(this);
 
-    ist_astnode_defineby_full(node, UNARY_EXPR, curtoken.location);
+    ist_astnode_defineby_full(node, unary_expr, curtoken.location);
 
     node->onlhs    = true;
     node->optype   = curtoken.type;
@@ -362,7 +362,7 @@ void* nud_prefix_expr(ist_parser* this) {
 void* led_suffix_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token curtoken = advance(this);
 
-    ist_astnode_defineby_full(node, UNARY_EXPR, curtoken.location);
+    ist_astnode_defineby_full(node, unary_expr, curtoken.location);
 
     node->onlhs    = false;
     node->optype   = curtoken.type;
@@ -382,7 +382,7 @@ void* led_suffix_expr(ist_parser* this, ist_astnode* lhs) {
 void* led_infix_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token curtoken = advance(this);
 
-    ist_astnode_defineby_full(node, BINARY_EXPR, curtoken.location);
+    ist_astnode_defineby_full(node, binary_expr, curtoken.location);
 
     node->lhs_node = lhs;
     node->optype   = curtoken.type;
@@ -401,10 +401,10 @@ void* led_infix_expr(ist_parser* this, ist_astnode* lhs) {
 
 void* led_fncall_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token curtoken = advance(this);
-    ist_astnode_defineby_full(node, FNCALL_EXPR, curtoken.location);
+    ist_astnode_defineby_full(node, fncall_expr, curtoken.location);
 
-    node->fn_entity = lhs;
-    node->arglist   = ist_astnodeptr_list_consc(2);
+    node->fn      = lhs;
+    node->arglist = ist_astnodeptr_list_consc(2);
 
     /* if the pair closed immediately, then the parsing over! */
     if (match_token(this, ISL_TOKENT_RPARE)) return node;
@@ -434,13 +434,13 @@ void* led_fncall_expr(ist_parser* this, ist_astnode* lhs) {
 
 void* led_wrap_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token curtoken = advance(this);
-    ist_astnode_defineby_full(node, FNCALL_EXPR, curtoken.location);
+    ist_astnode_defineby_full(node, fncall_expr, curtoken.location);
 
     node->arglist = ist_astnodeptr_list_consc(2);
     ist_astnodeptr_list_addc(&node->arglist, lhs);
 
     /* catch the fn-entity that will be called */
-    node->fn_entity = parse_expr(this, ledoptattrs[curtoken.type].rbp);
+    node->fn = parse_expr(this, ledoptattrs[curtoken.type].rbp);
     handle_pstate_force(
         this,
         ((node)),

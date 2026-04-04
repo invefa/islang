@@ -8,13 +8,13 @@
 
 
 const ist_string ist_astnode_type_names[] = {
-#define manifest(_name, _struct) [ISL_ASTNT_##_name] = #_name,
+#define manifest(_name, _struct) [isl_astnt_##_name] = #_name,
 #include "isl_astnodes.h"
 #undef manifest
 };
 
 #define manifest(_name, _struct)                            \
-    inline IST_ASTNODE_##_name* ISL_AS_##_name(void* adr) { \
+    inline ist_astnode_##_name* isl_as_##_name(void* adr) { \
         isl_assert(adr);                                    \
         return adr;                                         \
     }
@@ -25,7 +25,7 @@ const ist_string ist_astnode_type_names[] = {
 void ist_astnode_delete(void* this) {
     if (this == NULL) return;
 
-    ist_astnode_type type = 0 [(ist_astnode_type*)this];
+    ist_astnode_typenum type = 0 [(ist_astnode_typenum*)this];
 
     /**
      * Delete the astnode by the type. It serves for the counting of the memory.
@@ -34,8 +34,8 @@ void ist_astnode_delete(void* this) {
     switch (type) {
 
 #define manifest(_name, _struct)              \
-    case ISL_ASTNT_##_name:                   \
-        isl_free((IST_ASTNODE_##_name*)this); \
+    case isl_astnt_##_name:                   \
+        isl_free((ist_astnode_##_name*)this); \
         break;
 #include "isl_astnodes.h"
 #undef manifest
@@ -50,37 +50,37 @@ void ist_ast_delete(void* this) {
     if (this == NULL) return;
 
     /* delete the sub nodes of the astnode by the type */
-    switch (0 [(ist_astnode_type*)this]) {
-        case ISL_ASTNT_SCOPE_ENT:
-        case ISL_ASTNT_MODULE_ENT:
-        case ISL_ASTNT_ARG_LIST_PATT:
-        case ISL_ASTNT_PARAM_LIST_PATT:
-        case ISL_ASTNT_NODE_LIST: {
-            IST_ASTNODE_NODE_LIST* node_list = this;
-            ist_astnodeptr_list_clean(&node_list->nodeptr_list);
+    switch (0 [(ist_astnode_typenum*)this]) {
+        case isl_astnt_scope:
+        case isl_astnt_module:
+        case isl_astnt_arg_list_patt:
+        case isl_astnt_params_list_patt:
+        case isl_astnt_node_list: {
+            ist_astnode_node_list* node_list = this;
+            ist_astnodeptr_list_clean(&node_list->list);
             break;
         }
-        case ISL_ASTNT_UNARY_EXPR: {
-            ist_ast_delete(ISL_AS_UNARY_EXPR(this)->sub_node);
+        case isl_astnt_unary_expr: {
+            ist_ast_delete(isl_as_unary_expr(this)->sub_node);
             break;
         }
-        case ISL_ASTNT_BINARY_EXPR: {
-            IST_ASTNODE_BINARY_EXPR* binary_opt = this;
-            ist_ast_delete(binary_opt->lhs_node);
-            ist_ast_delete(binary_opt->rhs_node);
+        case isl_astnt_binary_expr: {
+            ist_astnode_binary_expr* node = this;
+            ist_ast_delete(node->lhs_node);
+            ist_ast_delete(node->rhs_node);
             break;
         }
-        case ISL_ASTNT_TERNARY_EXPR: {
-            IST_ASTNODE_TERNARY_EXPR* ternary_opt = this;
-            ist_ast_delete(ternary_opt->first_node);
-            ist_ast_delete(ternary_opt->second_node);
-            ist_ast_delete(ternary_opt->third_node);
+        case isl_astnt_ternary_expr: {
+            ist_astnode_ternary_expr* node = this;
+            ist_ast_delete(node->first_node);
+            ist_ast_delete(node->second_node);
+            ist_ast_delete(node->third_node);
             break;
         }
-        case ISL_ASTNT_FNCALL_EXPR: {
-            IST_ASTNODE_FNCALL_EXPR* fncall = this;
-            ist_ast_delete(fncall->fn_entity);
-            ist_astnodeptr_list_clean(&fncall->arglist);
+        case isl_astnt_fncall_expr: {
+            ist_astnode_fncall_expr* node = this;
+            ist_ast_delete(node->fn);
+            ist_astnodeptr_list_clean(&node->arglist);
             break;
         }
     }
@@ -88,31 +88,31 @@ void ist_ast_delete(void* this) {
 }
 
 ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) {
-// isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
+    // isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
     isl_dreport(rid_inform_dumping, "node", this);
     idxptr = idxptr ?: (ist_usize[1]){};
     if (!this) return *buffer;
 
-    ist_astnode_type type = 0 [(ist_astnode_type*)this];
+    ist_astnode_typenum type = 0 [(ist_astnode_typenum*)this];
 
     ist_strbuf_sprintf(buffer, idxptr, "{\"type:\":\"%s\",", ist_astnode_type_names[type]);
     ist_location_dump_json(&((ist_astnode*)this)->location, buffer, idxptr);
     ist_strbuf_append_raw(buffer, idxptr, ",");
 
     switch (type) {
-        case ISL_ASTNT_UNKNOWN:
+        case isl_astnt_unknown:
             ist_strbuf_append_raw(buffer, idxptr, "\b");
             break;
 
-        case ISL_ASTNT_SCOPE_ENT:
-        case ISL_ASTNT_MODULE_ENT:
-        case ISL_ASTNT_ARG_LIST_PATT:
-        case ISL_ASTNT_PARAM_LIST_PATT:
-        case ISL_ASTNT_NODE_LIST: {
-            IST_ASTNODE_NODE_LIST* node_list = this;
+        case isl_astnt_scope:
+        case isl_astnt_module:
+        case isl_astnt_arg_list_patt:
+        case isl_astnt_params_list_patt:
+        case isl_astnt_node_list: {
+            ist_astnode_node_list* node_list = this;
 
             ist_strbuf_append_raw(buffer, idxptr, "\"nodeptr_list\":[");
-            isg_list_foreach (nodepp, node_list->nodeptr_list) {
+            isg_list_foreach (nodepp, node_list->list) {
                 ist_ast_dump_json(*nodepp, buffer, idxptr);
                 ist_strbuf_append_raw(buffer, idxptr, ",");
             }
@@ -120,52 +120,49 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
             break;
         }
 
-        case ISL_ASTNT_LITERAL_ENT: {
-            IST_ASTNODE_LITERAL_ENT* literal_ent = this;
+        case isl_astnt_literal: {
+            ist_astnode_literal* literal = this;
             ist_strbuf_sprintf(
-                buffer, idxptr, "\"litype\":\"%s\",\"value\":", ist_token_names[literal_ent->litype]
+                buffer, idxptr, "\"litype\":\"%s\",\"value\":", ist_token_names[literal->litype]
             );
-            ist_value_dump_json(&literal_ent->value, literal_ent->litype, buffer, idxptr);
+            ist_value_dump_json(&literal->value, literal->litype, buffer, idxptr);
             break;
         }
 
-        case ISL_ASTNT_BINARY_EXPR: {
-            IST_ASTNODE_BINARY_EXPR* binary_opt = this;
+        case isl_astnt_binary_expr: {
+            ist_astnode_binary_expr* expr = this;
             ist_strbuf_sprintf(
-                buffer,
-                idxptr,
-                "\"optype\":\"%s\",\"lhs_node\":",
-                ist_token_names[binary_opt->optype]
+                buffer, idxptr, "\"optype\":\"%s\",\"lhs_node\":", ist_token_names[expr->optype]
             );
-            ist_ast_dump_json(binary_opt->lhs_node, buffer, idxptr);
+            ist_ast_dump_json(expr->lhs_node, buffer, idxptr);
             ist_strbuf_append_raw(buffer, idxptr, ",\"rhs_node\":");
-            ist_ast_dump_json(binary_opt->rhs_node, buffer, idxptr);
+            ist_ast_dump_json(expr->rhs_node, buffer, idxptr);
             break;
         }
 
-        case ISL_ASTNT_UNARY_EXPR: {
-            IST_ASTNODE_UNARY_EXPR* unary_opt = this;
+        case isl_astnt_unary_expr: {
+            ist_astnode_unary_expr* expr = this;
             ist_strbuf_sprintf(
                 buffer,
                 idxptr,
                 "\"optype\":\"%s\",\"onlhs\":%s,\"sub_node\":",
-                ist_token_names[unary_opt->optype],
-                unary_opt->onlhs ? "true" : "false"
+                ist_token_names[expr->optype],
+                expr->onlhs ? "true" : "false"
             );
-            ist_ast_dump_json(unary_opt->sub_node, buffer, idxptr);
+            ist_ast_dump_json(expr->sub_node, buffer, idxptr);
             break;
         }
 
-        case ISL_ASTNT_NAME_ENT: {
-            IST_ASTNODE_NAME_ENT* name_ent = this;
-            ist_strbuf_sprintf(buffer, idxptr, "\"name\":\"%s\"", name_ent->name);
+        case isl_astnt_name: {
+            ist_astnode_name* name = this;
+            ist_strbuf_sprintf(buffer, idxptr, "\"name\":\"%s\"", name->name);
             break;
         }
 
-        case ISL_ASTNT_FNCALL_EXPR: {
-            IST_ASTNODE_FNCALL_EXPR* fncall = this;
-            ist_strbuf_sprintf(buffer, idxptr, "\"fn_entity\":");
-            ist_ast_dump_json(fncall->fn_entity, buffer, idxptr);
+        case isl_astnt_fncall_expr: {
+            ist_astnode_fncall_expr* fncall = this;
+            ist_strbuf_sprintf(buffer, idxptr, "\"fn\":");
+            ist_ast_dump_json(fncall->fn, buffer, idxptr);
             ist_strbuf_append_raw(buffer, idxptr, ",\"arglist\":[");
             isg_list_foreach (nodepp, fncall->arglist) {
                 ist_ast_dump_json(*nodepp, buffer, idxptr);
@@ -183,6 +180,6 @@ ist_string ist_ast_dump_json(void* this, ist_string* buffer, ist_usize* idxptr) 
     return ist_strbuf_append_raw(buffer, idxptr, "}");
 }
 
-inline void IST_ASTNODE_NODE_LIST_ADD(IST_ASTNODE_NODE_LIST* this, void* node) {
-    ist_astnodeptr_list_addm(&this->nodeptr_list, node);
+inline void ist_astnode_node_list_add(ist_astnode_node_list* this, void* node) {
+    ist_astnodeptr_list_addm(&this->list, node);
 }
