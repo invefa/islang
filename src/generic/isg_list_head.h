@@ -48,7 +48,7 @@ ist_usize        ISG_FN_NAME(size)(ISG_STRUCT_NAME* this);
  * It will automatically iterate to the end of the list (which decide by size).
  */
 #define isg_list_foreach_from(_iterp, _listv, _from, _names...) \
-    isl_list_foreach_from (_iterp, (_listv).data, _from, ##_names)
+    isl_list_foreach_from_to (_iterp, (_listv).data, _from, (_listv).size, ##_names)
 
 /**
  * You must provide the list instance instead of the list pointer.
