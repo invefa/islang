@@ -5,10 +5,10 @@
 #include "isl_lexer.h"
 
 typedef enum ist_pstate {
-    PRS_SUCCESS     = 0,
-    PRS_FUNREPROTED = 1,
-    PRS_FREPROTED   = 2,
-    PRS_FAHEAD      = 3,
+    PRS_SUCCESS     = 0, /* success */
+    PRS_FUNREPROTED = 1, /* failure unreported */
+    PRS_FREPROTED   = 2, /* failure reported */
+    PRS_FAHEAD      = 3, /* failure aheading */
 } ist_pstate;
 
 typedef struct ist_parser {
