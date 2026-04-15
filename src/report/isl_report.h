@@ -169,4 +169,6 @@ void isl_report(isp_repid rid, ...);
 #define isp_catch_coreloc NULL
 #endif
 
+#define isp_unreachable() isl_report(rid_unreachable_brench, isp_catch_coreloc)
+
 #endif // ISC_REPORT_H
