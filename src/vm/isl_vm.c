@@ -40,7 +40,7 @@ void ist_vm_run(ist_vm vm) {
 #define ip_read_opcode(ipv)             (*(ipv)++)
 #define sp_pop(spv)                     (*(spv)--)
 #define sp_psh(spv, _value)             (*++(spv) = (_value))
-#define sp_pshas(spv, _as, _asvalue)      ((++(spv))->as_##_as = (_asvalue))
+#define sp_pshas(spv, _as, _asvalue)    ((++(spv))->as_##_as = (_asvalue))
 
 
     while (*vm.ip != ist_inst_end) {
@@ -278,7 +278,7 @@ void ist_vm_run(ist_vm vm) {
                 break;
 
             default:
-                isl_report(rid_unreachable_brench, isp_catch_coreloc);
+                isp_unreachable();
         }
     }
 }
