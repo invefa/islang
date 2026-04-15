@@ -26,6 +26,19 @@ void* _isl_set_adr_usize_value(void* _adr, ist_usize _value);
 #define isl_malloc(_type) ((_type*)isl_allocate(sizeof(_type), 0))
 #define isl_calloc(_type) ((_type*)isl_allocate(sizeof(_type), 1))
 
+#define isl_malloc_cons(_type, _cons)     \
+    ({                                    \
+        _type* __ptr = isl_malloc(_type); \
+        *__ptr       = _cons;             \
+        __ptr;                            \
+    })
+
+#define isl_calloc_cons(_type, _cons)     \
+    ({                                    \
+        _type* __ptr = isl_calloc(_type); \
+        *__ptr       = _cons;             \
+        __ptr;                            \
+    })
 
 // freev means free the memory and set the ptr variable to NULL.
 #define isl_freev(_ptrv)                            \
