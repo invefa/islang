@@ -47,16 +47,17 @@ typedef struct ist_astnode {
 #define ist_astnode_consby_full(_type, _location) \
     ((ist_astnode){.type = (_type), .location = (_location)})
 
-#define __FULL_CONSTRUCTOR_CONS_0()
-#define __FULL_CONSTRUCTOR_CONS_1(_cons)        _cons
-#define __FULL_CONSTRUCTOR_CONS_2(_name, _cons) _cons
-#define __FULL_CONSTRUCTOR_CONS(_cons...)       _isl_overload(__FULL_CONSTRUCTOR_CONS, ##_cons)
+#define __IST_ASTNODE_CREATEBY_FULL_CONS_0()
+#define __IST_ASTNODE_CREATEBY_FULL_CONS_1(_cons)        _cons
+#define __IST_ASTNODE_CREATEBY_FULL_CONS_2(_name, _cons) _cons
+#define __IST_ASTNODE_CREATEBY_FULL_CONS(_cons...) \
+    _isl_overload(__IST_ASTNODE_CREATEBY_FULL_CONS, ##_cons)
 
-#define __FULL_CONSTRUCTOR_RESULT_NAME_0()             __RESULT__
-#define __FULL_CONSTRUCTOR_RESULT_NAME_1(_cons)        __RESULT__
-#define __FULL_CONSTRUCTOR_RESULT_NAME_2(_name, _cons) _name
-#define __FULL_CONSTRUCTOR_RESULT_NAME(_cons...) \
-    _isl_overload(__FULL_CONSTRUCTOR_RESULT_NAME, ##_cons)
+#define __IST_ASTNODE_CREATEBY_FULL_RESULT_NAME_0()             __RESULT__
+#define __IST_ASTNODE_CREATEBY_FULL_RESULT_NAME_1(_cons)        __RESULT__
+#define __IST_ASTNODE_CREATEBY_FULL_RESULT_NAME_2(_name, _cons) _name
+#define __IST_ASTNODE_CREATEBY_FULL_RESULT_NAME(_cons...) \
+    _isl_overload(__IST_ASTNODE_CREATEBY_FULL_RESULT_NAME, ##_cons)
 /**
  * Create an sub of astnode by the raw type and the location and optional cons.
  * Raw type means the suffix of the type enum, for example, if you want to create IST_ASTNODE_SCOPE,
@@ -65,14 +66,14 @@ typedef struct ist_astnode {
  * Optionally, you can provide the constructor argument to initialize the astnode,
  * just pass the argument in the form of a tuple to varg:cons.
  */
-#define ist_astnode_createby_full(_raw_type, _location, _cons...)      \
-    ({                                                                 \
-        ist_astnode_##_raw_type* __FULL_CONSTRUCTOR_RESULT_NAME(_cons  \
-        ) = isl_calloc(ist_astnode_##_raw_type);                       \
-        *(ist_astnode*)__FULL_CONSTRUCTOR_RESULT_NAME(_cons            \
-        ) = ist_astnode_consby_full(isl_astnt_##_raw_type, _location); \
-        __FULL_CONSTRUCTOR_CONS(_cons);                                \
-        (void*)__FULL_CONSTRUCTOR_RESULT_NAME(_cons);                  \
+#define ist_astnode_createby_full(_raw_type, _location, _cons...)              \
+    ({                                                                         \
+        ist_astnode_##_raw_type* __IST_ASTNODE_CREATEBY_FULL_RESULT_NAME(_cons \
+        ) = isl_calloc(ist_astnode_##_raw_type);                               \
+        *(ist_astnode*)__IST_ASTNODE_CREATEBY_FULL_RESULT_NAME(_cons           \
+        ) = ist_astnode_consby_full(isl_astnt_##_raw_type, _location);         \
+        __IST_ASTNODE_CREATEBY_FULL_CONS(_cons);                               \
+        (void*)__IST_ASTNODE_CREATEBY_FULL_RESULT_NAME(_cons);                 \
     })
 
 #define ist_astnode_defineby_full(varid, _raw_type, _location, _cons...) \
