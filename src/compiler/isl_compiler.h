@@ -5,10 +5,10 @@
 #include "isl_context.h"
 
 typedef struct ist_compiler {
-    ist_context* ctx;
-    ist_astnode* ast;
-    ist_astnode* node;
-
+    ist_context*    ctx;
+    ist_module_list module_list;
+    ist_module*     module;
+    ist_astnode*    node;
 } ist_compiler;
 
 void ist_compiler_elaborate(ist_compiler* this);
