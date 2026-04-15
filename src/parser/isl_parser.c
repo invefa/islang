@@ -45,7 +45,7 @@ void* parse_stmts(ist_parser* this);
 
 void* parse_stmt(ist_parser* this);
 void* parse_import_stmt(ist_parser* this);
-void* parse_using_stmt(ist_parser* this);
+void* parse_use_stmt(ist_parser* this);
 void* parse_do_stmt(ist_parser* this);
 
 /* parse common pattern */
@@ -68,16 +68,17 @@ void* led_wrap_expr(ist_parser* this, ist_astnode* lhs);
 
 
 /* parse parsetime-entity */
-void* parse_name_parsent(ist_parser* this);
-void* parse_reference_parsent(ist_parser* this);
+void* parse_name(ist_parser* this);
+void* parse_entref(ist_parser* this);
 
-void* parse_fn_parsent(ist_parser* this);
-void* parse_fnproto_parsent(ist_parser* this);
-void* parse_type_parsent(ist_parser* this);
+void* parse_fn(ist_parser* this);
+void* parse_fnproto(ist_parser* this);
+void* parse_type(ist_parser* this);
 
-void* parse_regist_parsent(ist_parser* this);
-void* parse_slot_parsent(ist_parser* this);
-void* parse_literal_parsent(ist_parser* this);
+void* parse_regist(ist_parser* this);
+void* parse_span(ist_parser* this);
+void* parse_scope(ist_parser* this);
+void* parse_literal(ist_parser* this);
 
 
 
@@ -161,6 +162,7 @@ ist_bool match_token(ist_parser* this, ist_token_type _type) {
     return true;
 }
 
+
 /**
  * Operator binding power, the higher the value, the higher the priority.
  * The values ​​of two adjacent enumerations must differ by at least two, in order to ensure
@@ -183,11 +185,24 @@ enum ist_optbindpower {
     OBP_TERM      = 0xB0,      // * / %
     OBP_FACTOR    = 0xC0,      // ^
     OBP_PREFIX    = 0xD0,      // ++ -- * & ! ~
-    OBP_SUFFIX    = 0xE0,      // ++ -- * & ^
+    OBP_SUFFIX    = 0xE0,      // ++ -- * & ^ !
     OBP_CALL      = 0xF0,      // (...) [...] . ->
     OBP_ATOM      = 0XFFF,     // reserved for identifier or unit.
     OBP_HIGHEST   = INT16_MAX, // highest of i16.
 };
+
+/* entrance method for parser */
+void ist_parser_parse(ist_parser* this) {
+    this->root = parse_expr(this, OBP_LOWEST);
+}
+
+void* parse_do_stmt(ist_parser* this) {
+    if (match_token(this, ISL_TOKENT_KW_DO)) return parse_expr(this, OBP_LOWEST);
+    ist_lexer_lookahead_start(&this->lexer);
+    parse_expr(this, OBP_LOWEST);
+    if (this->pstate == PRS_SUCCESS) return parse_expr(this, OBP_LOWEST);
+    return NULL;
+}
 
 
 /**
@@ -255,13 +270,6 @@ struct ist_ledoptattr {
     [ISL_TOKENT_LATEST] = {NULL, OBP_NONE, OBP_NONE},
 
 };
-
-
-/* entrance method for parser */
-void ist_parser_parse(ist_parser* this) {
-    this->root = parse_expr(this, OBP_LOWEST);
-}
-
 
 void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
     ist_token curtoken = cur_token(this);
