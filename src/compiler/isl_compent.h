@@ -50,8 +50,8 @@ void ist_compent_clean(ist_compent* this);
 
 /**
  * Create an sub of compent by the raw type and the location and optional cons.
- * Raw type means the suffix of the type enum, for example, if you want to create `ist_compent_scope`,
- * you should provide the raw type as `scope`.
+ * Raw type means the suffix of the type enum, for example, if you want to create
+ * `ist_compent_scope`, you should provide the raw type as `scope`.
  *
  * Optionally, you can provide the constructor argument to initialize the compent,
  * just pass the argument in the form of a tuple to varg:cons.
@@ -65,5 +65,8 @@ void ist_compent_clean(ist_compent* this);
         __IST_COMPENT_CREATEBY_FULL_CONS(_cons);                            \
         (void*)__IST_COMPENT_CREATEBY_FULL_RESULT_NAME(_cons);              \
     })
+
+#define ist_compent_defineby_full(varid, _rkind, _location, _cons...) \
+    ist_compent_##_rkind* varid = ist_compent_createby_full(_rkind, _location, _cons)
 
 #endif // ISC_COMPENT_H
