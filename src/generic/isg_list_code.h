@@ -47,6 +47,21 @@ inline void ISG_FN_NAME(resizc)(ISG_STRUCT_NAME* this, ist_usize _newcap) {
     }
 }
 
+inline void ISG_FN_NAME(ensurm)(ISG_STRUCT_NAME* this, ist_usize _require) {
+    if (this->data) isl_list_ensuremv(this->data, this->size, _require);
+    else {
+        this->data = isl_list_malloc(ISG_VALUE_TYPE, _require);
+        this->size = 0;
+    }
+}
+inline void ISG_FN_NAME(ensurc)(ISG_STRUCT_NAME* this, ist_usize _require) {
+    if (this->data) isl_list_ensurecv(this->data, this->size, _require);
+    else {
+        this->data = isl_list_calloc(ISG_VALUE_TYPE, _require);
+        this->size = 0;
+    }
+}
+
 inline ist_usize ISG_FN_NAME(addm)(ISG_STRUCT_NAME* this, ISG_VALUE_TYPE _value) {
     isl_list_addmv(this->data, this->size, _value);
     return this->size - 1;

@@ -17,6 +17,8 @@ ISG_STRUCT_NAME* ISG_FN_NAME(calloc)(ist_usize _capacity);
 ISG_STRUCT_NAME* ISG_FN_NAME(create)(ist_usize _capacity, ist_bool _doclean);
 void             ISG_FN_NAME(resizm)(ISG_STRUCT_NAME* this, ist_usize _newcap);
 void             ISG_FN_NAME(resizc)(ISG_STRUCT_NAME* this, ist_usize _newcap);
+void             ISG_FN_NAME(ensurm)(ISG_STRUCT_NAME* this, ist_usize _require);
+void             ISG_FN_NAME(ensurc)(ISG_STRUCT_NAME* this, ist_usize _require);
 ist_usize        ISG_FN_NAME(addm)(ISG_STRUCT_NAME* this, ISG_VALUE_TYPE _value);
 ist_usize        ISG_FN_NAME(addc)(ISG_STRUCT_NAME* this, ISG_VALUE_TYPE _value);
 void             ISG_FN_NAME(clean)(ISG_STRUCT_NAME* this);
