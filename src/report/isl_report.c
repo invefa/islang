@@ -1,7 +1,10 @@
 #include "isl_report.h"
 
+#include <stdlib.h>
+
 #include "isl_ansictrl.h"
 #include "isl_location.h"
+#include "isl_module.h"
 #include "isl_types.h"
 
 

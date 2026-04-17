@@ -1,4 +1,5 @@
 #include "isl_location.h"
+#include "isl_module.h"
 
 
 ist_string ist_location_dump_json(ist_location* this, ist_string* buffer, ist_usize* idxptr) {

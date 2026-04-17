@@ -29,8 +29,8 @@ ISL_TEST_HEAD {
     ist_lexer   lexer   = ist_lexer_consby_module(&module);
     ist_string* dumpbuf = ist_string_create_buffer(128);
 
-    ist_module_register_strbuf(&module, macro_after_wrapper, ISL_STRBUFT_SOURCE);
-    ist_module_register_strbuf(&module, macro_after_lbrace, ISL_STRBUFT_SOURCE);
+    ist_module_register_string(&module, macro_after_wrapper, ISL_MOSKIND_SOURCE);
+    ist_module_register_string(&module, macro_after_lbrace, ISL_MOSKIND_SOURCE);
 
     /* make sure token dumping synchronized with fn:advance analysis */
     printf("%s\n", ist_token_dump(&lexer.cur_token, dumpbuf, NULL));

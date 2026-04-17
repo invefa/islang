@@ -1,8 +1,9 @@
 #ifndef ISC_LOCATION_H
 #define ISC_LOCATION_H
 
-#include "isl_module.h"
 #include "isl_string.h"
+
+typedef struct ist_module ist_module;
 
 typedef struct ist_location {
     ist_module* module;

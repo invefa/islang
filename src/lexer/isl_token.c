@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "isl_list.h"
+#include "isl_module.h"
 #include "isl_report.h"
 
 
