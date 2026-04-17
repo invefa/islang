@@ -5,7 +5,7 @@
 #define ISG_VALUE_DONT_CLEAN
 #include "isg_list_code.h"
 
-void ist_instream_append_ins(ist_instream* this, ist_instruction ins) {
+inline void ist_instream_append_ins(ist_instream* this, ist_instruction ins) {
     ist_instream_addc(this, ins);
 }
 
@@ -43,11 +43,11 @@ inline void ist_instream_append_u64(ist_instream* this, ist_u64 val) {
     0 [(ist_u64*)(this->data + this->size)] = val, this->size += sizeof(ist_u64);
 }
 
-void ist_instream_append_f32(ist_instream* this, ist_f32 val) {
+inline void ist_instream_append_f32(ist_instream* this, ist_f32 val) {
     ist_instream_ensurc(this, sizeof(ist_f32));
     0 [(ist_f32*)(this->data + this->size)] = val, this->size += sizeof(ist_f32);
 }
-void ist_instream_append_f64(ist_instream* this, ist_f64 val) {
+inline void ist_instream_append_f64(ist_instream* this, ist_f64 val) {
     ist_instream_ensurc(this, sizeof(ist_f64));
     0 [(ist_f64*)(this->data + this->size)] = val, this->size += sizeof(ist_f64);
 }

@@ -28,7 +28,7 @@ typedef struct ist_compent {
 
 void ist_compent_clean(ist_compent* this);
 
-/* rkind means raw kind name, for example ist_compent_expr (kind) => expr (rkind) */
+/* rkind means raw kind name, for example `ist_compent_expr` (kind) => `expr` (rkind) */
 #define ist_compent_createm(_rkind, _cons) (void*)isl_malloc_cons(ist_compent_##_rkind, _cons)
 #define ist_compent_createc(_rkind, _cons) (void*)isl_calloc_cons(ist_compent_##_rkind, _cons)
 
