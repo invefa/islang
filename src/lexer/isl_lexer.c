@@ -305,10 +305,10 @@ inline void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage) 
             NULL
         );
 
-        ist_module_register_strbuf(
+        ist_module_register_string(
             this->codepage->location.module,
             _codepage->location.pagename = *buffer,
-            ISL_STRBUFT_NAME
+            ISL_MOSKIND_NAME
         );
 
         isl_freev(buffer);
@@ -407,8 +407,8 @@ inline void ist_lexer_parse_string(ist_lexer* this) {
     /* extract the string literal, and register the string to the module */
     analysis_token.value.as_str =
         ist_string_consby_ref(analysis_token.extract, analysis_token.length);
-    ist_module_register_strbuf(
-        this->module, analysis_token.value.as_str, ISL_STRBUFT_LITERAL
+    ist_module_register_string(
+        this->module, analysis_token.value.as_str, ISL_MOSKIND_LITERAL
     );
 }
 

@@ -32,8 +32,8 @@ ist_codepage* ist_codepage_createby_full(
     this->prev_page = _prev_page;
 
     /* register the string buffer to the module */
-    ist_module_register_strbuf(_module, _name, ISL_STRBUFT_NAME);
-    ist_module_register_strbuf(_module, _source, ISL_STRBUFT_SOURCE);
+    ist_module_register_string(_module, _name, ISL_MOSKIND_NAME);
+    ist_module_register_string(_module, _source, ISL_MOSKIND_SOURCE);
 
     /* initialize the UTF-8 decode information */
     this->next_sequence_index     = 0;

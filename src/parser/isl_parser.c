@@ -342,7 +342,7 @@ void* nud_name(ist_parser* this) {
     ist_token curtoken = advance(this);
 
     ist_string name = ist_string_consby_ref(curtoken.extract, curtoken.length);
-    ist_module_register_strbuf(this->lexer.module, name, ISL_STRBUFT_SYMBOL);
+    ist_module_register_string(this->lexer.module, name, ISL_MOSKIND_IDENTIFER);
 
     return ist_astnode_createby_full(name, curtoken.location, res, res->name = name);
 }

@@ -21,10 +21,11 @@ typedef struct ist_parser {
 } ist_parser;
 
 ist_parser  ist_parser_consby_full(ist_lexer _lexer);
-ist_parser  ist_parser_consby_module(ist_module* _module);
 ist_parser* ist_parser_initby_full(ist_parser* this, ist_lexer _lexer);
-ist_parser* ist_parser_initby_module(ist_parser* this, ist_module* _module);
 ist_parser* ist_parser_createby_full(ist_lexer _lexer);
+
+ist_parser  ist_parser_consby_module(ist_module* _module);
+ist_parser* ist_parser_initby_module(ist_parser* this, ist_module* _module);
 ist_parser* ist_parser_createby_module(ist_module* _module);
 
 void ist_parser_clean(ist_parser* this);

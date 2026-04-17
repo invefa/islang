@@ -1,8 +1,8 @@
 #include "isl_module.h"
 
 
-#define ISG_VALUE_TYPE            ist_strbuf_entry
-#define ISG_VALUE_FN_CLEAN(_entp) ist_string_clean(&(_entp)->buffer)
+#define ISG_VALUE_TYPE            ist_mostring
+#define ISG_VALUE_FN_CLEAN(_entp) ist_string_clean(&(_entp)->data)
 #include "isg_list_code.h"
 
 #define ISG_VALUE_TYPE ist_module
@@ -30,12 +30,12 @@ inline ist_string isl_filename_catchby_filepath(ist_cstring _filepath) {
 
 inline ist_module ist_module_consby_full(ist_string _name, ist_string _filepath) {
     ist_module module = (ist_module){
-        .name              = _name,
-        .filepath          = _filepath,
-        .strbuf_entry_list = ist_strbuf_entry_list_consm(4),
+        .name          = _name,
+        .filepath      = _filepath,
+        .mostring_list = ist_mostring_list_consm(4),
     };
-    ist_module_register_strbuf(&module, _filepath, ISL_STRBUFT_FILEPATH);
-    ist_module_register_strbuf(&module, _name, ISL_STRBUFT_NAME);
+    ist_module_register_string(&module, _filepath, ISL_MOSKIND_FILEPATH);
+    ist_module_register_string(&module, _name, ISL_MOSKIND_NAME);
     return module;
 }
 inline ist_module* ist_module_initby_full(
@@ -64,7 +64,7 @@ inline ist_module* ist_module_createby_filepath(ist_string _filepath) {
 
 inline void ist_module_clean(ist_module* this) {
     isl_assert(this);
-    ist_strbuf_entry_list_clean(&this->strbuf_entry_list);
+    ist_mostring_list_clean(&this->mostring_list);
     this->name     = NULL;
     this->filepath = NULL;
 }
@@ -74,18 +74,18 @@ inline void ist_module_delete(ist_module* this) {
 }
 
 
-inline ist_usize ist_module_register_strbuf(
+inline ist_usize ist_module_register_string(
     ist_module* this,
-    ist_string _strbuf,
-    ist_sbtype _type
+    ist_string  _strbuf,
+    ist_moskind _kind
 ) {
-    if (!_strbuf) return this->strbuf_entry_list.size;
+    if (!_strbuf) return this->mostring_list.size;
 
-    isg_list_foreach (itp, this->strbuf_entry_list, idx)
-        if (itp->buffer == _strbuf) return itp->type = _type, idx;
+    isg_list_foreach (itp, this->mostring_list, idx)
+        if (itp->data == _strbuf) return itp->kind = _kind, idx;
 
-    return ist_strbuf_entry_list_addm(
-        &this->strbuf_entry_list, (ist_strbuf_entry){.type = _type, .buffer = _strbuf}
+    return ist_mostring_list_addm(
+        &this->mostring_list, (ist_mostring){.kind = _kind, .data = _strbuf}
     );
 }
 
@@ -102,21 +102,21 @@ ist_string ist_module_dump_json(ist_module* this, ist_string* buffer, ist_usize*
         this->filepath
     );
 
-    static ist_cstring isl_strbuf_type_names[] =
-        {[ISL_STRBUFT_UNKNOWN]  = "unknown",
-         [ISL_STRBUFT_SYMBOL]   = "symbol",
-         [ISL_STRBUFT_SOURCE]   = "source",
-         [ISL_STRBUFT_NAME]     = "name",
-         [ISL_STRBUFT_FILEPATH] = "filepath",
-         [ISL_STRBUFT_LITERAL]  = "literal"};
+    static ist_cstring isl_moskind_names[] =
+        {[ISL_MOSKIND_UNKNOWN]   = "unknown",
+         [ISL_MOSKIND_IDENTIFER] = "symbol",
+         [ISL_MOSKIND_SOURCE]    = "source",
+         [ISL_MOSKIND_NAME]      = "name",
+         [ISL_MOSKIND_FILEPATH]  = "filepath",
+         [ISL_MOSKIND_LITERAL]   = "literal"};
 
-    isg_list_foreach (entp, this->strbuf_entry_list) {
+    isg_list_foreach (entp, this->mostring_list) {
         ist_strbuf_sprintf(
             buffer,
             idxptr,
-            "{\"type\":\"%s\",\"buffer\":\"%s\"},",
-            isl_strbuf_type_names[entp->type],
-            entp->buffer
+            "{\"type\":\"%s\",\"buffer\":\"`%s`\"},",
+            isl_moskind_names[entp->kind],
+            entp->data
         );
     }
 
