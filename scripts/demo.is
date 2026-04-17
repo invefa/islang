@@ -1,0 +1,51 @@
+import std.utils::Option;
+import std.io::println;
+
+int main(){
+    use Option::[Some,None];
+
+    let list = [1, 3, 6, 7, 9, 11, 123, 232, 947];
+    let matrix = [
+        [1 , 3 , 0 ], 
+        [7 , 23, 11], 
+        [12, 32, 55],
+    ];
+
+    let found1 =
+        let result = 0 in
+        for num in list {
+            if (num % 2 == 0) break Some(num);
+            else if (num % 17 == 0) break None;
+            else result += num;
+        } else Some(result);
+
+    /**
+     * 'done means an identifer `done` instead of the keyword `done`.
+     * This feature applies to all keywords, but when it is applied to
+     * ordinary identifiers, it will have a completely different meaning.
+     */
+    use 'done = 1;
+    let i = {
+        use a = span:int(123);
+        const k = 1 in
+        for(i in 0..32) a *= a + i * k + 'done;
+        // done is a keyword using to emit value of block-expression instantly.
+        if (a < 32767) done a;
+        // you can also use a tail expr to emit value.
+        a % 10086
+    }
+
+    let found2 = for:outer row in matrix {
+        let a = for:inner (num in row)
+            if (num % 3 == 1) break:outer Some(num);
+            else if (num % 3 == 2) continue:outer;
+            else if (num % 19 == 5) break num / 2;
+            else continue;
+        else 0;
+        if (a % 23 == 1) break Some(a);
+    } else None;
+
+    println(found1.unwrap(), found2.unwrap());
+
+    return 0;
+}
