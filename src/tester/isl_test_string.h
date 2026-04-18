@@ -10,8 +10,13 @@ ISL_TEST_HEAD {
 
     ist_usize  idx    = 0;
     ist_strbuf buffer = ist_strbuf_cons(16);
-    ist_strbuf_append_raws(buffer, &idx, "asd", " qweqa ", "xixi", NULL);
-    printf("%s\n", *buffer);
+    ist_strbuf_append_raws(buffer, &idx, "abcdefg", " hijklmnopqrstuvwxyz ", "123456789\n", NULL);
+    ist_strbuf_append_raws(buffer, &idx, "abcdefg", " hijklmnopqrstuvwxyz ", "123456789\n", NULL);
+    ist_strbuf_append_raws(buffer, &idx, "abcdefg", " hijklmnopqrstuvwxyz ", "123456789\n", NULL);
+    ist_strbuf_append_raws(buffer, &idx, "abcdefg", " hijklmnopqrstuvwxyz ", "123456789\n", NULL);
+    ist_strbuf_append_ref(buffer, &idx, "asdfghjkl;'\n", 7);
+    printf("string[%" PRIuPTR "] = \n%s\n", idx, *buffer);
+
 
     ist_string_delete(buffer);
 
