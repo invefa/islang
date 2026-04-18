@@ -25,9 +25,9 @@ ISL_TEST_HEAD {
     ist_string_clean(&file_contents);
 
     /* construct module and lexer, and create dump buffer */
-    ist_module  module  = ist_module_consby_filepath(filepath);
-    ist_lexer   lexer   = ist_lexer_consby_module(&module);
-    ist_string* dumpbuf = ist_string_create_buffer(128);
+    ist_module module  = ist_module_consby_filepath(filepath);
+    ist_lexer  lexer   = ist_lexer_consby_module(&module);
+    ist_strbuf dumpbuf = ist_strbuf_cons(128);
 
     ist_module_register_string(&module, macro_after_wrapper, ISL_MOSKIND_SOURCE);
     ist_module_register_string(&module, macro_after_lbrace, ISL_MOSKIND_SOURCE);

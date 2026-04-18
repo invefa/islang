@@ -29,6 +29,7 @@ typedef double ist_f64;
 /* To avoid complement, we set byte type to u8 instead of i8. */
 typedef ist_u8 ist_byte;
 typedef ist_i8 ist_bool;
+typedef char   ist_char;
 
 
 #define true  1

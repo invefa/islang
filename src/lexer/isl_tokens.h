@@ -7,7 +7,7 @@ manifest(EOF, "\0")
 /* end of statement */
 manifest(EOS, ";")
 
-/* end of parsent(parse-time entity) */
+/* end of parsent (parse-time entity) */
 manifest(EOP, "`")
 
 manifest(ID, NULL)

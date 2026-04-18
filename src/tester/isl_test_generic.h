@@ -1,8 +1,9 @@
 #include "isg_list.h"
 #include "isl_module.h"
 #include "isl_value.h"
-#include <time.h>
 #include <inttypes.h>
+#include <time.h>
+
 #define ISL_TEST_ITEM generic
 #include "isg_test_defines.h"
 ISL_TEST_HEAD {
@@ -41,13 +42,13 @@ ISL_TEST_HEAD {
         module_list, ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is"))
     );
 
-    ist_string buffer = ist_string_cons_buffer(142);
+    ist_strbuf buffer = ist_strbuf_cons(142);
 
     isg_list_foreach (iterp, *module_list, idx) {
-        printf("module[%zu] = %s\n", idx, ist_module_dump_json(iterp, &buffer, NULL));
+        printf("module[%zu] = %s\n", idx, ist_module_dump_json(iterp, buffer, NULL));
     }
 
-    ist_string_clean(&buffer);
+    ist_strbuf_clean(&buffer);
     ist_module_list_delete(module_list);
     ist_value_list_delete(value_list);
 

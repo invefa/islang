@@ -12,7 +12,7 @@ ISL_TEST_HEAD {
 
     ist_parser_parse(&parser);
 
-    ist_string* dump_buffer = ist_string_create_buffer(1024);
+    ist_strbuf dump_buffer = ist_strbuf_cons(1024);
 
     // printf("module: %s\n", ist_module_dump_json(&module, dump_buffer, NULL));
     printf("AST    : %s\n", ist_ast_dump_json(parser.root, dump_buffer, NULL));

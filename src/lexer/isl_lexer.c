@@ -286,8 +286,8 @@ inline void ist_lexer_switch_codepage(ist_lexer* this, ist_codepage* _codepage) 
          * the both of last char '\0' also was claculated within the length,
          * so we don't need to add 2 to the length for the appending of ':' and '\0'.
          */
-        ist_usize   index  = 0;
-        ist_string* buffer = ist_string_create_buffer(
+        ist_usize  index  = 0;
+        ist_strbuf buffer = ist_strbuf_cons(
             isl_list_catch_length(this->codepage->location.pagename)
             + isl_list_catch_length(_codepage->location.pagename)
         );
@@ -407,9 +407,7 @@ inline void ist_lexer_parse_string(ist_lexer* this) {
     /* extract the string literal, and register the string to the module */
     analysis_token.value.as_str =
         ist_string_consby_ref(analysis_token.extract, analysis_token.length);
-    ist_module_register_string(
-        this->module, analysis_token.value.as_str, ISL_MOSKIND_LITERAL
-    );
+    ist_module_register_string(this->module, analysis_token.value.as_str, ISL_MOSKIND_LITERAL);
 }
 
 inline void ist_lexer_skip_comment(ist_lexer* this, ist_bool _is_block) {

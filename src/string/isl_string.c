@@ -21,7 +21,6 @@ inline ist_string* ist_string_createby_ref(ist_cstring _cstring, ist_usize _leng
     return ist_string_initby_ref(isl_malloc(ist_string), _cstring, _length);
 }
 
-
 inline ist_string ist_string_consby_raw(ist_cstring _cstring) {
     return ist_string_consby_ref(_cstring, strlen(_cstring));
 }
@@ -31,21 +30,6 @@ inline ist_string* ist_string_initby_raw(ist_string* this, ist_cstring _cstring)
 inline ist_string* ist_string_createby_raw(ist_cstring _cstring) {
     return ist_string_createby_ref(_cstring, strlen(_cstring));
 }
-
-
-ist_string ist_string_cons_buffer(ist_usize _capacity) {
-    ist_string buffer = isl_list_calloc(ist_byte, _capacity);
-    isl_ifnreport(_capacity, rid_catch_zero_capacity_buffer, isp_catch_coreloc, buffer);
-    return buffer;
-}
-inline ist_string* ist_string_init_buffer(ist_string* this, ist_usize _capacity) {
-    *this = ist_string_cons_buffer(_capacity);
-    return this;
-}
-inline ist_string* ist_string_create_buffer(ist_usize _capacity) {
-    return ist_string_init_buffer(isl_malloc(ist_string), _capacity);
-}
-
 
 inline void ist_string_clean(ist_string* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
@@ -59,7 +43,32 @@ inline void ist_string_delete(ist_string* this) {
 }
 
 
-inline void ist_strbuf_ensure(ist_string* this, ist_usize size, ist_usize _reqlen) {
+ist_strbuf ist_strbuf_cons(ist_usize _capacity) {
+    ist_strbuf buffer = isl_malloc(ist_string);
+    *buffer           = isl_list_calloc(ist_char, _capacity);
+    isl_ifnreport(_capacity, rid_catch_zero_capacity_buffer, isp_catch_coreloc, buffer);
+    return buffer;
+}
+inline ist_strbuf* ist_strbuf_init(ist_strbuf* this, ist_usize _capacity) {
+    *this = ist_strbuf_cons(_capacity);
+    return this;
+}
+// inline ist_strbuf* ist_strbuf_create(ist_usize _capacity) {
+//     return ist_strbuf_init(isl_malloc(ist_strbuf), _capacity);
+// }
+
+inline void ist_strbuf_clean(ist_strbuf* this) {
+    isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
+    ist_string_delete(*this);
+    *this = NULL;
+}
+// inline void ist_strbuf_delete(ist_strbuf* this) {
+//     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
+//     ist_strbuf_clean(this);
+//     isl_free(this);
+// }
+
+inline void ist_strbuf_ensure(ist_strbuf this, ist_usize size, ist_usize _reqlen) {
 
     /* check nullptr */
     isl_assert(this);
@@ -83,7 +92,7 @@ inline void ist_strbuf_ensure(ist_string* this, ist_usize size, ist_usize _reqle
 
 
 inline ist_string ist_strbuf_append_ref(
-    ist_string* this,
+    ist_strbuf this,
     ist_usize*  idxptr,
     ist_cstring _string,
     ist_usize   _length
@@ -104,11 +113,11 @@ inline ist_string ist_strbuf_append_ref(
     return *this;
 }
 
-inline ist_string ist_strbuf_append_raw(ist_string* this, ist_usize* idxptr, ist_cstring _string) {
+inline ist_string ist_strbuf_append_raw(ist_strbuf this, ist_usize* idxptr, ist_cstring _string) {
     return ist_strbuf_append_ref(this, idxptr, (ist_string)_string, strlen(_string));
 }
 
-ist_string ist_strbuf_append_raws(ist_string* this, ist_usize* idxptr, ist_cstring _string, ...) {
+ist_string ist_strbuf_append_raws(ist_strbuf this, ist_usize* idxptr, ist_cstring _string, ...) {
     va_list args;
     va_start(args, _string);
     for (ist_string catstr = _string; catstr; catstr = va_arg(args, ist_string))
@@ -117,7 +126,7 @@ ist_string ist_strbuf_append_raws(ist_string* this, ist_usize* idxptr, ist_cstri
     return *this;
 }
 
-ist_string ist_strbuf_sprintf(ist_string* this, ist_usize* idxptr, ist_cstring _format, ...) {
+ist_string ist_strbuf_sprintf(ist_strbuf this, ist_usize* idxptr, ist_cstring _format, ...) {
     va_list args;
 
     /* set the default value for idxptr if it was NULL */
