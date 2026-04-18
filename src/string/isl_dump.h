@@ -30,16 +30,16 @@ typedef enum ist_json_kind {
     JKIND_FALSE,
 } ist_json_kind;
 
-typedef struct ist_dump_item {
+typedef struct ist_dumpitem {
     ist_cstring   name;
     void*         valp;
     ist_json_kind kind;
     void*         fn;
-} ist_dump_item;
+} ist_dumpitem;
 
 typedef struct ist_dumpimage {
-    ist_dump_item* items;
-    ist_usize      count;
+    ist_dumpitem* items;
+    ist_usize     count;
 } ist_dumpimage;
 
 ist_string ist_dumpimage_dump_json(ist_dumpimage* image, ist_strbuf buffer, ist_usize* idxptr);

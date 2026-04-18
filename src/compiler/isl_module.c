@@ -111,7 +111,7 @@ ist_string ist_mostring_list_dump_json(
         if (i) ist_strbuf_append_raw(buffer, idxptr, ",");
         ist_dumpimage_dump_json(
             &(ist_dumpimage){
-                (ist_dump_item[]){
+                (ist_dumpitem[]){
                     {"kind", &isl_moskind_names[mostrp->kind], JKIND_STRING},
                     {"data", &mostrp->data, JKIND_STRING},
                 },
@@ -131,7 +131,7 @@ ist_string ist_module_dump_json(ist_module* this, ist_strbuf buffer, ist_usize* 
 
     return ist_dumpimage_dump_json(
         &(ist_dumpimage){
-            (ist_dump_item[]){
+            (ist_dumpitem[]){
                 {"name", &this->name, JKIND_STRING},
                 {"filepath", &this->filepath, JKIND_STRING},
                 {"mostrings", &this->mostring_list, JKIND_ARRAY, ist_mostring_list_dump_json},
