@@ -76,7 +76,7 @@ ist_string dump_f64(void* valp, ist_strbuf buffer, ist_usize* idxptr) {
 //                 if (fn) dumps(fmt, name, fn(valp, tbuffer, NULL));
 //                 else {
 //                     ist_dump_item_clist clist = val(valp, ist_dump_item_clist);
-//                     dumps(fmt, name, ist_dump_image_dump_json(tbuffer, NULL, clist.data,
+//                     dumps(fmt, name, ist_dumpimage_dump_json(tbuffer, NULL, clist.data,
 //                     clist.count));
 //                 }
 //                 break;
@@ -118,7 +118,7 @@ ist_string dump_f64(void* valp, ist_strbuf buffer, ist_usize* idxptr) {
 //     return *buffer;
 // }
 
-ist_string ist_dump_image_dump_json(ist_dump_image* image, ist_strbuf buffer, ist_usize* idxptr) {
+ist_string ist_dumpimage_dump_json(ist_dumpimage* image, ist_strbuf buffer, ist_usize* idxptr) {
     idxptr = idxptr ?: (ist_usize[1]){};
 
     ist_strbuf tbuffer = ist_strbuf_cons(8);
@@ -143,7 +143,7 @@ ist_string ist_dump_image_dump_json(ist_dump_image* image, ist_strbuf buffer, is
                     dumps(
                         fmt,
                         name,
-                        ist_dump_image_dump_json(&val(valp, ist_dump_image), tbuffer, NULL)
+                        ist_dumpimage_dump_json(&val(valp, ist_dumpimage), tbuffer, NULL)
                     );
                 break;
             case JKIND_ARRAY:

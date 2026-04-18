@@ -37,17 +37,12 @@ typedef struct ist_dump_item {
     void*         fn;
 } ist_dump_item;
 
-// typedef struct ist_dump_item_clist {
-//     ist_dump_item* data;
-//     ist_usize      count;
-// } ist_dump_item_clist;
-
-typedef struct ist_dump_image {
+typedef struct ist_dumpimage {
     ist_dump_item* items;
     ist_usize      count;
-} ist_dump_image;
+} ist_dumpimage;
 
-ist_string ist_dump_image_dump_json(ist_dump_image* image, ist_strbuf buffer, ist_usize* idxptr);
+ist_string ist_dumpimage_dump_json(ist_dumpimage* image, ist_strbuf buffer, ist_usize* idxptr);
 
 
 
