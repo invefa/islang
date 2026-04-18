@@ -24,9 +24,22 @@ ist_string dump_json(
     ist_cstring* name_list,
     void**       valp_list,
     json_kind*   kind_list,
-    void*        fn_list,
+    void**       fn_list,
     ist_usize    count
 );
 
+typedef struct ist_dump_item {
+    ist_cstring name;
+    void*       valp;
+    json_kind   kind;
+    void*       fn;
+} ist_dump_item;
+
+ist_string dump_json_(
+    ist_strbuf     buffer,
+    ist_usize*     idxptr,
+    ist_dump_item* item_list,
+    ist_usize      count
+);
 
 #endif // ISC_DUMP_H

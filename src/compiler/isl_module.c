@@ -91,7 +91,7 @@ inline ist_usize ist_module_register_string(
 }
 
 
-ist_string __mostring_list_dump_json(ist_strbuf tbuffer, void** mostring_listpp) {
+ist_string __mostring_list_dump_json(ist_strbuf tbuffer, void* mostring_listp) {
     static ist_cstring isl_moskind_names[] =
         {[ISL_MOSKIND_UNKNOWN]   = "unknown",
          [ISL_MOSKIND_IDENTIFER] = "symbol",
@@ -99,20 +99,18 @@ ist_string __mostring_list_dump_json(ist_strbuf tbuffer, void** mostring_listpp)
          [ISL_MOSKIND_NAME]      = "name",
          [ISL_MOSKIND_FILEPATH]  = "filepath",
          [ISL_MOSKIND_LITERAL]   = "literal"};
-    // printf("test dumping in sub: %p\n", *mostring_listpp);
-
-    ist_mostring_list* list = *mostring_listpp;
+    ist_mostring_list* list = mostring_listp;
     ist_usize          idx  = 0;
 
     isg_list_foreach (mostrp, *list, i) {
         if (i) ist_strbuf_append_raw(tbuffer, &idx, ",");
-        dump_json(
+        dump_json_(
             tbuffer,
             &idx,
-            (ist_cstring[]){"kind", "data"},
-            (void*[]){&isl_moskind_names[mostrp->kind], &mostrp->data},
-            (json_kind[]){JKIND_STRING, JKIND_STRING},
-            (void*[]){NULL, NULL},
+            (ist_dump_item[]){
+                {"kind", &isl_moskind_names[mostrp->kind], JKIND_STRING, NULL},
+                {"data", &mostrp->data, JKIND_STRING, NULL},
+            },
             2
         );
     }
@@ -124,43 +122,14 @@ ist_string ist_module_dump_json(ist_module* this, ist_strbuf buffer, ist_usize* 
     isl_dreport(rid_inform_dumping, "module", this);
     idxptr = idxptr ?: (ist_usize[1]){};
 
-    printf("test dumping in caller: %p\n", &this->mostring_list);
-
-    dump_json(
+    return dump_json_(
         buffer,
         idxptr,
-        (ist_cstring[]){"name", "filepath", "mostrs"},
-        (void*[]){&this->name, &this->filepath, &this->mostring_list},
-        (json_kind[]){JKIND_STRING, JKIND_STRING, JKIND_ARRAY},
-        (void*[]){NULL, NULL, __mostring_list_dump_json},
+        (ist_dump_item[]){
+            {"name", &this->name, JKIND_STRING, NULL},
+            {"filepath", &this->filepath, JKIND_STRING, NULL},
+            {"mostrings", &this->mostring_list, JKIND_ARRAY, __mostring_list_dump_json},
+        },
         3
     );
-
-    ist_strbuf_sprintf(
-        buffer,
-        idxptr,
-        "\n\n{\"name\":\"%s\",\"filepath\":\"%s\",\"mostrs\":[",
-        this->name,
-        this->filepath
-    );
-
-    static ist_cstring isl_moskind_names[] =
-        {[ISL_MOSKIND_UNKNOWN]   = "unknown",
-         [ISL_MOSKIND_IDENTIFER] = "symbol",
-         [ISL_MOSKIND_SOURCE]    = "source",
-         [ISL_MOSKIND_NAME]      = "name",
-         [ISL_MOSKIND_FILEPATH]  = "filepath",
-         [ISL_MOSKIND_LITERAL]   = "literal"};
-
-    isg_list_foreach (entp, this->mostring_list) {
-        ist_strbuf_sprintf(
-            buffer,
-            idxptr,
-            "{\"kind\":\"%s\",\"data\":\"`%s`\"},",
-            isl_moskind_names[entp->kind],
-            entp->data
-        );
-    }
-
-    return ist_strbuf_append_raw(buffer, idxptr, "\b]}");
 }
