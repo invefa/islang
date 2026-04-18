@@ -92,24 +92,25 @@ inline ist_usize ist_module_register_string(
 
 
 ist_string __mostring_list_dump_json(ist_strbuf tbuffer, void* mostring_listp) {
-    static ist_cstring isl_moskind_names[] =
-        {[ISL_MOSKIND_UNKNOWN]   = "unknown",
-         [ISL_MOSKIND_IDENTIFER] = "symbol",
-         [ISL_MOSKIND_SOURCE]    = "source",
-         [ISL_MOSKIND_NAME]      = "name",
-         [ISL_MOSKIND_FILEPATH]  = "filepath",
-         [ISL_MOSKIND_LITERAL]   = "literal"};
+    static ist_cstring isl_moskind_names[] = {
+        [ISL_MOSKIND_UNKNOWN]   = "unknown",
+        [ISL_MOSKIND_IDENTIFER] = "symbol",
+        [ISL_MOSKIND_SOURCE]    = "source",
+        [ISL_MOSKIND_NAME]      = "name",
+        [ISL_MOSKIND_FILEPATH]  = "filepath",
+        [ISL_MOSKIND_LITERAL]   = "literal",
+    };
     ist_mostring_list* list = mostring_listp;
     ist_usize          idx  = 0;
 
     isg_list_foreach (mostrp, *list, i) {
         if (i) ist_strbuf_append_raw(tbuffer, &idx, ",");
-        dump_json_(
+        dump_json(
             tbuffer,
             &idx,
             (ist_dump_item[]){
-                {"kind", &isl_moskind_names[mostrp->kind], JKIND_STRING, NULL},
-                {"data", &mostrp->data, JKIND_STRING, NULL},
+                {"kind", &isl_moskind_names[mostrp->kind], JKIND_STRING},
+                {"data", &mostrp->data, JKIND_STRING},
             },
             2
         );
@@ -122,12 +123,12 @@ ist_string ist_module_dump_json(ist_module* this, ist_strbuf buffer, ist_usize* 
     isl_dreport(rid_inform_dumping, "module", this);
     idxptr = idxptr ?: (ist_usize[1]){};
 
-    return dump_json_(
+    return dump_json(
         buffer,
         idxptr,
         (ist_dump_item[]){
-            {"name", &this->name, JKIND_STRING, NULL},
-            {"filepath", &this->filepath, JKIND_STRING, NULL},
+            {"name", &this->name, JKIND_STRING},
+            {"filepath", &this->filepath, JKIND_STRING},
             {"mostrings", &this->mostring_list, JKIND_ARRAY, __mostring_list_dump_json},
         },
         3

@@ -45,7 +45,7 @@ AlignOperands: AlignAfterOperator
 AlignTrailingComments:
   Kind: Always
   OverEmptyLines: 1
-AllowAllArgumentsOnNextLine: true
+AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowBreakBeforeNoexceptSpecifier: Never
 AllowShortBlocksOnASingleLine: Always
