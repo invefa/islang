@@ -1,8 +1,8 @@
 #include "isl_astnode.h"
 
 
-#define ISG_STRUCT_NAME           ist_astnodeptr_list
-#define ISG_VALUE_TYPE            ist_astnode*
+#define ISG_STRUCT_NAME            ist_astnodeptr_list
+#define ISG_VALUE_TYPE             ist_astnode*
 #define ISG_VALUE_FN_CLEAN(_astpp) ist_ast_delete(*(_astpp))
 #include "isg_list_code.h"
 

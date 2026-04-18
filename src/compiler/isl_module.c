@@ -1,3 +1,4 @@
+#include "isl_dump.h"
 #include "isl_module.h"
 
 
@@ -89,15 +90,56 @@ inline ist_usize ist_module_register_string(
     );
 }
 
+
+ist_string __mostring_list_dump_json(ist_strbuf tbuffer, void** mostring_listpp) {
+    static ist_cstring isl_moskind_names[] =
+        {[ISL_MOSKIND_UNKNOWN]   = "unknown",
+         [ISL_MOSKIND_IDENTIFER] = "symbol",
+         [ISL_MOSKIND_SOURCE]    = "source",
+         [ISL_MOSKIND_NAME]      = "name",
+         [ISL_MOSKIND_FILEPATH]  = "filepath",
+         [ISL_MOSKIND_LITERAL]   = "literal"};
+    // printf("test dumping in sub: %p\n", *mostring_listpp);
+
+    ist_mostring_list* list = *mostring_listpp;
+    ist_usize          idx  = 0;
+
+    isg_list_foreach (mostrp, *list, i) {
+        if (i) ist_strbuf_append_raw(tbuffer, &idx, ",");
+        dump_json(
+            tbuffer,
+            &idx,
+            (ist_cstring[]){"kind", "data"},
+            (void*[]){&isl_moskind_names[mostrp->kind], &mostrp->data},
+            (json_kind[]){JKIND_STRING, JKIND_STRING},
+            (void*[]){NULL, NULL},
+            2
+        );
+    }
+    return *tbuffer;
+}
+
 ist_string ist_module_dump_json(ist_module* this, ist_strbuf buffer, ist_usize* idxptr) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
     isl_dreport(rid_inform_dumping, "module", this);
     idxptr = idxptr ?: (ist_usize[1]){};
 
+    printf("test dumping in caller: %p\n", &this->mostring_list);
+
+    dump_json(
+        buffer,
+        idxptr,
+        (ist_cstring[]){"name", "filepath", "mostrs"},
+        (void*[]){&this->name, &this->filepath, &this->mostring_list},
+        (json_kind[]){JKIND_STRING, JKIND_STRING, JKIND_ARRAY},
+        (void*[]){NULL, NULL, __mostring_list_dump_json},
+        3
+    );
+
     ist_strbuf_sprintf(
         buffer,
         idxptr,
-        "{\"name\":\"%s\",\"filepath\":\"%s\",\"strbufs\":[",
+        "\n\n{\"name\":\"%s\",\"filepath\":\"%s\",\"mostrs\":[",
         this->name,
         this->filepath
     );
@@ -114,7 +156,7 @@ ist_string ist_module_dump_json(ist_module* this, ist_strbuf buffer, ist_usize* 
         ist_strbuf_sprintf(
             buffer,
             idxptr,
-            "{\"type\":\"%s\",\"buffer\":\"`%s`\"},",
+            "{\"kind\":\"%s\",\"data\":\"`%s`\"},",
             isl_moskind_names[entp->kind],
             entp->data
         );
