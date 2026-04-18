@@ -91,7 +91,11 @@ inline ist_usize ist_module_register_string(
 }
 
 
-ist_string __mostring_list_dump_json(ist_strbuf tbuffer, void* mostring_listp) {
+ist_string ist_mostring_list_dump_json(
+    ist_mostring_list* this,
+    ist_strbuf buffer,
+    ist_usize* idxptr
+) {
     static ist_cstring isl_moskind_names[] = {
         [ISL_MOSKIND_UNKNOWN]   = "unknown",
         [ISL_MOSKIND_IDENTIFER] = "symbol",
@@ -100,22 +104,24 @@ ist_string __mostring_list_dump_json(ist_strbuf tbuffer, void* mostring_listp) {
         [ISL_MOSKIND_FILEPATH]  = "filepath",
         [ISL_MOSKIND_LITERAL]   = "literal",
     };
-    ist_mostring_list* list = mostring_listp;
-    ist_usize          idx  = 0;
+    idxptr = idxptr ?: (ist_usize[1]){};
 
-    isg_list_foreach (mostrp, *list, i) {
-        if (i) ist_strbuf_append_raw(tbuffer, &idx, ",");
-        dump_json(
-            tbuffer,
-            &idx,
-            (ist_dump_item[]){
-                {"kind", &isl_moskind_names[mostrp->kind], JKIND_STRING},
-                {"data", &mostrp->data, JKIND_STRING},
+    ist_strbuf_append_raw(buffer, idxptr, "[");
+    isg_list_foreach (mostrp, *this, i) {
+        if (i) ist_strbuf_append_raw(buffer, idxptr, ",");
+        ist_dump_image_dump_json(
+            &(ist_dump_image){
+                (ist_dump_item[]){
+                    {"kind", &isl_moskind_names[mostrp->kind], JKIND_STRING},
+                    {"data", &mostrp->data, JKIND_STRING},
+                },
+                2,
             },
-            2
+            buffer,
+            idxptr
         );
     }
-    return *tbuffer;
+    return ist_strbuf_append_raw(buffer, idxptr, "]");
 }
 
 ist_string ist_module_dump_json(ist_module* this, ist_strbuf buffer, ist_usize* idxptr) {
@@ -123,14 +129,16 @@ ist_string ist_module_dump_json(ist_module* this, ist_strbuf buffer, ist_usize* 
     isl_dreport(rid_inform_dumping, "module", this);
     idxptr = idxptr ?: (ist_usize[1]){};
 
-    return dump_json(
-        buffer,
-        idxptr,
-        (ist_dump_item[]){
-            {"name", &this->name, JKIND_STRING},
-            {"filepath", &this->filepath, JKIND_STRING},
-            {"mostrings", &this->mostring_list, JKIND_ARRAY, __mostring_list_dump_json},
+    return ist_dump_image_dump_json(
+        &(ist_dump_image){
+            (ist_dump_item[]){
+                {"name", &this->name, JKIND_STRING},
+                {"filepath", &this->filepath, JKIND_STRING},
+                {"mostrings", &this->mostring_list, JKIND_ARRAY, ist_mostring_list_dump_json},
+            },
+            3,
         },
-        3
+        buffer,
+        idxptr
     );
 }

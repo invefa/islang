@@ -3,20 +3,20 @@
 
 #include "isl_string.h"
 
-typedef ist_string (*ist_dump_fn)(ist_strbuf, void*);
+typedef ist_string (*ist_dump_fn)(void*, ist_strbuf, ist_usize*);
 
-ist_string dump_u8(ist_strbuf tbuffer, void* valp);
-ist_string dump_u16(ist_strbuf tbuffer, void* valp);
-ist_string dump_u32(ist_strbuf tbuffer, void* valp);
-ist_string dump_u64(ist_strbuf tbuffer, void* valp);
+ist_string dump_u8(void* valp, ist_strbuf buffer, ist_usize* idxptr);
+ist_string dump_u16(void* valp, ist_strbuf buffer, ist_usize* idxptr);
+ist_string dump_u32(void* valp, ist_strbuf buffer, ist_usize* idxptr);
+ist_string dump_u64(void* valp, ist_strbuf buffer, ist_usize* idxptr);
 
-ist_string dump_i8(ist_strbuf tbuffer, void* valp);
-ist_string dump_i16(ist_strbuf tbuffer, void* valp);
-ist_string dump_i32(ist_strbuf tbuffer, void* valp);
-ist_string dump_i64(ist_strbuf tbuffer, void* valp);
+ist_string dump_i8(void* valp, ist_strbuf buffer, ist_usize* idxptr);
+ist_string dump_i16(void* valp, ist_strbuf buffer, ist_usize* idxptr);
+ist_string dump_i32(void* valp, ist_strbuf buffer, ist_usize* idxptr);
+ist_string dump_i64(void* valp, ist_strbuf buffer, ist_usize* idxptr);
 
-ist_string dump_f32(ist_strbuf tbuffer, void* valp);
-ist_string dump_f64(ist_strbuf tbuffer, void* valp);
+ist_string dump_f32(void* valp, ist_strbuf buffer, ist_usize* idxptr);
+ist_string dump_f64(void* valp, ist_strbuf buffer, ist_usize* idxptr);
 
 typedef enum ist_json_kind {
     JKIND_UNK,
@@ -37,17 +37,17 @@ typedef struct ist_dump_item {
     void*         fn;
 } ist_dump_item;
 
-typedef struct ist_dump_item_clist {
-    ist_dump_item* data;
-    ist_usize      count;
-} ist_dump_item_clist;
+// typedef struct ist_dump_item_clist {
+//     ist_dump_item* data;
+//     ist_usize      count;
+// } ist_dump_item_clist;
 
-ist_string dump_json(
-    ist_strbuf     buffer,
-    ist_usize*     idxptr,
-    ist_dump_item* item_list,
-    ist_usize      count
-);
+typedef struct ist_dump_image {
+    ist_dump_item* items;
+    ist_usize      count;
+} ist_dump_image;
+
+ist_string ist_dump_image_dump_json(ist_dump_image* image, ist_strbuf buffer, ist_usize* idxptr);
 
 
 
