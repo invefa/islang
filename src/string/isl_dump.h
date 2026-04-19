@@ -21,73 +21,28 @@ enum ist_dumpstyle {
 
 typedef ist_string (*ist_dumper)(ist_vptr, ist_strbuf, ist_usize*, ist_usize, ist_dumpstyle);
 
-ist_string ist_u8_dump(
-    void*         valp,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-);
-ist_string ist_u16_dump(
-    void*         valp,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-);
-ist_string ist_u32_dump(
-    void*         valp,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-);
-ist_string ist_u64_dump(
-    void*         valp,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-);
-
-ist_string ist_i8_dump(
-    void*         valp,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-);
-ist_string ist_i16_dump(
-    void*         valp,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-);
-ist_string ist_i32_dump(
-    void*         valp,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-);
-ist_string ist_i64_dump(
-    void*         valp,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-);
+#define _ist_x_dump_decl(_x)                                                                      \
+    ist_string ist_##_x##_dump(                                                                   \
+        ist_vptr valp, ist_strbuf buffer, ist_usize* idxptr, ist_usize depth, ist_dumpstyle style \
+    )
+_ist_x_dump_decl(u8);
+_ist_x_dump_decl(u16);
+_ist_x_dump_decl(u32);
+_ist_x_dump_decl(u64);
+_ist_x_dump_decl(i8);
+_ist_x_dump_decl(i16);
+_ist_x_dump_decl(i32);
+_ist_x_dump_decl(i64);
 
 ist_string ist_f32_dump(
-    void*         valp,
+    ist_vptr      valp,
     ist_strbuf    buffer,
     ist_usize*    idxptr,
     ist_usize     depth,
     ist_dumpstyle style
 );
 ist_string ist_f64_dump(
-    void*         valp,
+    ist_vptr      valp,
     ist_strbuf    buffer,
     ist_usize*    idxptr,
     ist_usize     depth,
@@ -133,12 +88,19 @@ ist_string ist_dumpimage_dump(
     ist_dumpstyle style
 );
 
+/**
+ * listp   :pointer to isg_list.
+ * capacity:capacity of isg_list.
+ * dumper  :dumper fn for element of list.
+ * header  :head text, if set, the head name of element will be ignore.
+ * withidx :do head with index, when `header` is not null, it require `header` contains `PRIuPTR`.
+ */
 typedef struct isg_list_dumpack {
-    ist_vptr    listp;    // pointer to isg_list.
-    ist_usize   capacity; // capacity of isg_list.
-    ist_vptr    dumper;   // dumper fn for element of list.
-    ist_cstring header;   // head text, if set, the head name of element will be ignore.
-    ist_bool    withidx;  // do head with index, require `header` contains `PRIuPTR`.
+    ist_vptr    listp;
+    ist_usize   capacity;
+    ist_vptr    dumper;
+    ist_cstring header;
+    ist_bool    withidx;
 } isg_list_dumpack;
 
 ist_string isg_list_dumpack_dump(

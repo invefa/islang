@@ -7,90 +7,25 @@
 #define val(_valp, _type) (*(_type*)(_valp))
 #define asdumper(_adr)    ((ist_dumper)(_adr))
 
-ist_string ist_u8_dump(
-    void*         valp,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-) {
-    idxptr = idxptr ?: (ist_usize[1]){};
-    return ist_strbuf_sprintf(buffer, idxptr, PRIu8, val(valp, ist_u8));
-}
-ist_string ist_u16_dump(
-    void*         valp,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-) {
-    idxptr = idxptr ?: (ist_usize[1]){};
-    return ist_strbuf_sprintf(buffer, idxptr, PRIu16, val(valp, ist_u16));
-}
-ist_string ist_u32_dump(
-    void*         valp,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-) {
-    idxptr = idxptr ?: (ist_usize[1]){};
-    return ist_strbuf_sprintf(buffer, idxptr, PRIu32, val(valp, ist_u32));
-}
-ist_string ist_u64_dump(
-    void*         valp,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-) {
-    idxptr = idxptr ?: (ist_usize[1]){};
-    return ist_strbuf_sprintf(buffer, idxptr, PRIu64, val(valp, ist_u64));
-}
+#define _ist_x_dump_impl(_x)                                                                      \
+    ist_string ist_##_x##_dump(                                                                   \
+        ist_vptr valp, ist_strbuf buffer, ist_usize* idxptr, ist_usize depth, ist_dumpstyle style \
+    ) {                                                                                           \
+        idxptr = idxptr ?: (ist_usize[1]){};                                                      \
+        return ist_strbuf_sprintf(buffer, idxptr, PRI##_x, val(valp, ist_##_x));                  \
+    }
 
-ist_string ist_i8_dump(
-    void*         valp,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-) {
-    idxptr = idxptr ?: (ist_usize[1]){};
-    return ist_strbuf_sprintf(buffer, idxptr, PRIi8, val(valp, ist_i8));
-}
-ist_string ist_i16_dump(
-    void*         valp,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-) {
-    idxptr = idxptr ?: (ist_usize[1]){};
-    return ist_strbuf_sprintf(buffer, idxptr, PRIi16, val(valp, ist_i16));
-}
-ist_string ist_i32_dump(
-    void*         valp,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-) {
-    idxptr = idxptr ?: (ist_usize[1]){};
-    return ist_strbuf_sprintf(buffer, idxptr, PRIi32, val(valp, ist_i32));
-}
-ist_string ist_i64_dump(
-    void*         valp,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-) {
-    idxptr = idxptr ?: (ist_usize[1]){};
-    return ist_strbuf_sprintf(buffer, idxptr, PRIi64, val(valp, ist_i64));
-}
+_ist_x_dump_impl(u8);
+_ist_x_dump_impl(u16);
+_ist_x_dump_impl(u32);
+_ist_x_dump_impl(u64);
+_ist_x_dump_impl(i8);
+_ist_x_dump_impl(i16);
+_ist_x_dump_impl(i32);
+_ist_x_dump_impl(i64);
 
 ist_string ist_f32_dump(
-    void*         valp,
+    ist_vptr      valp,
     ist_strbuf    buffer,
     ist_usize*    idxptr,
     ist_usize     depth,
@@ -100,7 +35,7 @@ ist_string ist_f32_dump(
     return ist_strbuf_sprintf(buffer, idxptr, "%f", val(valp, ist_f32));
 }
 ist_string ist_f64_dump(
-    void*         valp,
+    ist_vptr      valp,
     ist_strbuf    buffer,
     ist_usize*    idxptr,
     ist_usize     depth,
