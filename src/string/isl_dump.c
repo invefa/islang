@@ -131,7 +131,7 @@ ist_string ist_dumpimage_dump(
 
         case DKIND_INDENT: {
             if (!dobreak) depth = 0;
-            ist_bool dump_name = this->name && !(dflag | DFLAG_HEAD_NONAME);
+            ist_bool dump_name = this->name && !(dflag & DFLAG_HEAD_NONAME);
             if (dump_name) {
                 dumps("%s:\n", this->name);
                 ++depth;
@@ -151,7 +151,7 @@ ist_string ist_dumpimage_dump(
 
 
         case DKIND_STRUCT: {
-            if (this->name && !(dflag | DFLAG_HEAD_NONAME)) dumps("%s ", this->name);
+            if (this->name && !(dflag & DFLAG_HEAD_NONAME)) dumps("%s ", this->name);
             ist_strbuf_append_raw(buffer, idxptr, dobreak ? "{\n" : "{");
             for (ist_usize i = 0; i < this->count; ++i) {
                 ist_dumpitem item = this->items[i];
