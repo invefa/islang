@@ -3,11 +3,21 @@
 
 #include "isl_string.h"
 
-typedef enum ist_dumpstyle {
-    DKIND_UNK,
-    DKIND_JSON,
-    DKIND_YAML,
-} ist_dumpstyle;
+typedef ist_u32 ist_dumpstyle;
+enum ist_dumpstyle {
+    DKIND_MASK   = 0x000000FF,
+    DKIND_UNK    = 0,
+    DKIND_JSON   = 1,
+    DKIND_INDENT = 2,
+    DKIND_STRUCT = 3,
+
+    DFLAG_MASK           = 0xFFFFFF00,
+    DFLAG_SPREAD         = 1 << 8,
+    DFLAG_HEAD_INDENT    = 1 << 9,
+    DFLAG_HEAD_BREAK     = 1 << 10,
+    DFLAG_HEAD_NONAME    = 1 << 11,
+    DFLAG_BODY_AFT2SPACE = 1 << 12,
+};
 
 typedef ist_string (*ist_dumper)(ist_vptr, ist_strbuf, ist_usize*, ist_usize, ist_dumpstyle);
 
@@ -93,6 +103,13 @@ ist_string ist_cstring_dump(
     ist_usize     depth,
     ist_dumpstyle style
 );
+ist_string ist_cstring_dump_ident(
+    ist_cstring* this,
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
+);
 
 /* name: dumper(valp) */
 typedef struct ist_dumpitem {
@@ -117,9 +134,11 @@ ist_string ist_dumpimage_dump(
 );
 
 typedef struct isg_list_dumpack {
-    ist_vptr  listp;    // the pointer to isg_list
-    ist_usize capacity; // the capacity of isg_list
-    ist_vptr  dumper;   // the dumper fn for element of list
+    ist_vptr    listp;    // pointer to isg_list.
+    ist_usize   capacity; // capacity of isg_list.
+    ist_vptr    dumper;   // dumper fn for element of list.
+    ist_cstring header;   // head text, if set, the head name of element will be ignore.
+    ist_bool    withidx;  // do head with index, require `header` contains `PRIuPTR`.
 } isg_list_dumpack;
 
 ist_string isg_list_dumpack_dump(

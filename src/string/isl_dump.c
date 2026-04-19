@@ -5,6 +5,7 @@
 
 
 #define val(_valp, _type) (*(_type*)(_valp))
+#define asdumper(_adr)    ((ist_dumper)(_adr))
 
 ist_string ist_u8_dump(
     void*         valp,
@@ -125,6 +126,34 @@ ist_string ist_cstring_dump(
     return ist_strbuf_sprintf(buffer, idxptr, "\"%s\"", *this);
 }
 
+ist_string ist_cstring_dump_ident(
+    ist_cstring* this,
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
+) {
+    idxptr = idxptr ?: (ist_usize[1]){};
+
+    style &= DKIND_MASK;
+
+    switch (style) {
+        case DKIND_JSON:
+            return ist_strbuf_sprintf(buffer, idxptr, "\"%s\"", *this);
+            break;
+        case DKIND_INDENT:
+            return ist_strbuf_sprintf(buffer, idxptr, "%s", *this);
+            break;
+        case DKIND_STRUCT:
+            return ist_strbuf_sprintf(buffer, idxptr, "%s", *this);
+            break;
+        default:
+            isp_unreachable();
+    }
+    return *buffer;
+}
+
+#define dumps(_vargs...) ist_strbuf_sprintf(buffer, idxptr, ##_vargs)
 ist_string ist_dumpimage_dump(
     ist_dumpimage* this,
     ist_strbuf    buffer,
@@ -134,75 +163,80 @@ ist_string ist_dumpimage_dump(
 ) {
     idxptr = idxptr ?: (ist_usize[1]){};
 
-    ist_bool dofmt = depth != -1;
+    ist_dumpstyle dkind   = style & DKIND_MASK;
+    ist_dumpstyle dflag   = style & DFLAG_MASK;
+    ist_bool      dobreak = depth != -1;
 
-    switch (style) {
-        case DKIND_JSON:
-            ist_strbuf_append_raw(buffer, idxptr, dofmt ? "{\n" : "{");
-            break;
-        case DKIND_YAML:
-            if (this->name) ist_strbuf_sprintf(buffer, idxptr, "%s:\n", this->name);
-            break;
-        default:
-            isp_unreachable();
-    }
+    if (!(dflag & DFLAG_SPREAD)) style &= DKIND_MASK;
+    if (dflag & DFLAG_HEAD_BREAK) ist_strbuf_append_raw(buffer, idxptr, "\n");
+    if (dflag & DFLAG_HEAD_INDENT) isl_dump_tabs(buffer, idxptr, depth);
 
+    switch (dkind) {
+        case DKIND_JSON: {
 
-    for (ist_usize i = 0; i < this->count; ++i) {
-        if (i) switch (style)
-            {
-                case DKIND_JSON:
-                    ist_strbuf_append_raw(buffer, idxptr, dofmt ? ",\n" : ", ");
-                    break;
-                case DKIND_YAML:
-                    ist_strbuf_append_raw(buffer, idxptr, "\n");
-                    break;
-                default:
-                    isp_unreachable();
+            ist_strbuf_append_raw(buffer, idxptr, dobreak ? "{\n" : "{");
+
+            for (ist_usize i = 0; i < this->count; ++i) {
+                ist_dumpitem item = this->items[i];
+
+                if (i) ist_strbuf_append_raw(buffer, idxptr, dobreak ? ",\n" : ", ");
+                if (dobreak) isl_dump_tabs(buffer, idxptr, depth + 1);
+
+                dumps("\"%s\": ", item.name);
+                asdumper(item.dumper)(item.valp, buffer, idxptr, dobreak ? depth + 1 : -1, style);
             }
-
-
-        ist_cstring name   = this->items[i].name;
-        ist_dumper  dumper = this->items[i].dumper;
-        ist_vptr    valp   = this->items[i].valp;
-
-#define dumps(_vargs...) ist_strbuf_sprintf(buffer, idxptr, ##_vargs)
-
-
-        switch (style) {
-            case DKIND_JSON:
-                if (dofmt) isl_dump_tabs(buffer, idxptr, depth + 1);
-                dumps("\"%s\": ", name);
-                break;
-            case DKIND_YAML:
-                if (i || this->name) isl_dump_tabs(buffer, idxptr, depth + 1);
-                dumps("%s: ", name);
-                break;
-            default:
-                isp_unreachable();
-        }
-
-        dumper(valp, buffer, idxptr, depth + 1, style);
-    }
-
-#undef dumps
-
-    switch (style) {
-        case DKIND_JSON:
-            if (dofmt) {
+            if (dobreak) {
                 ist_strbuf_append_raw(buffer, idxptr, "\n");
                 isl_dump_tabs(buffer, idxptr, depth);
             }
             ist_strbuf_append_raw(buffer, idxptr, "}");
             break;
-        case DKIND_YAML:
+        }
+        case DKIND_INDENT: {
+            if (!dobreak) depth = 0;
+            if (this->name && !(dflag | DFLAG_HEAD_NONAME)) {
+                dumps("%s:\n", this->name);
+                ++depth;
+            }
+            for (ist_usize i = 0; i < this->count; ++i) {
+                ist_dumpitem item = this->items[i];
+
+                if (i) ist_strbuf_append_raw(buffer, idxptr, "\n");
+                if (i || this->name) isl_dump_tabs(buffer, idxptr, depth);
+                if (i && dflag & DFLAG_BODY_AFT2SPACE) ist_strbuf_append_raw(buffer, idxptr, "  ");
+                dumps("%s: ", item.name);
+                asdumper(item.dumper)(item.valp, buffer, idxptr, depth + 1, style);
+            }
             break;
+        }
+        case DKIND_STRUCT: {
+            if (this->name && !(dflag | DFLAG_HEAD_NONAME)) dumps("%s ", this->name);
+            ist_strbuf_append_raw(buffer, idxptr, dobreak ? "{\n" : "{");
+            for (ist_usize i = 0; i < this->count; ++i) {
+                ist_dumpitem item = this->items[i];
+
+                if (i) ist_strbuf_append_raw(buffer, idxptr, dobreak ? ",\n" : ", ");
+                if (dobreak) isl_dump_tabs(buffer, idxptr, depth + 1);
+
+                dumps("%s = ", item.name);
+                asdumper(item.dumper)(item.valp, buffer, idxptr, dobreak ? depth + 1 : -1, style);
+            }
+
+            if (dobreak) {
+                ist_strbuf_append_raw(buffer, idxptr, "\n");
+                isl_dump_tabs(buffer, idxptr, depth);
+            }
+            ist_strbuf_append_raw(buffer, idxptr, "}");
+
+            break;
+        }
         default:
             isp_unreachable();
     }
 
     return *buffer;
 }
+#undef dumps
 
 
 ist_string isg_list_dumpack_dump(
@@ -214,53 +248,80 @@ ist_string isg_list_dumpack_dump(
 ) {
     idxptr = idxptr ?: (ist_usize[1]){};
 
+    ist_dumpstyle dkind   = style & DKIND_MASK;
+    ist_dumpstyle dflag   = style & DFLAG_MASK;
+    ist_bool      dobreak = depth != -1;
+
+    if (!(dflag & DFLAG_SPREAD)) style &= DKIND_MASK;
+    if (dflag & DFLAG_HEAD_BREAK) ist_strbuf_append_raw(buffer, idxptr, "\n");
+    if (dflag & DFLAG_HEAD_INDENT) isl_dump_tabs(buffer, idxptr, depth);
+    if (this->header) style |= DFLAG_HEAD_NONAME;
+
     isg_list*  list   = this->listp;
     ist_usize  llen   = isl_list_catch_length(list->data);
     ist_usize  elen   = llen / this->capacity;
-    ist_bool   dofmt  = depth != -1;
     ist_dumper dumper = this->dumper;
 
     if (llen % this->capacity) isp_dunreachable();
-    switch (style) {
-        case DKIND_JSON:
-            ist_strbuf_append_raw(buffer, idxptr, dofmt ? "[\n" : "[");
-            break;
-        case DKIND_YAML:
-            break;
-        default:
-            isp_unreachable();
-    }
 
-    for (ist_usize i = 0; i < list->size; ++i) {
-        switch (style) {
-            case DKIND_JSON:
-                if (i) ist_strbuf_append_raw(buffer, idxptr, dofmt ? ",\n" : ", ");
-                if (dofmt) isl_dump_tabs(buffer, idxptr, depth + 1);
-                dumper(list->data + elen * i, buffer, idxptr, depth + 1, style);
-                break;
-            case DKIND_YAML:
-                ist_strbuf_append_raw(buffer, idxptr, "\n");
-                isl_dump_tabs(buffer, idxptr, depth + 1);
-                ist_strbuf_append_raw(buffer, idxptr, "- ");
-                dumper(list->data + elen * i, buffer, idxptr, depth + 1, style);
-                break;
-            default:
-                isp_unreachable();
-        }
-    }
-
-    switch (style) {
-        case DKIND_JSON:
-            if (dofmt) {
+    switch (dkind) {
+        case DKIND_STRUCT:
+            ist_strbuf_append_raw(buffer, idxptr, dobreak ? "[\n" : "[");
+            for (ist_usize i = 0; i < list->size; ++i) {
+                if (i) ist_strbuf_append_raw(buffer, idxptr, dobreak ? ",\n" : ", ");
+                if (dobreak) isl_dump_tabs(buffer, idxptr, depth + 1);
+                if (this->header) {
+                    if (this->withidx) ist_strbuf_sprintf(buffer, idxptr, this->header, i);
+                    else ist_strbuf_append_raw(buffer, idxptr, this->header);
+                    ist_strbuf_append_raw(buffer, idxptr, " = ");
+                } else if (this->withidx)
+                    ist_strbuf_sprintf(buffer, idxptr, "[%" PRIuPTR "] = ", i);
+                dumper(list->data + elen * i, buffer, idxptr, dobreak ? depth + 1 : -1, style);
+            }
+            if (dobreak) {
                 ist_strbuf_append_raw(buffer, idxptr, "\n");
                 isl_dump_tabs(buffer, idxptr, depth);
             }
             ist_strbuf_append_raw(buffer, idxptr, "]");
             break;
-        case DKIND_YAML:
+        case DKIND_JSON:
+            ist_strbuf_append_raw(buffer, idxptr, dobreak ? "[\n" : "[");
+            for (ist_usize i = 0; i < list->size; ++i) {
+                if (i) ist_strbuf_append_raw(buffer, idxptr, dobreak ? ",\n" : ", ");
+                if (dobreak) isl_dump_tabs(buffer, idxptr, depth + 1);
+                dumper(list->data + elen * i, buffer, idxptr, dobreak ? depth + 1 : -1, style);
+            }
+            if (dobreak) {
+                ist_strbuf_append_raw(buffer, idxptr, "\n");
+                isl_dump_tabs(buffer, idxptr, depth);
+            }
+            ist_strbuf_append_raw(buffer, idxptr, "]");
+            break;
+        case DKIND_INDENT:
+            if (!dobreak) depth = 0;
+            for (ist_usize i = 0; i < list->size; ++i) {
+                ist_strbuf_append_raw(buffer, idxptr, "\n");
+                isl_dump_tabs(buffer, idxptr, depth);
+                ist_strbuf_append_raw(buffer, idxptr, "- ");
+                if (this->header) {
+                    if (this->withidx) ist_strbuf_sprintf(buffer, idxptr, this->header, i);
+                    else ist_strbuf_append_raw(buffer, idxptr, this->header);
+                    ist_strbuf_append_raw(buffer, idxptr, ":\n");
+                    isl_dump_tabs(buffer, idxptr, depth + 1);
+                    dumper(list->data + elen * i, buffer, idxptr, depth + 1, style);
+                } else if (this->withidx) {
+                    ist_strbuf_sprintf(buffer, idxptr, "[%" PRIuPTR "]:\n", i);
+                    isl_dump_tabs(buffer, idxptr, depth + 1);
+                    dumper(list->data + elen * i, buffer, idxptr, depth + 1, style);
+                } else
+                    dumper(
+                        list->data + elen * i, buffer, idxptr, depth, style | DFLAG_BODY_AFT2SPACE
+                    );
+            }
             break;
         default:
             isp_unreachable();
     }
+
     return *buffer;
 }

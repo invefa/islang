@@ -112,7 +112,7 @@ ist_string ist_mostring_dump(
         &(ist_dumpimage){
             NULL,
             (ist_dumpitem[]){
-                {"kind", ist_cstring_dump, &isl_moskind_names[this->kind]},
+                {"kind", ist_cstring_dump_ident, &isl_moskind_names[this->kind]},
                 {"data", ist_cstring_dump, &this->data},
             },
             2,
@@ -137,17 +137,19 @@ ist_string ist_module_dump(
 
     return ist_dumpimage_dump(
         &(ist_dumpimage){
-            "Module",
+            "ist_module",
             (ist_dumpitem[]){
                 {"name", ist_cstring_dump, &this->name},
                 {"filepath", ist_cstring_dump, &this->filepath},
                 {
-                    "mostrings",
+                    "mostring_list",
                     isg_list_dumpack_dump,
                     &(isg_list_dumpack){
                         &this->mostring_list,
                         ist_mostring_list_capacity(&this->mostring_list),
                         ist_mostring_dump,
+                        NULL,
+                        true,
                     },
                 },
             },
