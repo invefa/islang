@@ -107,13 +107,12 @@ ist_string ist_mostring_list_dump_json(
     };
     idxptr = idxptr ?: (ist_usize[1]){};
 
+    ist_bool dofmt = depth != -1;
 
-    ++depth;
-
-    ist_strbuf_append_raw(buffer, idxptr, "[\n");
+    ist_strbuf_append_raw(buffer, idxptr, dofmt ? "[\n" : "[");
     isg_list_foreach (mostrp, *this, i) {
-        if (i) ist_strbuf_append_raw(buffer, idxptr, ",\n");
-        isl_dump_tabs(buffer, idxptr, depth);
+        if (i) ist_strbuf_append_raw(buffer, idxptr, dofmt ? ",\n" : ", ");
+        if (dofmt) isl_dump_tabs(buffer, idxptr, depth + 1);
         ist_dumpimage_dump_json(
             &(ist_dumpimage){
                 (ist_dumpitem[]){
@@ -127,8 +126,10 @@ ist_string ist_mostring_list_dump_json(
             depth
         );
     }
-    ist_strbuf_append_raw(buffer, idxptr, "\n");
-    isl_dump_tabs(buffer, idxptr, depth - 1);
+    if (dofmt) {
+        ist_strbuf_append_raw(buffer, idxptr, "\n");
+        isl_dump_tabs(buffer, idxptr, depth);
+    }
     return ist_strbuf_append_raw(buffer, idxptr, "]");
 }
 

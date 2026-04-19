@@ -59,12 +59,14 @@ ist_string ist_dumpimage_dump_json(
     ist_usize  depth
 ) {
     idxptr = idxptr ?: (ist_usize[1]){};
-    ++depth;
 
-    ist_strbuf_append_raw(buffer, idxptr, "{\n");
+    ist_bool dofmt = depth != -1;
+    if (dofmt) ++depth;
+
+    ist_strbuf_append_raw(buffer, idxptr, dofmt ? "{\n" : "{");
 
     for (ist_usize i = 0; i < this->count; ++i) {
-        if (i) ist_strbuf_append_raw(buffer, idxptr, ",\n");
+        if (i) ist_strbuf_append_raw(buffer, idxptr, dofmt ? ",\n" : ", ");
 
         ist_cstring  name = this->items[i].name;
         ist_dumpkind kind = this->items[i].kind;
@@ -73,7 +75,7 @@ ist_string ist_dumpimage_dump_json(
 
 #define dumps(_vargs...) ist_strbuf_sprintf(buffer, idxptr, ##_vargs)
 
-        isl_dump_tabs(buffer, idxptr, depth);
+        if (dofmt) isl_dump_tabs(buffer, idxptr, depth);
         switch (kind) {
             case DKIND_OBJECT:
                 ist_strbuf_sprintf(buffer, idxptr, "\"%s\": ", name);
@@ -118,8 +120,10 @@ ist_string ist_dumpimage_dump_json(
     }
 
 #undef dumps
-    ist_strbuf_append_raw(buffer, idxptr, "\n");
-    isl_dump_tabs(buffer, idxptr, depth - 1);
+    if (dofmt) {
+        ist_strbuf_append_raw(buffer, idxptr, "\n");
+        isl_dump_tabs(buffer, idxptr, depth - 1);
+    }
     ist_strbuf_append_raw(buffer, idxptr, "}");
     return *buffer;
 }
