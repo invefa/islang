@@ -90,12 +90,12 @@ ist_string ist_module_dump_json(
     ist_usize  depth
 );
 
-ist_string ist_module_dump_indent(
-    ist_module* this,
-    ist_strbuf buffer,
-    ist_usize* idxptr,
-    ist_usize  depth
-);
+// ist_string ist_module_dump_indent(
+//     ist_module* this,
+//     ist_strbuf buffer,
+//     ist_usize* idxptr,
+//     ist_usize  depth
+// );
 
 /**
  * Define the list of modules.

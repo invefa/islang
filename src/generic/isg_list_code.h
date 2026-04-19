@@ -96,4 +96,8 @@ inline ist_usize ISG_FN_NAME(size)(ISG_STRUCT_NAME* this) {
     return this->size;
 }
 
+inline ist_usize ISG_FN_NAME(capacity)(ISG_STRUCT_NAME* this) {
+    return isl_list_ptr_get_capacity(this->data);
+}
+
 #include "isg_undefs.h"

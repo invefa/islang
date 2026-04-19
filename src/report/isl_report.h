@@ -138,8 +138,10 @@ void isl_report(isp_repid rid, ...);
 #ifdef ISL_DEBUG
 /* isl_dreport means debug report for islang, it do reporting when debug mode only */
 #define isl_dreport(_rid, _vargs...) isl_report(_rid, ##_vargs)
+#define isp_dunreachable()           isl_report(rid_unreachable_brench, isp_catch_coreloc)
 #else
 #define isl_dreport(_rid, _vargs...)
+#define isp_dunreachable()
 #endif
 
 /* if expr is true, then report */

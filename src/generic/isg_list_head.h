@@ -25,6 +25,7 @@ void             ISG_FN_NAME(clean)(ISG_STRUCT_NAME* this);
 void             ISG_FN_NAME(delete)(ISG_STRUCT_NAME* this);
 ISG_VALUE_TYPE*  ISG_FN_NAME(data)(ISG_STRUCT_NAME* this);
 ist_usize        ISG_FN_NAME(size)(ISG_STRUCT_NAME* this);
+ist_usize        ISG_FN_NAME(capacity)(ISG_STRUCT_NAME* this);
 
 #ifndef ISG_LIST_HEAD_FOREACH_DEFINED
 #define ISG_LIST_HEAD_FOREACH_DEFINED

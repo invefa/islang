@@ -99,70 +99,92 @@ static ist_cstring isl_moskind_names[] = {
     [ISL_MOSKIND_FILEPATH]  = "filepath",
     [ISL_MOSKIND_LITERAL]   = "literal",
 };
-ist_string ist_mostring_list_dump_json(
-    ist_mostring_list* this,
+
+ist_string ist_mostring_dump_json(
+    ist_mostring* this,
     ist_strbuf buffer,
     ist_usize* idxptr,
     ist_usize  depth
 ) {
     idxptr = idxptr ?: (ist_usize[1]){};
-
-    ist_bool dofmt = depth != -1;
-
-    ist_strbuf_append_raw(buffer, idxptr, dofmt ? "[\n" : "[");
-    isg_list_foreach (mostrp, *this, i) {
-        if (i) ist_strbuf_append_raw(buffer, idxptr, dofmt ? ",\n" : ", ");
-        if (dofmt) isl_dump_tabs(buffer, idxptr, depth + 1);
-        ist_dumpimage_dump_json(
-            &(ist_dumpimage){
-                (ist_dumpitem[]){
-                    {"kind", DKIND_STRING, &isl_moskind_names[mostrp->kind]},
-                    {"data", DKIND_STRING, &mostrp->data},
-                },
-                2,
+    return ist_dumpimage_dump_json(
+        &(ist_dumpimage){
+            (ist_dumpitem[]){
+                {"kind", ist_cstring_dump, &isl_moskind_names[this->kind]},
+                {"data", ist_cstring_dump, &this->data},
             },
-            buffer,
-            idxptr,
-            depth + 1
-        );
-    }
-    if (dofmt) {
-        ist_strbuf_append_raw(buffer, idxptr, "\n");
-        isl_dump_tabs(buffer, idxptr, depth);
-    }
-    return ist_strbuf_append_raw(buffer, idxptr, "]");
+            2,
+        },
+        buffer,
+        idxptr,
+        depth
+    );
 }
 
-ist_string ist_mostring_list_dump_indent(
-    ist_mostring_list* this,
-    ist_strbuf buffer,
-    ist_usize* idxptr,
-    ist_usize  depth
-) {
-    idxptr = idxptr ?: (ist_usize[1]){};
-    ++depth;
-    ist_strbuf tbuf = ist_strbuf_cons(16);
+// ist_string ist_mostring_list_dump_json(
+//     ist_mostring_list* this,
+//     ist_strbuf buffer,
+//     ist_usize* idxptr,
+//     ist_usize  depth
+// ) {
+//     idxptr = idxptr ?: (ist_usize[1]){};
 
-    isg_list_foreach (mostrp, *this, i) {
-        isl_dump_tabs(buffer, idxptr, depth);
-        ist_strbuf_append_raw(buffer, idxptr, "- ");
-        ist_dumpimage_dump_indent(
-            &(ist_dumpimage){
-                (ist_dumpitem[]){
-                    {"kind", DKIND_STRING, &isl_moskind_names[mostrp->kind]},
-                    {"data", DKIND_STRING, &mostrp->data},
-                },
-                2,
-                ist_strbuf_sprintf(tbuf, NULL, "item[%" PRIuPTR "]", i),
-            },
-            buffer,
-            idxptr,
-            depth
-        );
-        ist_strbuf_append_raw(buffer, idxptr, "\n");
-    }
-    return *buffer;
-}
+//     ist_bool dofmt = depth != -1;
+
+//     ist_strbuf_append_raw(buffer, idxptr, dofmt ? "[\n" : "[");
+//     isg_list_foreach (mostrp, *this, i) {
+//         if (i) ist_strbuf_append_raw(buffer, idxptr, dofmt ? ",\n" : ", ");
+//         if (dofmt) isl_dump_tabs(buffer, idxptr, depth + 1);
+//         ist_dumpimage_dump_json(
+//             &(ist_dumpimage){
+//                 (ist_dumpitem[]){
+//                     {"kind", ist_cstring_dump, &isl_moskind_names[mostrp->kind]},
+//                     {"data", ist_cstring_dump, &mostrp->data},
+//                 },
+//                 2,
+//             },
+//             buffer,
+//             idxptr,
+//             depth + 1
+//         );
+//     }
+//     if (dofmt) {
+//         ist_strbuf_append_raw(buffer, idxptr, "\n");
+//         isl_dump_tabs(buffer, idxptr, depth);
+//     }
+//     return ist_strbuf_append_raw(buffer, idxptr, "]");
+// }
+
+// ist_string ist_mostring_list_dump_indent(
+//     ist_mostring_list* this,
+//     ist_strbuf buffer,
+//     ist_usize* idxptr,
+//     ist_usize  depth
+// ) {
+//     idxptr = idxptr ?: (ist_usize[1]){};
+//     ++depth;
+//     ist_strbuf tbuf = ist_strbuf_cons(16);
+
+//     isg_list_foreach (mostrp, *this, i) {
+//         isl_dump_tabs(buffer, idxptr, depth);
+//         ist_strbuf_append_raw(buffer, idxptr, "- ");
+//         ist_dumpimage_dump_indent(
+//             &(ist_dumpimage){
+//                 (ist_dumpitem[]){
+//                     {"kind", ist_cstring_dump, &isl_moskind_names[mostrp->kind]},
+//                     {"data", ist_cstring_dump, &mostrp->data},
+//                 },
+//                 2,
+//                 ist_strbuf_sprintf(tbuf, NULL, "item[%" PRIuPTR "]", i),
+//             },
+//             buffer,
+//             idxptr,
+//             depth
+//         );
+//         ist_strbuf_append_raw(buffer, idxptr, "\n");
+//     }
+//     return *buffer;
+// }
 
 ist_string ist_module_dump_json(
     ist_module* this,
@@ -177,9 +199,17 @@ ist_string ist_module_dump_json(
     return ist_dumpimage_dump_json(
         &(ist_dumpimage){
             (ist_dumpitem[]){
-                {"name", DKIND_STRING, &this->name},
-                {"filepath", DKIND_STRING, &this->filepath},
-                {"mostrings", DKIND_ARRAY, &this->mostring_list, ist_mostring_list_dump_json},
+                {"name", ist_cstring_dump, &this->name},
+                {"filepath", ist_cstring_dump, &this->filepath},
+                {
+                    "mostrings",
+                    isg_list_dumpack_dump_json,
+                    &(isg_list_dumpack){
+                        &this->mostring_list,
+                        ist_mostring_list_capacity(&this->mostring_list),
+                        ist_mostring_dump_json,
+                    },
+                },
             },
             3,
         },
@@ -189,28 +219,28 @@ ist_string ist_module_dump_json(
     );
 }
 
-ist_string ist_module_dump_indent(
-    ist_module* this,
-    ist_strbuf buffer,
-    ist_usize* idxptr,
-    ist_usize  depth
-) {
-    isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
-    isl_dreport(rid_inform_dumping, "module", this);
-    idxptr = idxptr ?: (ist_usize[1]){};
+// ist_string ist_module_dump_indent(
+//     ist_module* this,
+//     ist_strbuf buffer,
+//     ist_usize* idxptr,
+//     ist_usize  depth
+// ) {
+//     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
+//     isl_dreport(rid_inform_dumping, "module", this);
+//     idxptr = idxptr ?: (ist_usize[1]){};
 
-    return ist_dumpimage_dump_indent(
-        &(ist_dumpimage){
-            (ist_dumpitem[]){
-                {"name", DKIND_STRING, &this->name},
-                {"filepath", DKIND_STRING, &this->filepath},
-                {"mostrings", DKIND_ARRAY, &this->mostring_list, ist_mostring_list_dump_indent},
-            },
-            3,
-            "Module",
-        },
-        buffer,
-        idxptr,
-        depth
-    );
-}
+//     return ist_dumpimage_dump_indent(
+//         &(ist_dumpimage){
+//             (ist_dumpitem[]){
+//                 {"name", DKIND_STRING, &this->name},
+//                 {"filepath", DKIND_STRING, &this->filepath},
+//                 {"mostrings", DKIND_ARRAY, &this->mostring_list, ist_mostring_list_dump_indent},
+//             },
+//             3,
+//             "Module",
+//         },
+//         buffer,
+//         idxptr,
+//         depth
+//     );
+// }
