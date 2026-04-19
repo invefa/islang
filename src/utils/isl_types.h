@@ -26,11 +26,11 @@ typedef uint64_t ist_u64;
 typedef float  ist_f32;
 typedef double ist_f64;
 
-/* To avoid complement, we set byte type to u8 instead of i8. */
 typedef ist_u8 ist_byte;
-typedef ist_i8 ist_bool;
 typedef char   ist_char;
+typedef void*  ist_vptr; /* void pointer, aka ptr */
 
+typedef ist_i8 ist_bool;
 
 #define true  1
 #define false 0
@@ -40,21 +40,16 @@ typedef char   ist_char;
 union ist_value;
 
 struct ist_module;
-struct ist_compdata;
+struct ist_context;
 
 struct ist_location;
 struct ist_token;
 struct ist_codepage;
 struct ist_lexer;
-struct ist_parser;
-struct ist_compiler;
 struct ist_astnode;
-
-struct ist_fn_entity;
-struct ist_var_entity;
-struct ist_global_entity;
-struct ist_literal_entity;
-struct ist_reference_entity;
+struct ist_parser;
+struct ist_compent;
+struct ist_compiler;
 
 
 #endif // ISC_TYPES_H

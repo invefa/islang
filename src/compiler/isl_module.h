@@ -83,7 +83,12 @@ void ist_module_delete(ist_module* this);
  */
 ist_usize ist_module_register_string(ist_module* this, ist_string _strbuf, ist_moskind _type);
 
-ist_string ist_module_dump_json(ist_module* this, ist_strbuf buffer, ist_usize* idxptr);
+ist_string ist_module_dump_json(
+    ist_module* this,
+    ist_strbuf buffer,
+    ist_usize* idxptr,
+    ist_usize  depth
+);
 
 /**
  * Define the list of modules.

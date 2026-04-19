@@ -94,7 +94,8 @@ inline ist_usize ist_module_register_string(
 ist_string ist_mostring_list_dump_json(
     ist_mostring_list* this,
     ist_strbuf buffer,
-    ist_usize* idxptr
+    ist_usize* idxptr,
+    ist_usize  depth
 ) {
     static ist_cstring isl_moskind_names[] = {
         [ISL_MOSKIND_UNKNOWN]   = "unknown",
@@ -106,25 +107,37 @@ ist_string ist_mostring_list_dump_json(
     };
     idxptr = idxptr ?: (ist_usize[1]){};
 
-    ist_strbuf_append_raw(buffer, idxptr, "[");
+
+    ++depth;
+
+    ist_strbuf_append_raw(buffer, idxptr, "[\n");
     isg_list_foreach (mostrp, *this, i) {
-        if (i) ist_strbuf_append_raw(buffer, idxptr, ",");
+        if (i) ist_strbuf_append_raw(buffer, idxptr, ",\n");
+        isl_dump_tabs(buffer, idxptr, depth);
         ist_dumpimage_dump_json(
             &(ist_dumpimage){
                 (ist_dumpitem[]){
-                    {"kind", &isl_moskind_names[mostrp->kind], JKIND_STRING},
-                    {"data", &mostrp->data, JKIND_STRING},
+                    {"kind", DKIND_STRING, &isl_moskind_names[mostrp->kind]},
+                    {"data", DKIND_STRING, &mostrp->data},
                 },
                 2,
             },
             buffer,
-            idxptr
+            idxptr,
+            depth
         );
     }
+    ist_strbuf_append_raw(buffer, idxptr, "\n");
+    isl_dump_tabs(buffer, idxptr, depth - 1);
     return ist_strbuf_append_raw(buffer, idxptr, "]");
 }
 
-ist_string ist_module_dump_json(ist_module* this, ist_strbuf buffer, ist_usize* idxptr) {
+ist_string ist_module_dump_json(
+    ist_module* this,
+    ist_strbuf buffer,
+    ist_usize* idxptr,
+    ist_usize  depth
+) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
     isl_dreport(rid_inform_dumping, "module", this);
     idxptr = idxptr ?: (ist_usize[1]){};
@@ -132,13 +145,14 @@ ist_string ist_module_dump_json(ist_module* this, ist_strbuf buffer, ist_usize* 
     return ist_dumpimage_dump_json(
         &(ist_dumpimage){
             (ist_dumpitem[]){
-                {"name", &this->name, JKIND_STRING},
-                {"filepath", &this->filepath, JKIND_STRING},
-                {"mostrings", &this->mostring_list, JKIND_ARRAY, ist_mostring_list_dump_json},
+                {"name", DKIND_STRING, &this->name},
+                {"filepath", DKIND_STRING, &this->filepath},
+                {"mostrings", DKIND_ARRAY, &this->mostring_list, ist_mostring_list_dump_json},
             },
             3,
         },
         buffer,
-        idxptr
+        idxptr,
+        depth
     );
 }
