@@ -5,7 +5,7 @@
 #include "isl_string.h"
 #include "isl_token.h"
 
-ist_string ist_value_dump_json(
+ist_string ist_value_dump(
     ist_value* this,
     ist_u32     type,
     ist_string* buffer,

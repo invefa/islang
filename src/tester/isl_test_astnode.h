@@ -40,7 +40,7 @@ ISL_TEST_HEAD {
 
     // ist_string* buffer = ist_strbuf_create(684);
 
-    // printf("dump result: %s\n", ist_ast_dump_json(module_node, buffer, NULL));
+    // printf("dump result: %s\n", ist_ast_dump(module_node, buffer, NULL));
 
     // ist_string_delete(buffer);
     // ist_ast_delete(module_node);

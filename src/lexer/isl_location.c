@@ -2,7 +2,7 @@
 #include "isl_module.h"
 
 
-ist_string ist_location_dump_json(ist_location* this, ist_string* buffer, ist_usize* idxptr) {
+ist_string ist_location_dump(ist_location* this, ist_string* buffer, ist_usize* idxptr) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
     ist_strbuf_sprintf(
         ((buffer)),

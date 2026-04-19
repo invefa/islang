@@ -12,7 +12,7 @@ typedef struct ist_location {
     ist_usize   column;
 } ist_location;
 
-ist_string ist_location_dump_json(ist_location* this, ist_string* buffer, ist_usize* idxptr);
+ist_string ist_location_dump(ist_location* this, ist_string* buffer, ist_usize* idxptr);
 
 #define ist_location_consby_full(_module, _pagename) \
     ((ist_location){.module = (_module), .pagename = (_pagename), .line = 1, .column = 1})
