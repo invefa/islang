@@ -40,7 +40,13 @@ typedef struct ist_dumpitem {
 typedef struct ist_dumpimage {
     ist_dumpitem* items;
     ist_usize     count;
+    ist_cstring   name;
 } ist_dumpimage;
+
+typedef struct ist_dumplistpack {
+    ist_vptr  listp;    // the pointer to isg_list
+    ist_usize capacity; // the capacity of isg_list
+} ist_dumplistpack;
 
 ist_string isl_dump_tabs(ist_strbuf buffer, ist_usize* idxptr, ist_usize count);
 
@@ -51,6 +57,12 @@ ist_string ist_dumpimage_dump_json(
     ist_usize      depth
 );
 
+ist_string ist_dumpimage_dump_indent(
+    ist_dumpimage* this,
+    ist_strbuf buffer,
+    ist_usize* idxptr,
+    ist_usize  depth
+);
 
 
 #endif // ISC_DUMP_H

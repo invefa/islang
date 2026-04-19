@@ -78,12 +78,12 @@ ist_string ist_dumpimage_dump_json(
         if (dofmt) isl_dump_tabs(buffer, idxptr, depth);
         switch (kind) {
             case DKIND_OBJECT:
-                ist_strbuf_sprintf(buffer, idxptr, "\"%s\": ", name);
+                dumps("\"%s\": ", name);
                 if (fn) fn(valp, buffer, idxptr, depth);
                 else ist_dumpimage_dump_json(valp, buffer, idxptr, depth);
                 break;
             case DKIND_ARRAY:
-                ist_strbuf_sprintf(buffer, idxptr, "\"%s\": ", name);
+                dumps("\"%s\": ", name);
                 if (fn) fn(valp, buffer, idxptr, depth);
                 else isp_unreachable();
                 break;
@@ -95,12 +95,12 @@ ist_string ist_dumpimage_dump_json(
                 } else dumps("\"%s\": \"%s\"", name, val(valp, ist_string));
                 break;
             case DKIND_INT:
-                ist_strbuf_sprintf(buffer, idxptr, "\"%s\": ", name);
+                dumps("\"%s\": ", name);
                 if (fn) fn(valp, buffer, idxptr, depth);
                 else dumps("\"%s\": %" PRIi64, name, val(valp, ist_i64));
                 break;
             case DKIND_FLOAT:
-                ist_strbuf_sprintf(buffer, idxptr, "\"%s\": ", name);
+                dumps("\"%s\": ", name);
                 if (fn) fn(valp, buffer, idxptr, depth);
                 else dumps("\"%s\": %llf", name, val(valp, ist_f64));
                 break;
@@ -125,5 +125,76 @@ ist_string ist_dumpimage_dump_json(
         isl_dump_tabs(buffer, idxptr, depth - 1);
     }
     ist_strbuf_append_raw(buffer, idxptr, "}");
+    return *buffer;
+}
+
+
+
+ist_string ist_dumpimage_dump_indent(
+    ist_dumpimage* this,
+    ist_strbuf buffer,
+    ist_usize* idxptr,
+    ist_usize  depth
+) {
+    idxptr = idxptr ?: (ist_usize[1]){};
+    ++depth;
+
+    if (this->name) ist_strbuf_sprintf(buffer, idxptr, "%s:\n", this->name);
+    for (ist_usize i = 0; i < this->count; ++i) {
+
+        ist_cstring  name = this->items[i].name;
+        ist_dumpkind kind = this->items[i].kind;
+        ist_vptr     valp = this->items[i].valp;
+        ist_dump_fn  fn   = this->items[i].fn;
+
+#define dumps(_vargs...) ist_strbuf_sprintf(buffer, idxptr, ##_vargs)
+
+        if (i) ist_strbuf_append_raw(buffer, idxptr, "\n");
+        if (i || this->name) isl_dump_tabs(buffer, idxptr, depth);
+        switch (kind) {
+            case DKIND_OBJECT:
+                dumps("%s:\n", name);
+                if (fn) fn(valp, buffer, idxptr, depth);
+                else ist_dumpimage_dump_indent(valp, buffer, idxptr, depth);
+                break;
+            case DKIND_ARRAY:
+                dumps("%s:\n", name);
+                if (fn) fn(valp, buffer, idxptr, depth);
+                else isp_unreachable();
+                break;
+            case DKIND_STRING:
+                if (fn) {
+                    ist_strbuf tbuffer = ist_strbuf_cons(8);
+                    dumps("%s: \"%s\"", name, fn(valp, tbuffer, NULL, depth));
+                    ist_strbuf_clean(&tbuffer);
+                } else dumps("%s: \"%s\"", name, val(valp, ist_string));
+                break;
+            case DKIND_INT:
+                dumps("%s: ", name);
+                if (fn) fn(valp, buffer, idxptr, depth);
+                else dumps("%s: %" PRIi64, name, val(valp, ist_i64));
+                break;
+            case DKIND_FLOAT:
+                dumps("%s: ", name);
+                if (fn) fn(valp, buffer, idxptr, depth);
+                else dumps("%s: %llf", name, val(valp, ist_f64));
+                break;
+            case DKIND_BOOL:
+                dumps("%s: %s", name, val(valp, ist_bool) ? "true" : "false");
+                break;
+            case DKIND_TRUE:
+                dumps("%s: true", name);
+                break;
+            case DKIND_FALSE:
+                dumps("%s: false", name);
+                break;
+            default:
+                isp_unreachable();
+                break;
+        }
+    }
+
+#undef dumps
+
     return *buffer;
 }
