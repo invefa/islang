@@ -127,9 +127,12 @@ ist_string ist_dumpimage_dump(
             ist_strbuf_append_raw(buffer, idxptr, "}");
             break;
         }
+
+
         case DKIND_INDENT: {
             if (!dobreak) depth = 0;
-            if (this->name && !(dflag | DFLAG_HEAD_NONAME)) {
+            ist_bool dump_name = this->name && !(dflag | DFLAG_HEAD_NONAME);
+            if (dump_name) {
                 dumps("%s:\n", this->name);
                 ++depth;
             }
@@ -137,13 +140,16 @@ ist_string ist_dumpimage_dump(
                 ist_dumpitem item = this->items[i];
 
                 if (i) ist_strbuf_append_raw(buffer, idxptr, "\n");
-                if (i || this->name) isl_dump_tabs(buffer, idxptr, depth);
+                if (i || dump_name) isl_dump_tabs(buffer, idxptr, depth);
                 if (i && dflag & DFLAG_BODY_AFT2SPACE) ist_strbuf_append_raw(buffer, idxptr, "  ");
+
                 dumps("%s: ", item.name);
                 asdumper(item.dumper)(item.valp, buffer, idxptr, depth + 1, style);
             }
             break;
         }
+
+
         case DKIND_STRUCT: {
             if (this->name && !(dflag | DFLAG_HEAD_NONAME)) dumps("%s ", this->name);
             ist_strbuf_append_raw(buffer, idxptr, dobreak ? "{\n" : "{");
@@ -190,7 +196,7 @@ ist_string isg_list_dumpack_dump(
     if (!(dflag & DFLAG_SPREAD)) style &= DKIND_MASK;
     if (dflag & DFLAG_HEAD_BREAK) ist_strbuf_append_raw(buffer, idxptr, "\n");
     if (dflag & DFLAG_HEAD_INDENT) isl_dump_tabs(buffer, idxptr, depth);
-    if (this->header) style |= DFLAG_HEAD_NONAME;
+    if (this->header || this->withidx) style |= DFLAG_HEAD_NONAME;
 
     isg_list*  list   = this->listp;
     ist_usize  llen   = isl_list_catch_length(list->data);
@@ -219,6 +225,8 @@ ist_string isg_list_dumpack_dump(
             }
             ist_strbuf_append_raw(buffer, idxptr, "]");
             break;
+
+
         case DKIND_JSON:
             ist_strbuf_append_raw(buffer, idxptr, dobreak ? "[\n" : "[");
             for (ist_usize i = 0; i < list->size; ++i) {
@@ -232,6 +240,8 @@ ist_string isg_list_dumpack_dump(
             }
             ist_strbuf_append_raw(buffer, idxptr, "]");
             break;
+
+
         case DKIND_INDENT:
             if (!dobreak) depth = 0;
             for (ist_usize i = 0; i < list->size; ++i) {

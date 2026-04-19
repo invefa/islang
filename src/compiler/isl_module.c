@@ -110,7 +110,7 @@ ist_string ist_mostring_dump(
     idxptr = idxptr ?: (ist_usize[1]){};
     return ist_dumpimage_dump(
         &(ist_dumpimage){
-            NULL,
+            "ist_mostring",
             (ist_dumpitem[]){
                 {"kind", ist_cstring_dump_ident, &isl_moskind_names[this->kind]},
                 {"data", ist_cstring_dump, &this->data},
