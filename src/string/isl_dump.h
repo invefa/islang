@@ -3,95 +3,95 @@
 
 #include "isl_string.h"
 
-typedef enum ist_dumpkind {
+typedef enum ist_dumpstyle {
     DKIND_UNK,
     DKIND_JSON,
     DKIND_YAML,
-} ist_dumpkind;
+} ist_dumpstyle;
 
-typedef ist_string (*ist_dumper)(ist_vptr, ist_strbuf, ist_usize*, ist_usize, ist_dumpkind);
+typedef ist_string (*ist_dumper)(ist_vptr, ist_strbuf, ist_usize*, ist_usize, ist_dumpstyle);
 
 ist_string ist_u8_dump(
-    void*        valp,
-    ist_strbuf   buffer,
-    ist_usize*   idxptr,
-    ist_usize    depth,
-    ist_dumpkind style
+    void*         valp,
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
 );
 ist_string ist_u16_dump(
-    void*        valp,
-    ist_strbuf   buffer,
-    ist_usize*   idxptr,
-    ist_usize    depth,
-    ist_dumpkind style
+    void*         valp,
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
 );
 ist_string ist_u32_dump(
-    void*        valp,
-    ist_strbuf   buffer,
-    ist_usize*   idxptr,
-    ist_usize    depth,
-    ist_dumpkind style
+    void*         valp,
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
 );
 ist_string ist_u64_dump(
-    void*        valp,
-    ist_strbuf   buffer,
-    ist_usize*   idxptr,
-    ist_usize    depth,
-    ist_dumpkind style
+    void*         valp,
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
 );
 
 ist_string ist_i8_dump(
-    void*        valp,
-    ist_strbuf   buffer,
-    ist_usize*   idxptr,
-    ist_usize    depth,
-    ist_dumpkind style
+    void*         valp,
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
 );
 ist_string ist_i16_dump(
-    void*        valp,
-    ist_strbuf   buffer,
-    ist_usize*   idxptr,
-    ist_usize    depth,
-    ist_dumpkind style
+    void*         valp,
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
 );
 ist_string ist_i32_dump(
-    void*        valp,
-    ist_strbuf   buffer,
-    ist_usize*   idxptr,
-    ist_usize    depth,
-    ist_dumpkind style
+    void*         valp,
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
 );
 ist_string ist_i64_dump(
-    void*        valp,
-    ist_strbuf   buffer,
-    ist_usize*   idxptr,
-    ist_usize    depth,
-    ist_dumpkind style
+    void*         valp,
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
 );
 
 ist_string ist_f32_dump(
-    void*        valp,
-    ist_strbuf   buffer,
-    ist_usize*   idxptr,
-    ist_usize    depth,
-    ist_dumpkind style
+    void*         valp,
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
 );
 ist_string ist_f64_dump(
-    void*        valp,
-    ist_strbuf   buffer,
-    ist_usize*   idxptr,
-    ist_usize    depth,
-    ist_dumpkind style
+    void*         valp,
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
 );
 
 ist_string isl_dump_tabs(ist_strbuf buffer, ist_usize* idxptr, ist_usize count);
 
 ist_string ist_cstring_dump(
     ist_cstring* this,
-    ist_strbuf   buffer,
-    ist_usize*   idxptr,
-    ist_usize    depth,
-    ist_dumpkind style
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
 );
 
 /* name: dumper(valp) */
@@ -102,18 +102,18 @@ typedef struct ist_dumpitem {
 } ist_dumpitem;
 
 typedef struct ist_dumpimage {
+    ist_cstring   name;
     ist_dumpitem* items;
     ist_usize     count;
-    ist_cstring   name; // optional name for this dump object
 } ist_dumpimage;
 
 
 ist_string ist_dumpimage_dump(
     ist_dumpimage* this,
-    ist_strbuf   buffer,
-    ist_usize*   idxptr,
-    ist_usize    depth,
-    ist_dumpkind style
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
 );
 
 typedef struct isg_list_dumpack {
@@ -124,10 +124,10 @@ typedef struct isg_list_dumpack {
 
 ist_string isg_list_dumpack_dump(
     isg_list_dumpack* this,
-    ist_strbuf   buffer,
-    ist_usize*   idxptr,
-    ist_usize    depth,
-    ist_dumpkind style
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
 );
 
 

@@ -102,14 +102,15 @@ static ist_cstring isl_moskind_names[] = {
 
 ist_string ist_mostring_dump(
     ist_mostring* this,
-    ist_strbuf   buffer,
-    ist_usize*   idxptr,
-    ist_usize    depth,
-    ist_dumpkind style
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
 ) {
     idxptr = idxptr ?: (ist_usize[1]){};
     return ist_dumpimage_dump(
         &(ist_dumpimage){
+            NULL,
             (ist_dumpitem[]){
                 {"kind", ist_cstring_dump, &isl_moskind_names[this->kind]},
                 {"data", ist_cstring_dump, &this->data},
@@ -123,44 +124,12 @@ ist_string ist_mostring_dump(
     );
 }
 
-
-// ist_string ist_mostring_list_dump_indent(
-//     ist_mostring_list* this,
-//     ist_strbuf buffer,
-//     ist_usize* idxptr,
-//     ist_usize  depth
-// ) {
-//     idxptr = idxptr ?: (ist_usize[1]){};
-//     ++depth;
-//     ist_strbuf tbuf = ist_strbuf_cons(16);
-
-//     isg_list_foreach (mostrp, *this, i) {
-//         isl_dump_tabs(buffer, idxptr, depth);
-//         ist_strbuf_append_raw(buffer, idxptr, "- ");
-//         ist_dumpimage_dump_indent(
-//             &(ist_dumpimage){
-//                 (ist_dumpitem[]){
-//                     {"kind", ist_cstring_dump, &isl_moskind_names[mostrp->kind]},
-//                     {"data", ist_cstring_dump, &mostrp->data},
-//                 },
-//                 2,
-//                 ist_strbuf_sprintf(tbuf, NULL, "item[%" PRIuPTR "]", i),
-//             },
-//             buffer,
-//             idxptr,
-//             depth
-//         );
-//         ist_strbuf_append_raw(buffer, idxptr, "\n");
-//     }
-//     return *buffer;
-// }
-
 ist_string ist_module_dump(
     ist_module* this,
-    ist_strbuf   buffer,
-    ist_usize*   idxptr,
-    ist_usize    depth,
-    ist_dumpkind style
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
 ) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
     isl_dreport(rid_inform_dumping, "module", this);
@@ -168,6 +137,7 @@ ist_string ist_module_dump(
 
     return ist_dumpimage_dump(
         &(ist_dumpimage){
+            "Module",
             (ist_dumpitem[]){
                 {"name", ist_cstring_dump, &this->name},
                 {"filepath", ist_cstring_dump, &this->filepath},
@@ -189,29 +159,3 @@ ist_string ist_module_dump(
         style
     );
 }
-
-// ist_string ist_module_dump_indent(
-//     ist_module* this,
-//     ist_strbuf buffer,
-//     ist_usize* idxptr,
-//     ist_usize  depth
-// ) {
-//     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
-//     isl_dreport(rid_inform_dumping, "module", this);
-//     idxptr = idxptr ?: (ist_usize[1]){};
-
-//     return ist_dumpimage_dump_indent(
-//         &(ist_dumpimage){
-//             (ist_dumpitem[]){
-//                 {"name", DKIND_STRING, &this->name},
-//                 {"filepath", DKIND_STRING, &this->filepath},
-//                 {"mostrings", DKIND_ARRAY, &this->mostring_list, ist_mostring_list_dump_indent},
-//             },
-//             3,
-//             "Module",
-//         },
-//         buffer,
-//         idxptr,
-//         depth
-//     );
-// }
