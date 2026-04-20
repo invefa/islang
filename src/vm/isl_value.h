@@ -10,20 +10,20 @@
  * ones, make sure the size be same as another any one. why we set below typedefs? Because we want
  * to make a protocol for ist_value.
  */
-typedef ist_i8      ist_value_i8;
-typedef ist_u8      ist_value_u8;
-typedef ist_i16     ist_value_i16;
-typedef ist_u16     ist_value_u16;
-typedef ist_i32     ist_value_i32;
-typedef ist_u32     ist_value_u32;
-typedef ist_i64     ist_value_i64;
-typedef ist_u64     ist_value_u64;
-typedef ist_f32     ist_value_f32;
-typedef ist_f64     ist_value_f64;
-typedef ist_u64     ist_value_bool;
-typedef ist_usize   ist_value_usize;
-typedef ist_string* ist_value_strbuf;
-typedef ist_string  ist_value_str;
+typedef ist_i8     ist_value_i8;
+typedef ist_u8     ist_value_u8;
+typedef ist_i16    ist_value_i16;
+typedef ist_u16    ist_value_u16;
+typedef ist_i32    ist_value_i32;
+typedef ist_u32    ist_value_u32;
+typedef ist_i64    ist_value_i64;
+typedef ist_u64    ist_value_u64;
+typedef ist_f32    ist_value_f32;
+typedef ist_f64    ist_value_f64;
+typedef ist_u64    ist_value_bool;
+typedef ist_usize  ist_value_usize;
+typedef ist_strbuf ist_value_strbuf;
+typedef ist_string ist_value_str;
 
 typedef union ist_value {
     ist_value_i8     as_i8;
@@ -77,13 +77,7 @@ typedef struct ist_tvalue {
     ist_value      data;
 } ist_tvalue;
 
-ist_string ist_tvalue_dump(
-    ist_tvalue* this,
-    ist_string*   buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-);
+ist_string ist_tvalue_dump(ist_tvalue* this, ist_dumpctx dctx);
 
 #define ist_tvalue_cons (ist_tvalue)
 

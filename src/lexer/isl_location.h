@@ -16,13 +16,7 @@ typedef struct ist_location {
 
 ist_string ist_location_dump_old(ist_location* this, ist_string* buffer, ist_usize* idxptr);
 
-ist_string ist_location_dump(
-    ist_location* this,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-);
+ist_string ist_location_dump(ist_location* this, ist_dumpctx dctx);
 
 
 #define ist_location_consby_full(_module, _pagename) \

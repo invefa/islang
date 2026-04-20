@@ -100,45 +100,32 @@ static ist_cstring isl_moskind_names[] = {
     [ISL_MOSKIND_LITERAL]   = "literal",
 };
 
-ist_string ist_mostring_dump(
-    ist_mostring* this,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-) {
-    idxptr = idxptr ?: (ist_usize[1]){};
+ist_string ist_mostring_dump(ist_mostring* this, ist_dumpctx dctx) {
+    dctx.idxptr = dctx.idxptr ?: (ist_usize[1]){};
     return ist_dumpimage_dump(
-        &(ist_dumpimage){
-            "ist_mostring",
-            (ist_dumpitem[]){
+        &ist_dumpimage_{
+            .name  = "ist_mostring",
+            .count = 2,
+            ist_dumpitemar_{
                 {"kind", ist_cstring_dump_ident, &isl_moskind_names[this->kind]},
                 {"data", ist_cstring_dump, &this->data},
             },
-            2,
         },
-        buffer,
-        idxptr,
-        depth,
-        style
+        dctx
+
     );
 }
 
-ist_string ist_module_dump(
-    ist_module* this,
-    ist_strbuf    buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-) {
+ist_string ist_module_dump(ist_module* this, ist_dumpctx dctx) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
     isl_dreport(rid_inform_dumping, "module", this);
-    idxptr = idxptr ?: (ist_usize[1]){};
+    dctx.idxptr = dctx.idxptr ?: (ist_usize[1]){};
 
     return ist_dumpimage_dump(
-        &(ist_dumpimage){
-            "ist_module",
-            (ist_dumpitem[]){
+        &ist_dumpimage_{
+            .name  = "ist_module",
+            .count = 3,
+            ist_dumpitemar_{
                 {"name", ist_cstring_dump, &this->name},
                 {"filepath", ist_cstring_dump, &this->filepath},
                 {
@@ -153,11 +140,7 @@ ist_string ist_module_dump(
                     },
                 },
             },
-            3,
         },
-        buffer,
-        idxptr,
-        depth,
-        style
+        dctx
     );
 }

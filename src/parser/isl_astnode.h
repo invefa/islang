@@ -111,13 +111,7 @@ void ist_ast_delete(void* this);
  */
 ist_string ist_ast_dump_old(void* this, ist_string* buffer, ist_usize* idxptr);
 
-ist_string ist_ast_dump(
-    ist_vptr this,
-    ist_string*   buffer,
-    ist_usize*    idxptr,
-    ist_usize     depth,
-    ist_dumpstyle style
-);
+ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx);
 
 /**
  * Declares for special nodes.

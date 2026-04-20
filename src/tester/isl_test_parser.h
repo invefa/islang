@@ -15,19 +15,19 @@ ISL_TEST_HEAD {
     ist_strbuf dump_buffer = ist_strbuf_cons(1024);
 
     printf("AST: %s\n", ist_ast_dump_old(parser.root, dump_buffer, NULL));
-    // printf("%s\n", ist_module_dump_indent(&module, dump_buffer, NULL, 0));
-    printf("%s\n", ist_module_dump(&module, dump_buffer, NULL, 0, DKIND_JSON));
-    printf("%s\n", ist_module_dump(&module, dump_buffer, NULL, 0, DKIND_INDENT));
-    printf("%s\n", ist_module_dump(&module, dump_buffer, NULL, 0, DKIND_STRUCT));
-    printf("%s\n", ist_module_dump(&module, dump_buffer, NULL, -1, DKIND_JSON));
-    printf("%s\n", ist_module_dump(&module, dump_buffer, NULL, -1, DKIND_INDENT));
-    printf("%s\n", ist_module_dump(&module, dump_buffer, NULL, -1, DKIND_STRUCT));
-    printf("%s\n", ist_ast_dump(parser.root, dump_buffer, NULL, 0, DKIND_JSON));
-    printf("%s\n", ist_ast_dump(parser.root, dump_buffer, NULL, 0, DKIND_INDENT));
-    printf("%s\n", ist_ast_dump(parser.root, dump_buffer, NULL, 0, DKIND_STRUCT));
-    printf("%s\n", ist_ast_dump(parser.root, dump_buffer, NULL, -1, DKIND_JSON));
-    printf("%s\n", ist_ast_dump(parser.root, dump_buffer, NULL, -1, DKIND_INDENT));
-    printf("%s\n", ist_ast_dump(parser.root, dump_buffer, NULL, -1, DKIND_STRUCT));
+    // printf("%s\n", ist_module_dump_indent(&module, dump_buffer, NULL, 0));s
+    printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_JSON}));
+    printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_INDENT}));
+    printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_STRUCT}));
+    printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, -1, DKIND_JSON}));
+    printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, -1, DKIND_INDENT}));
+    printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, -1, DKIND_STRUCT}));
+    printf("%s\n", ist_ast_dump(parser.root, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_JSON}));
+    printf("%s\n", ist_ast_dump(parser.root, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_INDENT}));
+    printf("%s\n", ist_ast_dump(parser.root, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_STRUCT}));
+    printf("%s\n", ist_ast_dump(parser.root, ist_dumpctx_{dump_buffer, NULL, -1, DKIND_JSON}));
+    printf("%s\n", ist_ast_dump(parser.root, ist_dumpctx_{dump_buffer, NULL, -1, DKIND_INDENT}));
+    printf("%s\n", ist_ast_dump(parser.root, ist_dumpctx_{dump_buffer, NULL, -1, DKIND_STRUCT}));
     ist_module_clean(&module);
     ist_parser_clean(&parser);
     ist_string_delete(dump_buffer);
