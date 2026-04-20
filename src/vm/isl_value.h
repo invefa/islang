@@ -76,10 +76,10 @@ typedef struct ist_tvalue {
     ist_value_type type;
     ist_value      data;
 } ist_tvalue;
+#define ist_tvalue_ (ist_tvalue)
 
 ist_string ist_tvalue_dump(ist_tvalue* this, ist_dumpctx dctx);
 
-#define ist_tvalue_cons (ist_tvalue)
 
 #define ISG_VALUE_TYPE ist_value
 #include "isg_list_head.h"

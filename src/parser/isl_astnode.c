@@ -261,7 +261,7 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
                         {
                             "value",
                             ist_tvalue_dump,
-                            &ist_tvalue_cons{
+                            &ist_tvalue_{
                                 toklitype_to_valtype[literal->litype],
                                 literal->value,
                             },
@@ -343,7 +343,7 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
                         {
                             "arg_list",
                             isg_list_dumpack_dump,
-                            &(isg_list_dumpack){
+                            &isg_list_dumpack_{
                                 &fncall->arglist,
                                 ist_astnodeptr_list_capacity(&fncall->arglist),
                                 ist_ast_dump,

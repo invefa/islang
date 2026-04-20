@@ -53,20 +53,12 @@ inline ist_strbuf* ist_strbuf_init(ist_strbuf* this, ist_usize _capacity) {
     *this = ist_strbuf_cons(_capacity);
     return this;
 }
-// inline ist_strbuf* ist_strbuf_create(ist_usize _capacity) {
-//     return ist_strbuf_init(isl_malloc(ist_strbuf), _capacity);
-// }
 
 inline void ist_strbuf_clean(ist_strbuf* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
     ist_string_delete(*this);
     *this = NULL;
 }
-// inline void ist_strbuf_delete(ist_strbuf* this) {
-//     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
-//     ist_strbuf_clean(this);
-//     isl_free(this);
-// }
 
 inline void ist_strbuf_ensure(ist_strbuf this, ist_usize size, ist_usize _reqlen) {
 
