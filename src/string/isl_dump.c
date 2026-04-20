@@ -16,36 +16,57 @@
 ist_string ist_dumpimage_dump(ist_dumpimage* this, ist_dumpctx dctx) {
     dctx.idxptr = dctx.idxptr ?: (ist_usize[1]){};
 
-    const ist_dumpstyle dkind   = dctx.style & DKIND_MASK;
-    const ist_dumpstyle dflag   = dctx.style & DFLAG_MASK;
-    const ist_bool      noname  = !this->name || dflag & DFLAG_HEAD_NONAME;
-    const ist_bool      dobreak = dctx.depth != -1;
+    const ist_dumpstyle dkind  = dctx.style & DKIND_MASK;
+    const ist_dumpstyle dflag  = dctx.style & DFLAG_MASK;
+    const ist_bool      noname = !this->name || dflag & DFLAG_HEAD_NONAME;
+    const ist_bool      muline = dctx.depth != -1;
 
     if (!(dflag & DFLAG_SPREAD)) dctx.style &= DKIND_MASK;
     if (dflag & DFLAG_HEAD_BREAK) dumpr("\n");
     if (dflag & DFLAG_HEAD_INDENT) tab(dctx.depth);
 
+    static const struct _fmtcons {
+        ist_cstring open;
+        ist_cstring close;
+        ist_cstring mapto;
+        ist_cstring divide;
+        ist_cstring line;
+    } silinefmts[] =
+        {
+            [DKIND_JSON]   = {"{", "}", ":", ",", NULL},
+            [DKIND_INDENT] = {NULL, NULL, ": ", ",\n", "\n"},
+            [DKIND_STRUCT] = {"{", "}", "=", ",", NULL},
+        },
+      mulinefmts[] = {
+          [DKIND_JSON]   = {"{\n", "}", ": ", ",\n", "\n"},
+          [DKIND_INDENT] = {NULL, NULL, ": ", ",\n", "\n"},
+          [DKIND_STRUCT] = {"{\n", "}", " = ", ",\n", "\n"},
+      };
+
+    struct _fmtcons fmt = muline ? mulinefmts[dkind] : silinefmts[dkind];
+    // TODO: use a table and one drive code to dump all format.
+
     switch (dkind) {
         case DKIND_JSON: {
-            dumpr(dobreak ? "{\n" : "{");
+            dumpr(fmt.open);
             for (ist_usize i = 0; i < this->count; ++i) {
                 ist_dumpitem item = this->items[i];
 
-                if (i) dumpr(dobreak ? ",\n" : ", ");
-                if (dobreak) tab(dctx.depth + 1);
+                if (i) dumpr(fmt.divide);
+                if (muline) tab(dctx.depth + 1);
 
                 dumpf("\"%s\": ", item.name);
-                appdumper(item.dumper, item.valp, dobreak ? dctx.depth + 1 : -1, dctx.style);
+                appdumper(item.dumper, item.valp, muline ? dctx.depth + 1 : -1, dctx.style);
             }
 
-            if (dobreak) dumpr("\n"), tab(dctx.depth);
-            dumpr("}");
+            if (muline) dumpr(fmt.line), tab(dctx.depth);
+            dumpr(fmt.close);
             break;
         }
 
 
         case DKIND_INDENT: {
-            if (!dobreak) dctx.depth = 0;
+            if (!muline) dctx.depth = 0;
 
             if (dflag & DFLAG_THIS_ONVALSIDE) dumpr("\n"), tab(dctx.depth);
             if (!noname) dumpf("%s:\n", this->name), ++dctx.depth;
@@ -66,25 +87,25 @@ ist_string ist_dumpimage_dump(ist_dumpimage* this, ist_dumpctx dctx) {
 
 
         case DKIND_STRUCT: {
-            if (dobreak && dflag & DFLAG_THIS_ONVALSIDE && !noname) dumpr("\n"), tab(dctx.depth);
+            if (muline && dflag & DFLAG_THIS_ONVALSIDE && !noname) dumpr("\n"), tab(dctx.depth);
             if (!noname) dumpf("%s ", this->name);
-            dumpr(dobreak ? "{\n" : "{");
+            dumpr(muline ? "{\n" : "{");
             for (ist_usize i = 0; i < this->count; ++i) {
                 ist_dumpitem item = this->items[i];
 
-                if (i) dumpr(dobreak ? ",\n" : ", ");
-                if (dobreak) tab(dctx.depth + 1);
+                if (i) dumpr(muline ? ",\n" : ", ");
+                if (muline) tab(dctx.depth + 1);
 
-                dumpf("%s = ", item.name);
+                dumpf(".%s = ", item.name);
                 appdumper(
                     item.dumper,
                     item.valp,
-                    dobreak ? dctx.depth + 1 : -1,
+                    muline ? dctx.depth + 1 : -1,
                     dctx.style | DFLAG_THIS_ONVALSIDE
                 );
             }
 
-            if (dobreak) dumpr("\n"), tab(dctx.depth);
+            if (muline) dumpr("\n"), tab(dctx.depth);
             dumpr("}");
             break;
         }
@@ -98,9 +119,9 @@ ist_string ist_dumpimage_dump(ist_dumpimage* this, ist_dumpctx dctx) {
 ist_string isg_list_dumpack_dump(isg_list_dumpack* this, ist_dumpctx dctx) {
     dctx.idxptr = dctx.idxptr ?: (ist_usize[1]){};
 
-    const ist_dumpstyle dkind   = dctx.style & DKIND_MASK;
-    const ist_dumpstyle dflag   = dctx.style & DFLAG_MASK;
-    const ist_bool      dobreak = dctx.depth != -1;
+    const ist_dumpstyle dkind  = dctx.style & DKIND_MASK;
+    const ist_dumpstyle dflag  = dctx.style & DFLAG_MASK;
+    const ist_bool      muline = dctx.depth != -1;
 
     if (!(dflag & DFLAG_SPREAD)) dctx.style &= DKIND_MASK;
     if (dflag & DFLAG_HEAD_BREAK) dumpr("\n");
@@ -116,34 +137,34 @@ ist_string isg_list_dumpack_dump(isg_list_dumpack* this, ist_dumpctx dctx) {
 
     switch (dkind) {
         case DKIND_STRUCT:
-            dumpr(dobreak ? "{\n" : "{");
+            dumpr(muline ? "{\n" : "{");
             for (ist_usize i = 0; i < list->size; ++i) {
-                if (i) dumpr(dobreak ? ",\n" : ", ");
-                if (dobreak) tab(dctx.depth + 1);
+                if (i) dumpr(muline ? ",\n" : ", ");
+                if (muline) tab(dctx.depth + 1);
                 if (this->header) dumpf(this->header, i), dumpr(" = ");
-                appdumper(dumper, list->data + elen * i, dobreak ? dctx.depth + 1 : -1, dctx.style);
+                appdumper(dumper, list->data + elen * i, muline ? dctx.depth + 1 : -1, dctx.style);
             }
 
-            if (dobreak) dumpr("\n"), tab(dctx.depth);
+            if (muline) dumpr("\n"), tab(dctx.depth);
             dumpr("}");
             break;
 
 
         case DKIND_JSON:
-            dumpr(dobreak ? "[\n" : "[");
+            dumpr(muline ? "[\n" : "[");
             for (ist_usize i = 0; i < list->size; ++i) {
-                if (i) dumpr(dobreak ? ",\n" : ", ");
-                if (dobreak) tab(dctx.depth + 1);
-                appdumper(dumper, list->data + elen * i, dobreak ? dctx.depth + 1 : -1, dctx.style);
+                if (i) dumpr(muline ? ",\n" : ", ");
+                if (muline) tab(dctx.depth + 1);
+                appdumper(dumper, list->data + elen * i, muline ? dctx.depth + 1 : -1, dctx.style);
             }
 
-            if (dobreak) dumpr("\n"), tab(dctx.depth);
+            if (muline) dumpr("\n"), tab(dctx.depth);
             dumpr("]");
             break;
 
 
         case DKIND_INDENT:
-            if (!dobreak) dctx.depth = 0;
+            if (!muline) dctx.depth = 0;
             for (ist_usize i = 0; i < list->size; ++i) {
                 dumpr("\n");
                 tab(dctx.depth), dumpr("- ");
