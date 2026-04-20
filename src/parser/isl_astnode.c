@@ -1,5 +1,5 @@
 #include "isl_astnode.h"
-
+#include "isl_dump.h"
 
 #define ISG_STRUCT_NAME            ist_astnodeptr_list
 #define ISG_VALUE_TYPE             ist_astnode*
@@ -87,7 +87,22 @@ void ist_ast_delete(void* this) {
     ist_astnode_delete(this);
 }
 
-ist_string ist_ast_dump(void* this, ist_string* buffer, ist_usize* idxptr) {
+
+// ist_string ist_ast_dump(
+//     ist_vptr this,
+//     ist_strbuf    buffer,
+//     ist_usize*    idxptr,
+//     ist_usize     depth,
+//     ist_dumpstyle style
+// ) {
+//     idxptr = idxptr ?: (ist_usize[1]){};
+
+//     ist_astnode_typenum type = 0 [(ist_astnode_typenum*)this];
+
+//     // return;
+// }
+
+ist_string ist_ast_dump_old(void* this, ist_string* buffer, ist_usize* idxptr) {
     // isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
     isl_dreport(rid_inform_dumping, "node", this);
     idxptr = idxptr ?: (ist_usize[1]){};
@@ -96,7 +111,7 @@ ist_string ist_ast_dump(void* this, ist_string* buffer, ist_usize* idxptr) {
     ist_astnode_typenum type = 0 [(ist_astnode_typenum*)this];
 
     ist_strbuf_sprintf(buffer, idxptr, "{\"type:\":\"%s\",", ist_astnode_type_names[type]);
-    ist_location_dump(&((ist_astnode*)this)->location, buffer, idxptr);
+    ist_location_dump_old(&((ist_astnode*)this)->location, buffer, idxptr);
     ist_strbuf_append_raw(buffer, idxptr, ",");
 
     switch (type) {
@@ -113,7 +128,7 @@ ist_string ist_ast_dump(void* this, ist_string* buffer, ist_usize* idxptr) {
 
             ist_strbuf_append_raw(buffer, idxptr, "\"nodeptr_list\":[");
             isg_list_foreach (nodepp, node_list->list) {
-                ist_ast_dump(*nodepp, buffer, idxptr);
+                ist_ast_dump_old(*nodepp, buffer, idxptr);
                 ist_strbuf_append_raw(buffer, idxptr, ",");
             }
             ist_strbuf_append_raw(buffer, idxptr, "\b]");
@@ -134,9 +149,9 @@ ist_string ist_ast_dump(void* this, ist_string* buffer, ist_usize* idxptr) {
             ist_strbuf_sprintf(
                 buffer, idxptr, "\"optype\":\"%s\",\"lhs_node\":", ist_token_names[expr->optype]
             );
-            ist_ast_dump(expr->lhs_node, buffer, idxptr);
+            ist_ast_dump_old(expr->lhs_node, buffer, idxptr);
             ist_strbuf_append_raw(buffer, idxptr, ",\"rhs_node\":");
-            ist_ast_dump(expr->rhs_node, buffer, idxptr);
+            ist_ast_dump_old(expr->rhs_node, buffer, idxptr);
             break;
         }
 
@@ -149,7 +164,7 @@ ist_string ist_ast_dump(void* this, ist_string* buffer, ist_usize* idxptr) {
                 ist_token_names[expr->optype],
                 expr->onlhs ? "true" : "false"
             );
-            ist_ast_dump(expr->sub_node, buffer, idxptr);
+            ist_ast_dump_old(expr->sub_node, buffer, idxptr);
             break;
         }
 
@@ -162,10 +177,10 @@ ist_string ist_ast_dump(void* this, ist_string* buffer, ist_usize* idxptr) {
         case isl_astnt_fncall_expr: {
             ist_astnode_fncall_expr* fncall = this;
             ist_strbuf_sprintf(buffer, idxptr, "\"fn\":");
-            ist_ast_dump(fncall->fn, buffer, idxptr);
+            ist_ast_dump_old(fncall->fn, buffer, idxptr);
             ist_strbuf_append_raw(buffer, idxptr, ",\"arglist\":[");
             isg_list_foreach (nodepp, fncall->arglist) {
-                ist_ast_dump(*nodepp, buffer, idxptr);
+                ist_ast_dump_old(*nodepp, buffer, idxptr);
                 ist_strbuf_append_raw(buffer, idxptr, ",");
             }
             ist_strbuf_append_raw(buffer, idxptr, "\b]");
