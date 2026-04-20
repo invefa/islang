@@ -8,13 +8,13 @@
 #include "isl_report.h"
 
 
-const ist_cstring ist_token_reflects[] = {
+ist_cstring ist_token_reflects[] = {
 #define manifest(_name, _reflect) [ISL_TOKENT_##_name] = _reflect,
 #include "isl_tokens.h"
 #undef manifest
 };
 
-const ist_cstring ist_token_names[] = {
+ist_cstring ist_token_names[] = {
 #define manifest(_name, _reflect) [ISL_TOKENT_##_name] = #_name,
 #include "isl_tokens.h"
 #undef manifest

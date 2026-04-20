@@ -10,7 +10,7 @@
 #include "isg_list_code.h"
 
 
-const ist_string ist_astnode_type_names[] = {
+ist_string ist_astnode_type_names[] = {
 #define manifest(_name, _struct) [isl_astnt_##_name] = #_name,
 #include "isl_astnodes.h"
 #undef manifest
@@ -198,6 +198,8 @@ ist_string ist_ast_dump_old(void* this, ist_string* buffer, ist_usize* idxptr) {
     return ist_strbuf_append_raw(buffer, idxptr, "}");
 }
 
+
+
 ist_string ist_ast_dump(
     ist_vptr this,
     ist_string*   buffer,
@@ -225,11 +227,7 @@ ist_string ist_ast_dump(
                 &(ist_dumpimage){
                     NULL,
                     (ist_dumpitem[]){
-                        {
-                            "type",
-                            ist_cstring_dump_ident,
-                            (ist_cstring*)ist_astnode_type_names + type,
-                        },
+                        {"type", ist_cstring_dump_ident, &ist_astnode_type_names[type]},
                         {"location", ist_location_dump, &node_list->base.location},
                         {
                             "nodeptr_list",
@@ -265,17 +263,9 @@ ist_string ist_ast_dump(
                 &(ist_dumpimage){
                     NULL,
                     (ist_dumpitem[]){
-                        {
-                            "type",
-                            ist_cstring_dump_ident,
-                            (ist_cstring*)ist_astnode_type_names + type,
-                        },
+                        {"type", ist_cstring_dump_ident, &ist_astnode_type_names[type]},
                         {"location", ist_location_dump, &literal->base.location},
-                        {
-                            "litype",
-                            ist_cstring_dump_ident,
-                            (ist_cstring*)ist_token_names + literal->litype,
-                        },
+                        {"litype", ist_cstring_dump_ident, &ist_token_names[literal->litype]},
                         {
                             "value",
                             ist_tvalue_dump,
@@ -301,17 +291,9 @@ ist_string ist_ast_dump(
                 &(ist_dumpimage){
                     NULL,
                     (ist_dumpitem[]){
-                        {
-                            "type",
-                            ist_cstring_dump_ident,
-                            (ist_cstring*)ist_astnode_type_names + type,
-                        },
+                        {"type", ist_cstring_dump_ident, &ist_astnode_type_names[type]},
                         {"location", ist_location_dump, &expr->base.location},
-                        {
-                            "optype",
-                            ist_cstring_dump_ident,
-                            (ist_cstring*)ist_token_names + expr->optype,
-                        },
+                        {"optype", ist_cstring_dump_ident, &ist_token_names[expr->optype]},
                         {"lhs_node", ist_ast_dump, expr->lhs_node},
                         {"rhs_node", ist_ast_dump, expr->rhs_node},
                     },
@@ -331,17 +313,9 @@ ist_string ist_ast_dump(
                 &(ist_dumpimage){
                     NULL,
                     (ist_dumpitem[]){
-                        {
-                            "type",
-                            ist_cstring_dump_ident,
-                            (ist_cstring*)ist_astnode_type_names + type,
-                        },
+                        {"type", ist_cstring_dump_ident, &ist_astnode_type_names[type]},
                         {"location", ist_location_dump, &expr->base.location},
-                        {
-                            "optype",
-                            ist_cstring_dump_ident,
-                            (ist_cstring*)ist_token_names + expr->optype,
-                        },
+                        {"optype", ist_cstring_dump_ident, &ist_token_names[expr->optype]},
                         {"onlhs", ist_bool_dump, &expr->onlhs},
                         {"sub_node", ist_ast_dump, expr->sub_node},
                     },
@@ -362,11 +336,7 @@ ist_string ist_ast_dump(
                     // ist_astnode_type_names[type],
                     NULL,
                     (ist_dumpitem[]){
-                        {
-                            "type",
-                            ist_cstring_dump_ident,
-                            (ist_cstring*)ist_astnode_type_names + type,
-                        },
+                        {"type", ist_cstring_dump_ident, &ist_astnode_type_names[type]},
                         {"location", ist_location_dump, &name->base.location},
                         {"name", ist_cstring_dump, &name->name},
                     },
@@ -387,11 +357,7 @@ ist_string ist_ast_dump(
                     // ist_astnode_type_names[type],
                     NULL,
                     (ist_dumpitem[]){
-                        {
-                            "type",
-                            ist_cstring_dump_ident,
-                            (ist_cstring*)ist_astnode_type_names + type,
-                        },
+                        {"type", ist_cstring_dump_ident, &ist_astnode_type_names[type]},
                         {"location", ist_location_dump, &fncall->base.location},
                         {"fn", ist_ast_dump, fncall->fn},
                         {

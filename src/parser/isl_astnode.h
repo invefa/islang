@@ -23,7 +23,7 @@ enum ist_astnode_typenum {
 };
 
 /* define the names of the astnode type */
-extern const ist_string ist_astnode_type_names[];
+extern ist_string ist_astnode_type_names[];
 
 
 /* define the base struct of the astnode */
