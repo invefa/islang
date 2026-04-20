@@ -1,8 +1,8 @@
 #ifndef ISC_ASTNODE_H
 #define ISC_ASTNODE_H
 
+#include "isl_dump.h"
 #include "isl_token.h"
-
 
 /**
  * This enum only for hightlight the type of the astnode.
@@ -111,6 +111,13 @@ void ist_ast_delete(void* this);
  */
 ist_string ist_ast_dump_old(void* this, ist_string* buffer, ist_usize* idxptr);
 
+ist_string ist_ast_dump(
+    ist_vptr this,
+    ist_string*   buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
+);
 
 /**
  * Declares for special nodes.

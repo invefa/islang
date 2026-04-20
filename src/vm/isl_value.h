@@ -1,6 +1,7 @@
 #ifndef ISC_VALUE_H
 #define ISC_VALUE_H
 
+#include "isl_dump.h"
 #include "isl_string.h"
 #include "isl_types.h"
 
@@ -33,7 +34,7 @@ typedef union ist_value {
     ist_value_u32    as_u32;
     ist_value_i64    as_i64;
     ist_value_u64    as_u64;
-    ist_value_f64    as_f32;
+    ist_value_f32    as_f32;
     ist_value_f64    as_f64;
     ist_value_bool   as_bool;
     ist_value_usize  as_usize;
@@ -41,6 +42,24 @@ typedef union ist_value {
     ist_value_str    as_str;
 } ist_value;
 
+typedef enum ist_value_type {
+    isl_valtype_i8,
+    isl_valtype_u8,
+    isl_valtype_i16,
+    isl_valtype_u16,
+    isl_valtype_i32,
+    isl_valtype_u32,
+    isl_valtype_i64,
+    isl_valtype_u64,
+    isl_valtype_f32,
+    isl_valtype_f64,
+    isl_valtype_bool,
+    isl_valtype_usize,
+    isl_valtype_strbuf,
+    isl_valtype_str,
+} ist_value_type;
+
+#define ist_value_cons                   (ist_value)
 #define ist_value_consby_null()          ((ist_value){.as_i64 = 0})
 #define ist_value_consby_i64(_i64)       ((ist_value){.as_i64 = (_i64)})
 #define ist_value_consby_u64(_u64)       ((ist_value){.as_u64 = (_u64)})
@@ -53,6 +72,20 @@ typedef union ist_value {
 
 ist_string ist_value_dump_old(ist_value* this, ist_u32 type, ist_string* buffer, ist_usize* idxptr);
 
+typedef struct ist_tvalue {
+    ist_value_type type;
+    ist_value      data;
+} ist_tvalue;
+
+ist_string ist_tvalue_dump(
+    ist_tvalue* this,
+    ist_string*   buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
+);
+
+#define ist_tvalue_cons (ist_tvalue)
 
 #define ISG_VALUE_TYPE ist_value
 #include "isg_list_head.h"

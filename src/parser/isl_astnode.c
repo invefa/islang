@@ -1,5 +1,8 @@
+#include "inttypes.h"
 #include "isl_astnode.h"
 #include "isl_dump.h"
+
+
 
 #define ISG_STRUCT_NAME            ist_astnodeptr_list
 #define ISG_VALUE_TYPE             ist_astnode*
@@ -104,7 +107,7 @@ void ist_ast_delete(void* this) {
 
 ist_string ist_ast_dump_old(void* this, ist_string* buffer, ist_usize* idxptr) {
     // isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
-    isl_dreport(rid_inform_dumping, "node", this);
+    isl_dreport(rid_inform_dumping, "astnode", this);
     idxptr = idxptr ?: (ist_usize[1]){};
     if (!this) return *buffer;
 
@@ -194,6 +197,231 @@ ist_string ist_ast_dump_old(void* this, ist_string* buffer, ist_usize* idxptr) {
 
     return ist_strbuf_append_raw(buffer, idxptr, "}");
 }
+
+ist_string ist_ast_dump(
+    ist_vptr this,
+    ist_string*   buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
+) {
+    isl_dreport(rid_inform_dumping, "astnode", this);
+    idxptr = idxptr ?: (ist_usize[1]){};
+    if (!this) return ist_strbuf_append_raw(buffer, idxptr, "null");
+
+    ist_astnode_typenum type = 0 [(ist_astnode_typenum*)this];
+
+    switch (type) {
+        case isl_astnt_unknown:
+            break;
+
+        case isl_astnt_scope:
+        case isl_astnt_module:
+        case isl_astnt_arg_list_patt:
+        case isl_astnt_params_list_patt:
+        case isl_astnt_node_list: {
+            ist_astnode_node_list* node_list = this;
+            return ist_dumpimage_dump(
+                &(ist_dumpimage){
+                    NULL,
+                    (ist_dumpitem[]){
+                        {
+                            "type",
+                            ist_cstring_dump_ident,
+                            (ist_cstring*)ist_astnode_type_names + type,
+                        },
+                        {"location", ist_location_dump, &node_list->base.location},
+                        {
+                            "nodeptr_list",
+                            isg_list_dumpack_dump,
+                            &(isg_list_dumpack){
+                                &node_list->list,
+                                ist_astnodeptr_list_capacity(&node_list->list),
+                                ist_ast_dump,
+                                "[%" PRIuPTR "]",
+                            },
+                        },
+                    },
+                    3,
+                },
+                buffer,
+                idxptr,
+                depth,
+                style
+            );
+
+            break;
+        }
+
+        case isl_astnt_literal: {
+            static ist_value_type toklitype_to_valtype[] = {
+                [ISL_TOKENT_VL_INT]    = isl_valtype_i64,
+                [ISL_TOKENT_VL_REAL]   = isl_valtype_f64,
+                [ISL_TOKENT_VL_STRING] = isl_valtype_str,
+            };
+
+            ist_astnode_literal* literal = this;
+            return ist_dumpimage_dump(
+                &(ist_dumpimage){
+                    NULL,
+                    (ist_dumpitem[]){
+                        {
+                            "type",
+                            ist_cstring_dump_ident,
+                            (ist_cstring*)ist_astnode_type_names + type,
+                        },
+                        {"location", ist_location_dump, &literal->base.location},
+                        {
+                            "litype",
+                            ist_cstring_dump_ident,
+                            (ist_cstring*)ist_token_names + literal->litype,
+                        },
+                        {
+                            "value",
+                            ist_tvalue_dump,
+                            &ist_tvalue_cons{
+                                toklitype_to_valtype[literal->litype],
+                                literal->value,
+                            },
+                        },
+                    },
+                    4,
+                },
+                buffer,
+                idxptr,
+                depth,
+                style
+            );
+            break;
+        }
+
+        case isl_astnt_binary_expr: {
+            ist_astnode_binary_expr* expr = this;
+            return ist_dumpimage_dump(
+                &(ist_dumpimage){
+                    NULL,
+                    (ist_dumpitem[]){
+                        {
+                            "type",
+                            ist_cstring_dump_ident,
+                            (ist_cstring*)ist_astnode_type_names + type,
+                        },
+                        {"location", ist_location_dump, &expr->base.location},
+                        {
+                            "optype",
+                            ist_cstring_dump_ident,
+                            (ist_cstring*)ist_token_names + expr->optype,
+                        },
+                        {"lhs_node", ist_ast_dump, expr->lhs_node},
+                        {"rhs_node", ist_ast_dump, expr->rhs_node},
+                    },
+                    5,
+                },
+                buffer,
+                idxptr,
+                depth,
+                style
+            );
+            break;
+        }
+
+        case isl_astnt_unary_expr: {
+            ist_astnode_unary_expr* expr = this;
+            return ist_dumpimage_dump(
+                &(ist_dumpimage){
+                    NULL,
+                    (ist_dumpitem[]){
+                        {
+                            "type",
+                            ist_cstring_dump_ident,
+                            (ist_cstring*)ist_astnode_type_names + type,
+                        },
+                        {"location", ist_location_dump, &expr->base.location},
+                        {
+                            "optype",
+                            ist_cstring_dump_ident,
+                            (ist_cstring*)ist_token_names + expr->optype,
+                        },
+                        {"onlhs", ist_bool_dump, &expr->onlhs},
+                        {"sub_node", ist_ast_dump, expr->sub_node},
+                    },
+                    5,
+                },
+                buffer,
+                idxptr,
+                depth,
+                style
+            );
+            break;
+        }
+
+        case isl_astnt_name: {
+            ist_astnode_name* name = this;
+            return ist_dumpimage_dump(
+                &(ist_dumpimage){
+                    // ist_astnode_type_names[type],
+                    NULL,
+                    (ist_dumpitem[]){
+                        {
+                            "type",
+                            ist_cstring_dump_ident,
+                            (ist_cstring*)ist_astnode_type_names + type,
+                        },
+                        {"location", ist_location_dump, &name->base.location},
+                        {"name", ist_cstring_dump, &name->name},
+                    },
+                    3,
+                },
+                buffer,
+                idxptr,
+                depth,
+                style
+            );
+            break;
+        }
+
+        case isl_astnt_fncall_expr: {
+            ist_astnode_fncall_expr* fncall = this;
+            return ist_dumpimage_dump(
+                &(ist_dumpimage){
+                    // ist_astnode_type_names[type],
+                    NULL,
+                    (ist_dumpitem[]){
+                        {
+                            "type",
+                            ist_cstring_dump_ident,
+                            (ist_cstring*)ist_astnode_type_names + type,
+                        },
+                        {"location", ist_location_dump, &fncall->base.location},
+                        {"fn", ist_ast_dump, fncall->fn},
+                        {
+                            "arg_list",
+                            isg_list_dumpack_dump,
+                            &(isg_list_dumpack){
+                                &fncall->arglist,
+                                ist_astnodeptr_list_capacity(&fncall->arglist),
+                                ist_ast_dump,
+                                "[%" PRIuPTR "]",
+                            },
+                        },
+                    },
+                    4,
+                },
+                buffer,
+                idxptr,
+                depth,
+                style
+            );
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    return *buffer;
+}
+
 
 inline void ist_astnode_node_list_add(ist_astnode_node_list* this, void* node) {
     ist_astnodeptr_list_addm(&this->list, node);

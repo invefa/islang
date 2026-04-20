@@ -66,6 +66,17 @@ ist_string ist_cstring_dump_ident(_ist_dumper_params) {
     return *buffer;
 }
 
+ist_string ist_bool_dump(
+    ist_vptr this,
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
+) {
+    idxptr = idxptr ?: (ist_usize[1]){};
+    return dumpf("%s", val(this, ist_bool) ? "true" : "false");
+}
+
 
 ist_string isl_dump_tabs(ist_strbuf buffer, ist_usize* idxptr, ist_usize count) {
     for (ist_usize i = 0; i < count; ++i) dumpr("    ");
@@ -81,9 +92,10 @@ ist_string ist_dumpimage_dump(
 ) {
     idxptr = idxptr ?: (ist_usize[1]){};
 
-    ist_dumpstyle dkind   = style & DKIND_MASK;
-    ist_dumpstyle dflag   = style & DFLAG_MASK;
-    ist_bool      dobreak = depth != -1;
+    const ist_dumpstyle dkind   = style & DKIND_MASK;
+    const ist_dumpstyle dflag   = style & DFLAG_MASK;
+    const ist_bool      noname  = !this->name || dflag & DFLAG_HEAD_NONAME;
+    const ist_bool      dobreak = depth != -1;
 
     if (!(dflag & DFLAG_SPREAD)) style &= DKIND_MASK;
     if (dflag & DFLAG_HEAD_BREAK) dumpr("\n");
@@ -110,25 +122,26 @@ ist_string ist_dumpimage_dump(
 
         case DKIND_INDENT: {
             if (!dobreak) depth = 0;
-            ist_bool dump_name = this->name && !(dflag & DFLAG_HEAD_NONAME);
 
-            if (dump_name) dumpf("%s:\n", this->name), ++depth;
+            if (dflag & DFLAG_THIS_ONVALSIDE) dumpr("\n"), tab(depth);
+            if (!noname) dumpf("%s:\n", this->name), ++depth;
             for (ist_usize i = 0; i < this->count; ++i) {
                 ist_dumpitem item = this->items[i];
 
                 if (i) dumpr("\n");
-                if (i || dump_name) tab(depth);
-                if (i && !dump_name && dflag & DFLAG_BODY_AFT2SPACE) dumpr("  ");
+                if (i || !noname) tab(depth);
+                if (i && !noname && dflag & DFLAG_BODY_AFT2SPACE) dumpr("  ");
 
                 dumpf("%s: ", item.name);
-                appdumper(item.dumper, item.valp, depth + 1, style);
+                appdumper(item.dumper, item.valp, depth + 1, style | DFLAG_THIS_ONVALSIDE);
             }
             break;
         }
 
 
         case DKIND_STRUCT: {
-            if (this->name && !(dflag & DFLAG_HEAD_NONAME)) dumpf("%s ", this->name);
+            if (dobreak && dflag & DFLAG_THIS_ONVALSIDE && !noname) dumpr("\n"), tab(depth);
+            if (!noname) dumpf("%s ", this->name);
             dumpr(dobreak ? "{\n" : "{");
             for (ist_usize i = 0; i < this->count; ++i) {
                 ist_dumpitem item = this->items[i];
@@ -137,7 +150,9 @@ ist_string ist_dumpimage_dump(
                 if (dobreak) tab(depth + 1);
 
                 dumpf("%s = ", item.name);
-                appdumper(item.dumper, item.valp, dobreak ? depth + 1 : -1, style);
+                appdumper(
+                    item.dumper, item.valp, dobreak ? depth + 1 : -1, style | DFLAG_THIS_ONVALSIDE
+                );
             }
 
             if (dobreak) dumpr("\n"), tab(depth);
@@ -160,9 +175,9 @@ ist_string isg_list_dumpack_dump(
 ) {
     idxptr = idxptr ?: (ist_usize[1]){};
 
-    ist_dumpstyle dkind   = style & DKIND_MASK;
-    ist_dumpstyle dflag   = style & DFLAG_MASK;
-    ist_bool      dobreak = depth != -1;
+    const ist_dumpstyle dkind   = style & DKIND_MASK;
+    const ist_dumpstyle dflag   = style & DFLAG_MASK;
+    const ist_bool      dobreak = depth != -1;
 
     if (!(dflag & DFLAG_SPREAD)) style &= DKIND_MASK;
     if (dflag & DFLAG_HEAD_BREAK) dumpr("\n");
@@ -178,7 +193,7 @@ ist_string isg_list_dumpack_dump(
 
     switch (dkind) {
         case DKIND_STRUCT:
-            dumpr(dobreak ? "[\n" : "[");
+            dumpr(dobreak ? "{\n" : "{");
             for (ist_usize i = 0; i < list->size; ++i) {
                 if (i) dumpr(dobreak ? ",\n" : ", ");
                 if (dobreak) tab(depth + 1);
@@ -187,7 +202,7 @@ ist_string isg_list_dumpack_dump(
             }
 
             if (dobreak) dumpr("\n"), tab(depth);
-            dumpr("]");
+            dumpr("}");
             break;
 
 

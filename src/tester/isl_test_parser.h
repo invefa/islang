@@ -22,6 +22,12 @@ ISL_TEST_HEAD {
     printf("%s\n", ist_module_dump(&module, dump_buffer, NULL, -1, DKIND_JSON));
     printf("%s\n", ist_module_dump(&module, dump_buffer, NULL, -1, DKIND_INDENT));
     printf("%s\n", ist_module_dump(&module, dump_buffer, NULL, -1, DKIND_STRUCT));
+    printf("%s\n", ist_ast_dump(parser.root, dump_buffer, NULL, 0, DKIND_JSON));
+    printf("%s\n", ist_ast_dump(parser.root, dump_buffer, NULL, 0, DKIND_INDENT));
+    printf("%s\n", ist_ast_dump(parser.root, dump_buffer, NULL, 0, DKIND_STRUCT));
+    printf("%s\n", ist_ast_dump(parser.root, dump_buffer, NULL, -1, DKIND_JSON));
+    printf("%s\n", ist_ast_dump(parser.root, dump_buffer, NULL, -1, DKIND_INDENT));
+    printf("%s\n", ist_ast_dump(parser.root, dump_buffer, NULL, -1, DKIND_STRUCT));
     ist_module_clean(&module);
     ist_parser_clean(&parser);
     ist_string_delete(dump_buffer);
