@@ -140,7 +140,7 @@ ist_string ist_ast_dump_old(void* this, ist_string* buffer, ist_usize* idxptr) {
             ist_strbuf_sprintf(
                 buffer, idxptr, "\"litype\":\"%s\",\"value\":", ist_token_names[literal->litype]
             );
-            ist_value_dump(&literal->value, literal->litype, buffer, idxptr);
+            ist_value_dump_old(&literal->value, literal->litype, buffer, idxptr);
             break;
         }
 

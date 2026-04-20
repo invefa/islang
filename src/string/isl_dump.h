@@ -34,6 +34,14 @@ _ist_x_dump_decl(i16);
 _ist_x_dump_decl(i32);
 _ist_x_dump_decl(i64);
 
+ist_string ist_usize_dump(
+    ist_vptr this,
+    ist_strbuf    buffer,
+    ist_usize*    idxptr,
+    ist_usize     depth,
+    ist_dumpstyle style
+);
+
 ist_string ist_f32_dump(
     ist_vptr this,
     ist_strbuf    buffer,

@@ -50,7 +50,7 @@ typedef struct ist_token {
       .value    = (_value)})
 
 
-ist_string ist_token_dump(ist_token* this, ist_string* buffer, ist_usize* idxptr);
+ist_string ist_token_dump_old(ist_token* this, ist_string* buffer, ist_usize* idxptr);
 ist_string ist_token_dump_json(ist_token* this, ist_string* buffer, ist_usize* idxptr);
 
 /*

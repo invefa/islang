@@ -5,10 +5,10 @@
 
 
 #define val(_valp, _type)      (*(_type*)(_valp))
-#define asdumper(_adr)         ((ist_dumper)(_adr))
+#define tab(_count)            isl_dump_tabs(buffer, idxptr, _count)
 #define dumpf(_fmt, _vargs...) ist_strbuf_sprintf(buffer, idxptr, _fmt, ##_vargs)
 #define dumpr(_raw)            ist_strbuf_append_raw(buffer, idxptr, _raw)
-#define tab(_count)            isl_dump_tabs(buffer, idxptr, _count)
+#define asdumper(_adr)         ((ist_dumper)(_adr))
 #define appdumper(_dumper, _valp, _depth, _style) \
     asdumper(_dumper)(_valp, buffer, idxptr, _depth, _style)
 
@@ -29,6 +29,11 @@ _ist_x_dump_impl(i8);
 _ist_x_dump_impl(i16);
 _ist_x_dump_impl(i32);
 _ist_x_dump_impl(i64);
+
+ist_string ist_usize_dump(_ist_dumper_params) {
+    idxptr = idxptr ?: (ist_usize[1]){};
+    return dumpf(PRIuPTR, val(this, ist_usize));
+}
 
 ist_string ist_f32_dump(_ist_dumper_params) {
     idxptr = idxptr ?: (ist_usize[1]){};
@@ -218,7 +223,9 @@ ist_string isg_list_dumpack_dump(
     return *buffer;
 }
 
-
+#undef val
+#undef tab
 #undef dumpf
 #undef dumpr
-#undef tab
+#undef asdumper
+#undef appdumper

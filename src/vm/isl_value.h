@@ -51,12 +51,7 @@ typedef union ist_value {
 #define ist_value_consby_strbuf(_strbuf) ((ist_value){.as_strbuf = (_strbuf)})
 #define ist_value_consby_str(_string)    ((ist_value){.as_str = (_string)})
 
-ist_string ist_value_dump(
-    ist_value* this,
-    ist_u32     type,
-    ist_string* buffer,
-    ist_usize*  idxptr
-);
+ist_string ist_value_dump_old(ist_value* this, ist_u32 type, ist_string* buffer, ist_usize* idxptr);
 
 
 #define ISG_VALUE_TYPE ist_value

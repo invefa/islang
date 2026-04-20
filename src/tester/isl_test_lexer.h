@@ -33,12 +33,12 @@ ISL_TEST_HEAD {
     ist_module_register_string(&module, macro_after_lbrace, ISL_MOSKIND_SOURCE);
 
     /* make sure token dumping synchronized with fn:advance analysis */
-    printf("%s\n", ist_token_dump(&lexer.cur_token, dumpbuf, NULL));
-    printf("%s\n", ist_token_dump(&lexer.nex_token, dumpbuf, NULL));
+    printf("%s\n", ist_token_dump_old(&lexer.cur_token, dumpbuf, NULL));
+    printf("%s\n", ist_token_dump_old(&lexer.nex_token, dumpbuf, NULL));
 
 
     while (lexer.sec_token.type != ISL_TOKENT_EOF) {
-        printf("%s\n", ist_token_dump(&lexer.sec_token, dumpbuf, NULL));
+        printf("%s\n", ist_token_dump_old(&lexer.sec_token, dumpbuf, NULL));
         isl_wssert(lexer.sec_token.type != ISL_TOKENT_WRAPPER);
         /* switch codepage if the current token is a wrapper */
         if (lexer.sec_token.type == ISL_TOKENT_WRAPPER)
@@ -58,7 +58,7 @@ ISL_TEST_HEAD {
             while (lexer.sec_token.type != ISL_TOKENT_EOS && lexer.sec_token.type != ISL_TOKENT_EOF)
             {
                 ist_lexer_advance(&lexer);
-                printf("ahead: %s\n", ist_token_dump(&lexer.sec_token, dumpbuf, NULL));
+                printf("ahead: %s\n", ist_token_dump_old(&lexer.sec_token, dumpbuf, NULL));
             }
 
             ist_lexer_lookahead_end(&lexer);
@@ -68,7 +68,7 @@ ISL_TEST_HEAD {
         ist_lexer_advance(&lexer);
     }
     /* print the last token:EOF */
-    printf("%s\n", ist_token_dump(&lexer.sec_token, dumpbuf, NULL));
+    printf("%s\n", ist_token_dump_old(&lexer.sec_token, dumpbuf, NULL));
 
     /* clean up */
     ist_lexer_clean(&lexer);
