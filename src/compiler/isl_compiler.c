@@ -3,9 +3,9 @@
 
 void elaborate_expr(ist_compiler* this) {
     switch (this->node->type) {
-        case isl_astnt_unary_expr:
-        case isl_astnt_binary_expr:
-        case isl_astnt_ternary_expr: {
+        case isl_astnt_unexpr:
+        case isl_astnt_binexpr:
+        case isl_astnt_ternexpr: {
             ist_compent_defineby_full(res, expr, this->node->location);
             res->is_const = false;
             res->node     = this->node;
@@ -20,9 +20,9 @@ void elaborate_expr(ist_compiler* this) {
 
 void ist_compiler_elaborate(ist_compiler* this) {
     switch (this->node->type) {
-        case isl_astnt_unary_expr:
-        case isl_astnt_binary_expr:
-        case isl_astnt_ternary_expr:
+        case isl_astnt_unexpr:
+        case isl_astnt_binexpr:
+        case isl_astnt_ternexpr:
             elaborate_expr(this);
             break;
         default:

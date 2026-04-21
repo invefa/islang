@@ -24,21 +24,21 @@ manifest(literal, (struct {
          }))
 
 /* expression parsents */
-manifest(unary_expr, (struct {
+manifest(unexpr, (struct {
              ist_astnode    base;
              ist_token_type optype: 8;
              ist_bool       onlhs;
              ist_astnode*   sub_node;
          }))
 
-manifest(binary_expr, (struct {
+manifest(binexpr, (struct {
              ist_astnode    base;
              ist_token_type optype: 8;
              ist_astnode*   lhs_node;
              ist_astnode*   rhs_node;
          }))
 
-manifest(ternary_expr, (struct {
+manifest(ternexpr, (struct {
              ist_astnode    base;
              ist_token_type optype: 8;
              ist_astnode*   first_node;

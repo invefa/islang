@@ -8,6 +8,7 @@
 #define tab(_count)            isl_dump_tabs(dctx.buffer, dctx.idxptr, _count)
 #define dumpf(_fmt, _vargs...) ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, _fmt, ##_vargs)
 #define dumpr(_raw)            ist_strbuf_append_raw(dctx.buffer, dctx.idxptr, _raw)
+#define dumprs(_raws...)       ist_strbuf_append_raws(dctx.buffer, dctx.idxptr, ##_raws)
 #define asdumper(_adr)         ((ist_dumper)(_adr))
 #define appdumper(_dumper, _valp, _depth, _style) \
     asdumper(_dumper)(_valp, ist_dumpctx_{dctx.buffer, dctx.idxptr, _depth, _style})
@@ -16,84 +17,130 @@
 ist_string ist_dumpimage_dump(ist_dumpimage* this, ist_dumpctx dctx) {
     dctx.idxptr = dctx.idxptr ?: (ist_usize[1]){};
 
-    const ist_dumpstyle dkind  = dctx.style & DKIND_MASK;
-    const ist_dumpstyle dflag  = dctx.style & DFLAG_MASK;
-    const ist_bool      muline = dctx.indent != -1;
-    const ist_bool      dowrap = this->name && dflag & DFLAG_HEAD_DOWRAP;
-    const ist_bool      noname = !this->name;
-
-    if (!(dflag & DFLAG_SPREAD)) dctx.style &= DKIND_MASK;
-    if (dflag & DFLAG_HEAD_NL) dumpr("\n");
-    if (dflag & DFLAG_HEAD_TAB) tab(dctx.indent);
-
-    static const struct _fmtcons {
+    static const struct dumpimage_fmtcons {
+        ist_cstring space;
+        ist_cstring namef;
         ist_cstring open;
-        ist_cstring close;
-        ist_cstring mapto;
+        ist_cstring wrapf;
+        ist_cstring keyf;
         ist_cstring divide;
+        ist_cstring close;
         ist_cstring line;
-    } silinefmts[] =
+    } mulinefmts[] =
         {
-            [DKIND_JSON] =
-                {
-                    .open   = "{",
-                    .close  = "}",
-                    .mapto  = ":",
-                    .divide = ",",
-                    .line   = NULL,
-                },
             [DKIND_INDENT] =
-                {
-                    .open   = NULL,
-                    .close  = NULL,
-                    .mapto  = ": ",
-                    .divide = "\n",
-                    .line   = "\n",
-                },
+                {.space  = " ",
+                 .namef  = "%s:\n",
+                 .open   = "",
+                 .wrapf  = "%s: %s",
+                 .keyf   = "%s:",
+                 .divide = "\n",
+                 .close  = "",
+                 .line   = "\n"},
             [DKIND_STRUCT] =
-                {
-                    .open   = "{",
-                    .close  = "}",
-                    .mapto  = "=",
-                    .divide = ",",
-                    .line   = NULL,
-                },
+                {.space  = " ",
+                 .namef  = "(%s)",
+                 .open   = "{\n",
+                 .wrapf  = "",
+                 .keyf   = ".%s =",
+                 .divide = ",\n",
+                 .close  = "}",
+                 .line   = "\n"},
+            [DKIND_JSON] =
+                {.space  = " ",
+                 .namef  = "",
+                 .open   = "{\n",
+                 .wrapf  = "\"%s\": \"%s\"",
+                 .keyf   = "\"%s\":",
+                 .divide = ",\n",
+                 .close  = "}",
+                 .line   = "\n"},
+
         },
-      mulinefmts[] = {
-          [DKIND_JSON] =
-              {
-                  .open   = "{\n",
-                  .close  = "}",
-                  .mapto  = ":",
-                  .divide = ",\n",
-                  .line   = "\n",
-              },
-          [DKIND_INDENT] =
-              {
-                  .open   = NULL,
-                  .close  = NULL,
-                  .mapto  = ": ",
-                  .divide = "\n",
-                  .line   = "\n",
-              },
+      silinefmts[] = {
+          [DKIND_INDENT] = mulinefmts[DKIND_INDENT],
           [DKIND_STRUCT] =
-              {
-                  .open   = "{\n",
-                  .close  = "}",
-                  .mapto  = " = ",
-                  .divide = ", ",
-                  .line   = "\n",
-              },
+              {.space  = "",
+               .namef  = "(%s)",
+               .open   = "{",
+               .wrapf  = "",
+               .keyf   = ".%s=",
+               .divide = ",",
+               .close  = "}",
+               .line   = ""},
+          [DKIND_JSON] =
+              {.space  = "",
+               .namef  = "",
+               .open   = "{",
+               .wrapf  = "\"%s\":%s",
+               .keyf   = "\"%s\":",
+               .divide = ",",
+               .close  = "}",
+               .line   = ""},
       };
 
-    struct _fmtcons fmt = muline ? mulinefmts[dkind] : silinefmts[dkind];
+    ist_dumpstyle dkind  = dctx.style & DKIND_MASK;
+    ist_dumpstyle dflag  = dctx.style & DFLAG_MASK;
+    ist_bool      muline = dctx.indent != -1;
+    ist_bool      noname = !this->name;
+    ist_bool      dowrap = this->name && this->wrapkey && dflag & DFLAG_HEAD_DOWRAP;
+
+    if (!(dflag & DFLAG_SPREAD)) dctx.style &= DKIND_MASK;
+
+    struct dumpimage_fmtcons fmt = dctx.indent != -1 ? mulinefmts[dkind] : silinefmts[dkind];
     // TODO: use a table and one drive code to dump all format.
+
+    // ist_bool expact_muline = dctx.indent != -1;
+
+    ist_bool dump_headnl         = dflag & DFLAG_HEAD_NL;
+    ist_bool dump_headtab        = dflag & DFLAG_HEAD_TAB;
+    ist_bool dump_muline         = *fmt.line;
+    ist_bool dump_wrap           = this->name && this->wrapkey && dflag | DFLAG_HEAD_DOWRAP;
+    ist_bool dump_headspace      = *fmt.space && !dump_wrap && dflag | DFLAG_THIS_ONVALSIDE;
+    ist_bool dump_name           = this->name && !dump_wrap;
+    ist_bool dump_open           = *fmt.open;
+    ist_bool dump_divide         = *fmt.divide;
+    ist_bool dump_loopindent     = dump_muline;
+    ist_bool dump_loopstepindent = false;
+    ist_bool dump_valindent      = muline && *fmt.line;
+    ist_bool dump_valstepindent  = muline && *fmt.line;
+    ist_bool dump_closenltab     = dump_muline;
+    ist_bool dump_close          = *fmt.close;
+
+    if (dump_muline && dctx.indent == -1) dctx.indent = 0;
+
+    if (dump_headspace) dumpr(fmt.space);
+    if (dump_headnl) dumpr("\n");
+    if (dump_headtab) tab(dctx.indent);
+    if (dump_name) dumpf(fmt.namef, this->name);
+    if (dump_open) dumpr(fmt.open);
+    for (ist_usize i = 0; i < this->count; ++i) {
+        ist_dumpitem item = this->items[i];
+
+        if (dump_divide && i) dumpr(fmt.divide);
+        if (dump_loopindent) {
+            if (dump_loopstepindent) tab(dctx.indent + 1);
+            else tab(dctx.indent);
+        }
+        dumpf(fmt.keyf, item.key);
+        appdumper(
+            item.dumper,
+            item.valp,
+            dump_valindent ? dctx.indent + (dump_valstepindent ? 1 : 0) : -1,
+            dctx.style | DFLAG_THIS_ONVALSIDE
+        );
+    }
+
+    if (dump_closenltab) dumpr(fmt.line), tab(dctx.indent);
+    if (dump_close) dumpr(fmt.close);
+
+    return *dctx.buffer;
 
     switch (dkind) {
         case DKIND_JSON: {
             dumpr(fmt.open);
             for (ist_usize i = 0; i < this->count; ++i) {
-                if (dowrap && !i) {
+                if (this->name && this->wrapkey && !i) {
                     if (muline) tab(dctx.indent + 1);
                     dumpf("\"%s\": \"%s\"%s", this->wrapkey, this->name, fmt.divide);
                 }
@@ -136,7 +183,8 @@ ist_string ist_dumpimage_dump(ist_dumpimage* this, ist_dumpctx dctx) {
 
 
         case DKIND_STRUCT: {
-            // if (muline && dflag & DFLAG_THIS_ONVALSIDE && !noname) dumpr("\n"), tab(++dctx.indent);
+            // if (muline && dflag & DFLAG_THIS_ONVALSIDE && !noname) dumpr("\n"),
+            // tab(++dctx.indent);
             if (!noname) dumpf("(%s)", this->name);
             dumpr(muline ? "{\n" : "{");
             for (ist_usize i = 0; i < this->count; ++i) {

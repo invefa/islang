@@ -350,7 +350,7 @@ void* nud_name(ist_parser* this) {
 void* nud_prefix_expr(ist_parser* this) {
     ist_token curtoken = advance(this);
 
-    ist_astnode_defineby_full(node, unary_expr, curtoken.location);
+    ist_astnode_defineby_full(node, unexpr, curtoken.location);
 
     node->onlhs    = true;
     node->optype   = curtoken.type;
@@ -370,7 +370,7 @@ void* nud_prefix_expr(ist_parser* this) {
 void* led_suffix_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token curtoken = advance(this);
 
-    ist_astnode_defineby_full(node, unary_expr, curtoken.location);
+    ist_astnode_defineby_full(node, unexpr, curtoken.location);
 
     node->onlhs    = false;
     node->optype   = curtoken.type;
@@ -390,7 +390,7 @@ void* led_suffix_expr(ist_parser* this, ist_astnode* lhs) {
 void* led_infix_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token curtoken = advance(this);
 
-    ist_astnode_defineby_full(node, binary_expr, curtoken.location);
+    ist_astnode_defineby_full(node, binexpr, curtoken.location);
 
     node->lhs_node = lhs;
     node->optype   = curtoken.type;

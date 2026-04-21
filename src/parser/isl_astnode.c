@@ -63,18 +63,18 @@ void ist_ast_delete(void* this) {
             ist_astnodeptr_list_clean(&node_list->list);
             break;
         }
-        case isl_astnt_unary_expr: {
-            ist_ast_delete(isl_as_unary_expr(this)->sub_node);
+        case isl_astnt_unexpr: {
+            ist_ast_delete(isl_as_unexpr(this)->sub_node);
             break;
         }
-        case isl_astnt_binary_expr: {
-            ist_astnode_binary_expr* node = this;
+        case isl_astnt_binexpr: {
+            ist_astnode_binexpr* node = this;
             ist_ast_delete(node->lhs_node);
             ist_ast_delete(node->rhs_node);
             break;
         }
-        case isl_astnt_ternary_expr: {
-            ist_astnode_ternary_expr* node = this;
+        case isl_astnt_ternexpr: {
+            ist_astnode_ternexpr* node = this;
             ist_ast_delete(node->first_node);
             ist_ast_delete(node->second_node);
             ist_ast_delete(node->third_node);
@@ -147,8 +147,8 @@ ist_string ist_ast_dump_old(void* this, ist_string* buffer, ist_usize* idxptr) {
             break;
         }
 
-        case isl_astnt_binary_expr: {
-            ist_astnode_binary_expr* expr = this;
+        case isl_astnt_binexpr: {
+            ist_astnode_binexpr* expr = this;
             ist_strbuf_sprintf(
                 buffer, idxptr, "\"optype\":\"%s\",\"lhs_node\":", ist_token_names[expr->optype]
             );
@@ -158,8 +158,8 @@ ist_string ist_ast_dump_old(void* this, ist_string* buffer, ist_usize* idxptr) {
             break;
         }
 
-        case isl_astnt_unary_expr: {
-            ist_astnode_unary_expr* expr = this;
+        case isl_astnt_unexpr: {
+            ist_astnode_unexpr* expr = this;
             ist_strbuf_sprintf(
                 buffer,
                 idxptr,
@@ -277,8 +277,8 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
             break;
         }
 
-        case isl_astnt_binary_expr: {
-            ist_astnode_binary_expr* expr = this;
+        case isl_astnt_binexpr: {
+            ist_astnode_binexpr* expr = this;
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
                     .name    = ist_astnode_type_names[type],
@@ -296,8 +296,8 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
             break;
         }
 
-        case isl_astnt_unary_expr: {
-            ist_astnode_unary_expr* expr = this;
+        case isl_astnt_unexpr: {
+            ist_astnode_unexpr* expr = this;
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
                     .name    = ist_astnode_type_names[type],

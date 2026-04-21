@@ -10,7 +10,7 @@ ISL_TEST_HEAD {
     // );
 
     // isl_report(
-    //     rid_custom_core_warn, "sizeof(IST_ASTNODE_UNARY_OPT) = %zu", sizeof(IST_ASTNODE_UNARY_EXPR)
+    //     rid_custom_core_warn, "sizeof(IST_ASTNODE_UNARY_OPT) = %zu", sizeof(IST_ASTNODE_unexpr)
     // );
 
     // IST_ASTNODE_UNARY_EXPR* unopt_node =
