@@ -13,25 +13,27 @@ enum ist_dumpstyle {
 
     DFLAG_MASK           = 0xFFFFFF00,
     DFLAG_SPREAD         = 1 << 8,
-    DFLAG_HEAD_INDENT    = 1 << 9,
-    DFLAG_HEAD_BREAK     = 1 << 10,
-    DFLAG_HEAD_NONAME    = 1 << 11,
+    DFLAG_HEAD_NL        = 1 << 9,
+    DFLAG_HEAD_TAB       = 1 << 10,
+    DFLAG_HEAD_DOWRAP    = 1 << 11,
     DFLAG_BODY_AFT2SPACE = 1 << 12,
     DFLAG_THIS_ONVALSIDE = 1 << 13,
+
+    DFLAG_HEAD_NLTAB = DFLAG_HEAD_NL | DFLAG_HEAD_TAB,
 };
 
 
 typedef struct ist_dumpctx {
     ist_string*   buffer;
     ist_usize*    idxptr;
-    ist_usize     depth;
+    ist_usize     indent;
     ist_dumpstyle style;
 } ist_dumpctx;
 /**
  * dumping context
  * buffer : the buffer for dumping
  * idxptr : pointer of index
- * depth  : indent level
+ * indent : indent level
  * style  : store the format and flag info
  */
 #define ist_dumpctx_ (ist_dumpctx)
@@ -42,7 +44,7 @@ typedef ist_string (*ist_dumper)(ist_vptr, ist_dumpctx);
 
 
 typedef struct ist_dumpitem {
-    ist_cstring name;
+    ist_cstring key;
     ist_vptr    dumper;
     ist_vptr    valp;
 } ist_dumpitem;
@@ -58,13 +60,15 @@ typedef struct ist_dumpitem {
 
 typedef struct ist_dumpimage {
     ist_cstring   name;
+    ist_cstring   wrapkey;
     ist_usize     count;
     ist_dumpitem* items;
 } ist_dumpimage;
 /**
- * name : name of this object
- * items: entries of this object
- * count: count of items
+ * name    : name of this object
+ * wrapkey : if do wrap, the name will become the value of this key
+ * count   : count of items
+ * items   : entries of this object
  */
 #define ist_dumpimage_ (ist_dumpimage)
 
@@ -74,18 +78,20 @@ ist_string ist_dumpimage_dump(ist_dumpimage* this, ist_dumpctx dctx);
 
 
 typedef struct isg_list_dumpack {
+    ist_cstring name;
+    ist_cstring idxtag;
+    ist_bool    dowrap;
+    ist_vptr    dumper;
     ist_vptr    listp;
     ist_usize   capacity;
-    ist_vptr    dumper;
-    ist_cstring header;
-    ist_bool    noname;
 } isg_list_dumpack;
 /**
+ * name     : name tag of list
+ * idxtag   : index tag for element
+ * dowarp   : optional, if true, the name of element will be warping
+ * dumper   : dumper fn for all element of list
  * listp    : pointer to isg_list
  * capacity : capacity of isg_list
- * dumper   : dumper fn for all element of list
- * header   : head text for element, if set, the orginal name of element will be ignore
- * noname   : optional, if true, the orginal name of element will be ignore
  */
 #define isg_list_dumpack_ (isg_list_dumpack)
 

@@ -205,7 +205,9 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
     dctx.idxptr = dctx.idxptr ?: (ist_usize[1]){};
     if (!this) return ist_strbuf_append_raw(dctx.buffer, dctx.idxptr, "null");
 
-    ist_astnode_typenum type = 0 [(ist_astnode_typenum*)this];
+    ist_astnode_typenum type = *(ist_astnode_typenum*)this;
+
+    // dctx.style |= DFLAG_HEAD_DOWRAP;
 
     switch (type) {
         case isl_astnt_unknown:
@@ -219,19 +221,21 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
             ist_astnode_node_list* node_list = this;
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
-                    .name  = NULL,
-                    .count = 3,
+                    .name    = "type",
+                    .wrapkey = ist_astnode_type_names[type],
+                    .count   = 2,
                     ist_dumpitemar_{
-                        {"type", ist_cstring_dump_ident, &ist_astnode_type_names[type]},
                         {"location", ist_location_dump, &node_list->base.location},
                         {
                             "nodeptr_list",
                             isg_list_dumpack_dump,
-                            &(isg_list_dumpack){
+                            &isg_list_dumpack_{
+                                .name   = NULL,
+                                .idxtag = "[%" PRIuPTR "]",
+                                .dowrap = true,
+                                ist_ast_dump,
                                 &node_list->list,
                                 ist_astnodeptr_list_capacity(&node_list->list),
-                                ist_ast_dump,
-                                "[%" PRIuPTR "]",
                             },
                         },
                     },
@@ -252,10 +256,10 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
             ist_astnode_literal* literal = this;
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
-                    .name  = NULL,
-                    .count = 4,
+                    .name    = ist_astnode_type_names[type],
+                    .wrapkey = "type",
+                    .count   = 3,
                     ist_dumpitemar_{
-                        {"type", ist_cstring_dump_ident, &ist_astnode_type_names[type]},
                         {"location", ist_location_dump, &literal->base.location},
                         {"litype", ist_cstring_dump_ident, &ist_token_names[literal->litype]},
                         {
@@ -277,17 +281,17 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
             ist_astnode_binary_expr* expr = this;
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
-                    .name  = NULL,
-                    .count = 5,
+                    .name    = ist_astnode_type_names[type],
+                    .wrapkey = "type",
+                    .count   = 4,
                     ist_dumpitemar_{
-                        {"type", ist_cstring_dump_ident, &ist_astnode_type_names[type]},
                         {"location", ist_location_dump, &expr->base.location},
                         {"optype", ist_cstring_dump_ident, &ist_token_names[expr->optype]},
                         {"lhs_node", ist_ast_dump, expr->lhs_node},
                         {"rhs_node", ist_ast_dump, expr->rhs_node},
                     },
                 },
-                ist_dumpctx_{dctx.buffer, dctx.idxptr, dctx.depth, dctx.style}
+                ist_dumpctx_{dctx.buffer, dctx.idxptr, dctx.indent, dctx.style}
             );
             break;
         }
@@ -296,10 +300,10 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
             ist_astnode_unary_expr* expr = this;
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
-                    .name  = NULL,
-                    .count = 5,
+                    .name    = ist_astnode_type_names[type],
+                    .wrapkey = "type",
+                    .count   = 4,
                     ist_dumpitemar_{
-                        {"type", ist_cstring_dump_ident, &ist_astnode_type_names[type]},
                         {"location", ist_location_dump, &expr->base.location},
                         {"optype", ist_cstring_dump_ident, &ist_token_names[expr->optype]},
                         {"onlhs", ist_bool_dump, &expr->onlhs},
@@ -316,10 +320,10 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
             ist_astnode_name* name = this;
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
-                    .name  = NULL,
-                    .count = 3,
+                    .name    = ist_astnode_type_names[type],
+                    .wrapkey = "type",
+                    .count   = 2,
                     ist_dumpitemar_{
-                        {"type", ist_cstring_dump_ident, &ist_astnode_type_names[type]},
                         {"location", ist_location_dump, &name->base.location},
                         {"name", ist_cstring_dump, &name->name},
                     },
@@ -334,20 +338,22 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
             ist_astnode_fncall_expr* fncall = this;
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
-                    .name  = NULL,
-                    .count = 4,
+                    .name    = ist_astnode_type_names[type],
+                    .wrapkey = "type",
+                    .count   = 3,
                     ist_dumpitemar_{
-                        {"type", ist_cstring_dump_ident, &ist_astnode_type_names[type]},
                         {"location", ist_location_dump, &fncall->base.location},
                         {"fn", ist_ast_dump, fncall->fn},
                         {
                             "arg_list",
                             isg_list_dumpack_dump,
                             &isg_list_dumpack_{
+                                .name   = NULL,
+                                .idxtag = "[%" PRIuPTR "]",
+                                .dowrap = true,
+                                ist_ast_dump,
                                 &fncall->arglist,
                                 ist_astnodeptr_list_capacity(&fncall->arglist),
-                                ist_ast_dump,
-                                "[%" PRIuPTR "]",
                             },
                         },
                     },

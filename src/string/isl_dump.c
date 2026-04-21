@@ -18,12 +18,13 @@ ist_string ist_dumpimage_dump(ist_dumpimage* this, ist_dumpctx dctx) {
 
     const ist_dumpstyle dkind  = dctx.style & DKIND_MASK;
     const ist_dumpstyle dflag  = dctx.style & DFLAG_MASK;
-    const ist_bool      noname = !this->name || dflag & DFLAG_HEAD_NONAME;
-    const ist_bool      muline = dctx.depth != -1;
+    const ist_bool      muline = dctx.indent != -1;
+    const ist_bool      dowrap = this->name && dflag & DFLAG_HEAD_DOWRAP;
+    const ist_bool      noname = !this->name;
 
     if (!(dflag & DFLAG_SPREAD)) dctx.style &= DKIND_MASK;
-    if (dflag & DFLAG_HEAD_BREAK) dumpr("\n");
-    if (dflag & DFLAG_HEAD_INDENT) tab(dctx.depth);
+    if (dflag & DFLAG_HEAD_NL) dumpr("\n");
+    if (dflag & DFLAG_HEAD_TAB) tab(dctx.indent);
 
     static const struct _fmtcons {
         ist_cstring open;
@@ -33,14 +34,56 @@ ist_string ist_dumpimage_dump(ist_dumpimage* this, ist_dumpctx dctx) {
         ist_cstring line;
     } silinefmts[] =
         {
-            [DKIND_JSON]   = {"{", "}", ":", ",", NULL},
-            [DKIND_INDENT] = {NULL, NULL, ": ", ",\n", "\n"},
-            [DKIND_STRUCT] = {"{", "}", "=", ",", NULL},
+            [DKIND_JSON] =
+                {
+                    .open   = "{",
+                    .close  = "}",
+                    .mapto  = ":",
+                    .divide = ",",
+                    .line   = NULL,
+                },
+            [DKIND_INDENT] =
+                {
+                    .open   = NULL,
+                    .close  = NULL,
+                    .mapto  = ": ",
+                    .divide = "\n",
+                    .line   = "\n",
+                },
+            [DKIND_STRUCT] =
+                {
+                    .open   = "{",
+                    .close  = "}",
+                    .mapto  = "=",
+                    .divide = ",",
+                    .line   = NULL,
+                },
         },
       mulinefmts[] = {
-          [DKIND_JSON]   = {"{\n", "}", ": ", ",\n", "\n"},
-          [DKIND_INDENT] = {NULL, NULL, ": ", ",\n", "\n"},
-          [DKIND_STRUCT] = {"{\n", "}", " = ", ",\n", "\n"},
+          [DKIND_JSON] =
+              {
+                  .open   = "{\n",
+                  .close  = "}",
+                  .mapto  = ":",
+                  .divide = ",\n",
+                  .line   = "\n",
+              },
+          [DKIND_INDENT] =
+              {
+                  .open   = NULL,
+                  .close  = NULL,
+                  .mapto  = ": ",
+                  .divide = "\n",
+                  .line   = "\n",
+              },
+          [DKIND_STRUCT] =
+              {
+                  .open   = "{\n",
+                  .close  = "}",
+                  .mapto  = " = ",
+                  .divide = ", ",
+                  .line   = "\n",
+              },
       };
 
     struct _fmtcons fmt = muline ? mulinefmts[dkind] : silinefmts[dkind];
@@ -50,36 +93,42 @@ ist_string ist_dumpimage_dump(ist_dumpimage* this, ist_dumpctx dctx) {
         case DKIND_JSON: {
             dumpr(fmt.open);
             for (ist_usize i = 0; i < this->count; ++i) {
+                if (dowrap && !i) {
+                    if (muline) tab(dctx.indent + 1);
+                    dumpf("\"%s\": \"%s\"%s", this->wrapkey, this->name, fmt.divide);
+                }
                 ist_dumpitem item = this->items[i];
 
                 if (i) dumpr(fmt.divide);
-                if (muline) tab(dctx.depth + 1);
+                if (muline) tab(dctx.indent + 1);
 
-                dumpf("\"%s\": ", item.name);
-                appdumper(item.dumper, item.valp, muline ? dctx.depth + 1 : -1, dctx.style);
+                dumpf("\"%s\": ", item.key);
+                appdumper(item.dumper, item.valp, muline ? dctx.indent + 1 : -1, dctx.style);
             }
 
-            if (muline) dumpr(fmt.line), tab(dctx.depth);
+            if (muline) dumpr(fmt.line), tab(dctx.indent);
             dumpr(fmt.close);
             break;
         }
 
 
         case DKIND_INDENT: {
-            if (!muline) dctx.depth = 0;
+            if (!muline) dctx.indent = 0;
 
-            if (dflag & DFLAG_THIS_ONVALSIDE) dumpr("\n"), tab(dctx.depth);
-            if (!noname) dumpf("%s:\n", this->name), ++dctx.depth;
+            if (dflag & DFLAG_THIS_ONVALSIDE) dumpr("\n"), tab(dctx.indent);
+            if (!noname && !dowrap) dumpf("%s:\n", this->name), ++dctx.indent;
             for (ist_usize i = 0; i < this->count; ++i) {
+                if (dowrap && !i) dumpf("%s: %s\n", this->wrapkey, this->name);
+
                 ist_dumpitem item = this->items[i];
 
                 if (i) dumpr("\n");
-                if (i || !noname) tab(dctx.depth);
+                if (i || !noname) tab(dctx.indent);
                 if (i && !noname && dflag & DFLAG_BODY_AFT2SPACE) dumpr("  ");
 
-                dumpf("%s: ", item.name);
+                dumpf("%s: ", item.key);
                 appdumper(
-                    item.dumper, item.valp, dctx.depth + 1, dctx.style | DFLAG_THIS_ONVALSIDE
+                    item.dumper, item.valp, dctx.indent + 1, dctx.style | DFLAG_THIS_ONVALSIDE
                 );
             }
             break;
@@ -87,25 +136,25 @@ ist_string ist_dumpimage_dump(ist_dumpimage* this, ist_dumpctx dctx) {
 
 
         case DKIND_STRUCT: {
-            if (muline && dflag & DFLAG_THIS_ONVALSIDE && !noname) dumpr("\n"), tab(dctx.depth);
-            if (!noname) dumpf("%s ", this->name);
+            // if (muline && dflag & DFLAG_THIS_ONVALSIDE && !noname) dumpr("\n"), tab(++dctx.indent);
+            if (!noname) dumpf("(%s)", this->name);
             dumpr(muline ? "{\n" : "{");
             for (ist_usize i = 0; i < this->count; ++i) {
                 ist_dumpitem item = this->items[i];
 
                 if (i) dumpr(muline ? ",\n" : ", ");
-                if (muline) tab(dctx.depth + 1);
+                if (muline) tab(dctx.indent + 1);
 
-                dumpf(".%s = ", item.name);
+                dumpf(".%s = ", item.key);
                 appdumper(
                     item.dumper,
                     item.valp,
-                    muline ? dctx.depth + 1 : -1,
+                    muline ? dctx.indent + 1 : -1,
                     dctx.style | DFLAG_THIS_ONVALSIDE
                 );
             }
 
-            if (muline) dumpr("\n"), tab(dctx.depth);
+            if (muline) dumpr("\n"), tab(dctx.indent);
             dumpr("}");
             break;
         }
@@ -121,12 +170,12 @@ ist_string isg_list_dumpack_dump(isg_list_dumpack* this, ist_dumpctx dctx) {
 
     const ist_dumpstyle dkind  = dctx.style & DKIND_MASK;
     const ist_dumpstyle dflag  = dctx.style & DFLAG_MASK;
-    const ist_bool      muline = dctx.depth != -1;
+    const ist_bool      muline = dctx.indent != -1;
 
     if (!(dflag & DFLAG_SPREAD)) dctx.style &= DKIND_MASK;
-    if (dflag & DFLAG_HEAD_BREAK) dumpr("\n");
-    if (dflag & DFLAG_HEAD_INDENT) tab(dctx.depth);
-    if (this->noname) dctx.style |= DFLAG_HEAD_NONAME;
+    if (dflag & DFLAG_HEAD_NL) dumpr("\n");
+    if (dflag & DFLAG_HEAD_TAB) tab(dctx.indent);
+    if (this->dowrap) dctx.style |= DFLAG_HEAD_DOWRAP;
 
     isg_list*  list   = this->listp;
     ist_usize  llen   = isl_list_catch_length(list->data);
@@ -140,12 +189,12 @@ ist_string isg_list_dumpack_dump(isg_list_dumpack* this, ist_dumpctx dctx) {
             dumpr(muline ? "{\n" : "{");
             for (ist_usize i = 0; i < list->size; ++i) {
                 if (i) dumpr(muline ? ",\n" : ", ");
-                if (muline) tab(dctx.depth + 1);
-                if (this->header) dumpf(this->header, i), dumpr(" = ");
-                appdumper(dumper, list->data + elen * i, muline ? dctx.depth + 1 : -1, dctx.style);
+                if (muline) tab(dctx.indent + 1);
+                if (this->idxtag) dumpf(this->idxtag, i), dumpr(" = ");
+                appdumper(dumper, list->data + elen * i, muline ? dctx.indent + 1 : -1, dctx.style);
             }
 
-            if (muline) dumpr("\n"), tab(dctx.depth);
+            if (muline) dumpr("\n"), tab(dctx.indent);
             dumpr("}");
             break;
 
@@ -154,27 +203,30 @@ ist_string isg_list_dumpack_dump(isg_list_dumpack* this, ist_dumpctx dctx) {
             dumpr(muline ? "[\n" : "[");
             for (ist_usize i = 0; i < list->size; ++i) {
                 if (i) dumpr(muline ? ",\n" : ", ");
-                if (muline) tab(dctx.depth + 1);
-                appdumper(dumper, list->data + elen * i, muline ? dctx.depth + 1 : -1, dctx.style);
+                if (muline) tab(dctx.indent + 1);
+                appdumper(dumper, list->data + elen * i, muline ? dctx.indent + 1 : -1, dctx.style);
             }
 
-            if (muline) dumpr("\n"), tab(dctx.depth);
+            if (muline) dumpr("\n"), tab(dctx.indent);
             dumpr("]");
             break;
 
 
         case DKIND_INDENT:
-            if (!muline) dctx.depth = 0;
+            if (!muline) dctx.indent = 0;
             for (ist_usize i = 0; i < list->size; ++i) {
                 dumpr("\n");
-                tab(dctx.depth), dumpr("- ");
-                if (this->header) {
-                    dumpf(this->header, i), dumpr(":\n");
-                    tab(dctx.depth + 1),
-                        appdumper(dumper, list->data + elen * i, dctx.depth + 1, dctx.style);
+                tab(dctx.indent), dumpr("- ");
+                if (this->idxtag) {
+                    dumpf(this->idxtag, i), dumpr(":\n");
+                    tab(dctx.indent + 1),
+                        appdumper(dumper, list->data + elen * i, dctx.indent + 1, dctx.style);
                 } else
                     appdumper(
-                        dumper, list->data + elen * i, dctx.depth, dctx.style | DFLAG_BODY_AFT2SPACE
+                        dumper,
+                        list->data + elen * i,
+                        dctx.indent,
+                        dctx.style | DFLAG_BODY_AFT2SPACE
                     );
             }
             break;
@@ -188,6 +240,7 @@ ist_string isg_list_dumpack_dump(isg_list_dumpack* this, ist_dumpctx dctx) {
 
 
 ist_string isl_dump_tabs(ist_strbuf buffer, ist_usize* idxptr, ist_usize count) {
+    if (count == -1) isp_unreachable();
     for (ist_usize i = 0; i < count; ++i) ist_strbuf_append_raw(buffer, idxptr, "    ");
     return *buffer;
 }

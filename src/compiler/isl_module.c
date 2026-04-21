@@ -131,12 +131,13 @@ ist_string ist_module_dump(ist_module* this, ist_dumpctx dctx) {
                 {
                     "mostring_list",
                     isg_list_dumpack_dump,
-                    &(isg_list_dumpack){
+                    &isg_list_dumpack_{
+                        .name = NULL,
+                        .idxtag = "[%llu]",
+                        .dowrap = false,
+                        ist_mostring_dump,
                         &this->mostring_list,
                         ist_mostring_list_capacity(&this->mostring_list),
-                        ist_mostring_dump,
-                        "[%llu]",
-                        false,
                     },
                 },
             },
