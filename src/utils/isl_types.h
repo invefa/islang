@@ -31,6 +31,7 @@ typedef char   ist_char;
 typedef void*  ist_vptr; /* void pointer, aka ptr */
 
 typedef ist_i8 ist_bool;
+#define ist_bool_(_expr) !!(_expr)
 
 #define true  1
 #define false 0
