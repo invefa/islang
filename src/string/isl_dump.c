@@ -124,7 +124,7 @@ ist_string ist_dumpimage_dump(ist_dumpimage* this, ist_dumpctx dctx) {
 
     ist_dumpstyle dkind = dctx.style & DKIND_MASK;
     ist_dumpstyle dflag = dctx.style & DFLAG_MASK;
-    if (dflag & DFLAG_HEAD_NL) dumpr("\n");
+    if (dflag & DFLAG_HEAD_NL) nl();
     if (dflag & DFLAG_HEAD_TAB) tab(dctx.indent);
     dctx.style &= ~DFLAG_MASK_ONCE;
 
@@ -136,12 +136,12 @@ ist_string ist_dumpimage_dump(ist_dumpimage* this, ist_dumpctx dctx) {
 ist_string isg_list_dumpack_dump(isg_list_dumpack* this, ist_dumpctx dctx) {
     dctx.idxptr = dctx.idxptr ?: (ist_usize[1]){};
 
-    const ist_dumpstyle dkind  = dctx.style & DKIND_MASK;
-    const ist_dumpstyle dflag  = dctx.style & DFLAG_MASK;
-    const ist_bool      muline = dctx.indent != -1;
+    const ist_dumpstyle dkind = dctx.style & DKIND_MASK;
+    const ist_dumpstyle dflag = dctx.style & DFLAG_MASK;
 
+    const ist_bool muline = dctx.indent != -1;
     if (!(dflag & DFLAG_SPREAD)) dctx.style &= DKIND_MASK;
-    if (dflag & DFLAG_HEAD_NL) dumpr("\n");
+    if (dflag & DFLAG_HEAD_NL) nl();
     if (dflag & DFLAG_HEAD_TAB) tab(dctx.indent);
     if (this->dowrap) dctx.style |= DFLAG_HEAD_DOWRAP;
 
@@ -154,28 +154,30 @@ ist_string isg_list_dumpack_dump(isg_list_dumpack* this, ist_dumpctx dctx) {
 
     switch (dkind) {
         case DKIND_STRUCT:
-            dumpr(muline ? "{\n" : "{");
+            dumpr("{");
+            if (muline) nltab(++dctx.indent);
             for (ist_usize i = 0; i < list->size; ++i) {
-                if (i) dumpr(muline ? ",\n" : ", ");
-                if (muline) tab(dctx.indent + 1);
+                if (i) {
+                    dumpr(",");
+                    if (muline) nltab(dctx.indent);
+                }
                 if (this->idxtag) dumpf(this->idxtag, i), dumpr(" = ");
-                appdumper(dumper, list->data + elen * i, muline ? dctx.indent + 1 : -1, dctx.style);
+                appdumper(dumper, list->data + elen * i, dctx.indent, dctx.style);
             }
-
-            if (muline) dumpr("\n"), tab(dctx.indent);
+            if (muline) nltab(--dctx.indent);
             dumpr("}");
             break;
 
 
         case DKIND_JSON:
-            dumpr(muline ? "[\n" : "[");
+            dumpr("[");
+            if (muline) nltab(++dctx.indent);
             for (ist_usize i = 0; i < list->size; ++i) {
-                if (i) dumpr(muline ? ",\n" : ", ");
-                if (muline) tab(dctx.indent + 1);
-                appdumper(dumper, list->data + elen * i, muline ? dctx.indent + 1 : -1, dctx.style);
+                if (i) dumpr(",");
+                if (muline) tab(dctx.indent);
+                appdumper(dumper, list->data + elen * i, dctx.indent, dctx.style);
             }
-
-            if (muline) dumpr("\n"), tab(dctx.indent);
+            if (muline) nltab(--dctx.indent);
             dumpr("]");
             break;
 
@@ -185,11 +187,18 @@ ist_string isg_list_dumpack_dump(isg_list_dumpack* this, ist_dumpctx dctx) {
             ++dctx.indent;
             for (ist_usize i = 0; i < list->size; ++i) {
                 dumpr("\n");
-                tab(dctx.indent), dumpr("- ");
+                tabdumpr(dctx.indent, "- ");
                 if (this->idxtag) {
+                    ++dctx.indent;
                     dumpf(this->idxtag, i), dumpr(":\n");
-                    tab(dctx.indent + 1),
-                        appdumper(dumper, list->data + elen * i, dctx.indent + 1, dctx.style);
+                    tab(dctx.indent);
+                    appdumper(
+                        dumper,
+                        list->data + elen * i,
+                        dctx.indent,
+                        dctx.style | DFLAG_THIS_ONVALSIDE
+                    );
+                    --dctx.indent;
                 } else
                     appdumper(
                         dumper,
@@ -198,6 +207,7 @@ ist_string isg_list_dumpack_dump(isg_list_dumpack* this, ist_dumpctx dctx) {
                         dctx.style | DFLAG_BODY_AFT2SPACE
                     );
             }
+            --dctx.indent;
             break;
         default:
             isp_unreachable();
@@ -210,9 +220,7 @@ ist_string isg_list_dumpack_dump(isg_list_dumpack* this, ist_dumpctx dctx) {
 // TODO: use dumpctx also, and it can dump tabs intelligently.
 // we can divide all of the component of dumping string into the function, make it smart!!
 ist_string isl_dump_tabs(ist_strbuf buffer, ist_usize* idxptr, ist_usize count) {
-    if (count == -1) {
-        isp_unreachable();
-    }
+    if (count == -1) isp_unreachable();
     for (ist_usize i = 0; i < count; ++i) ist_strbuf_append_raw(buffer, idxptr, "    ");
     return *buffer;
 }
