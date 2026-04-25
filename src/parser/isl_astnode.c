@@ -221,8 +221,8 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
             ist_astnode_node_list* node_list = this;
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
-                    .name    = "type",
-                    .wrapkey = ist_astnode_type_names[type],
+                    .name    = ist_astnode_type_names[type],
+                    .wrapkey = "type",
                     .count   = 2,
                     ist_dumpitemar_{
                         {"location", ist_location_dump, &node_list->base.location},
