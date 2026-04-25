@@ -43,7 +43,8 @@ ist_string _ist_dumpimage_dump_json(ist_dumpimage* this, ist_dumpctx dctx, ist_d
             if (muline) nltab(dctx.indent);
         }
 
-        dumpf("\"%s\": ", item.key);
+        dumpf("\"%s\":", item.key);
+        if (muline) dumpr(" ");
         appdumper(item.dumper, item.valp, dctx.indent, dctx.style | DFLAG_THIS_ONVALSIDE);
     }
     if (muline) nltab(--dctx.indent);
