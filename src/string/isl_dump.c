@@ -182,6 +182,7 @@ ist_string isg_list_dumpack_dump(isg_list_dumpack* this, ist_dumpctx dctx) {
 
         case DKIND_INDENT:
             if (!muline) dctx.indent = 0;
+            ++dctx.indent;
             for (ist_usize i = 0; i < list->size; ++i) {
                 dumpr("\n");
                 tab(dctx.indent), dumpr("- ");
@@ -278,3 +279,12 @@ ist_string ist_cstring_dump_ident(ist_vptr this, ist_dumpctx dctx) {
 #undef dumpr
 #undef asdumper
 #undef appdumper
+
+#undef nl
+#undef nltab
+#undef tabdumpr
+#undef tabdumpf
+#undef dumprtab
+#undef dumpftab
+#undef nltabdumpr
+#undef nltabdumpf

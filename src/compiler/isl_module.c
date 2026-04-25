@@ -104,7 +104,7 @@ ist_string ist_mostring_dump(ist_mostring* this, ist_dumpctx dctx) {
     dctx.idxptr = dctx.idxptr ?: (ist_usize[1]){};
     return ist_dumpimage_dump(
         &ist_dumpimage_{
-            .name  = "ist_mostring",
+            // .name  = "ist_mostring",
             .count = 2,
             ist_dumpitemar_{
                 {"kind", ist_cstring_dump_ident, &isl_moskind_names[this->kind]},
@@ -132,8 +132,8 @@ ist_string ist_module_dump(ist_module* this, ist_dumpctx dctx) {
                     "mostring_list",
                     isg_list_dumpack_dump,
                     &isg_list_dumpack_{
-                        .name = NULL,
-                        .idxtag = "[%llu]",
+                        .name   = NULL,
+                        // .idxtag = "[%llu]",
                         .dowrap = false,
                         ist_mostring_dump,
                         &this->mostring_list,

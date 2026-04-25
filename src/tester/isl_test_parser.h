@@ -16,12 +16,17 @@ ISL_TEST_HEAD {
 
     printf("AST: %s\n", ist_ast_dump_old(parser.root, dump_buffer, NULL));
     // printf("%s\n", ist_module_dump_indent(&module, dump_buffer, NULL, 0));s
-    printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_JSON}));
-    printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_INDENT}));
-    printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_STRUCT}));
-    printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, -1, DKIND_JSON}));
-    printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, -1, DKIND_INDENT}));
-    printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, -1, DKIND_STRUCT}));
+    // printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_JSON}));
+    // printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_INDENT}));
+    // printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_STRUCT}));
+    // printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, -1, DKIND_JSON}));
+    printf(
+        "%s\n",
+        ist_module_dump(
+            &module, ist_dumpctx_{dump_buffer, NULL, -1, DKIND_INDENT | DFLAG_HEAD_DOWRAP}
+        )
+    );
+    // printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, -1, DKIND_STRUCT}));
     printf("%s\n", ist_ast_dump(parser.root, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_JSON}));
     printf("%s\n", ist_ast_dump(parser.root, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_INDENT}));
     printf("%s\n", ist_ast_dump(parser.root, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_STRUCT}));
