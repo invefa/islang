@@ -192,12 +192,7 @@ ist_string isg_list_dumpack_dump(isg_list_dumpack* this, ist_dumpctx dctx) {
                     ++dctx.indent;
                     dumpf(this->idxtag, i), dumpr(":\n");
                     tab(dctx.indent);
-                    appdumper(
-                        dumper,
-                        list->data + elen * i,
-                        dctx.indent,
-                        dctx.style | DFLAG_THIS_ONVALSIDE
-                    );
+                    appdumper(dumper, list->data + elen * i, dctx.indent, dctx.style);
                     --dctx.indent;
                 } else
                     appdumper(
@@ -217,8 +212,6 @@ ist_string isg_list_dumpack_dump(isg_list_dumpack* this, ist_dumpctx dctx) {
 }
 
 
-// TODO: use dumpctx also, and it can dump tabs intelligently.
-// we can divide all of the component of dumping string into the function, make it smart!!
 ist_string isl_dump_tabs(ist_strbuf buffer, ist_usize* idxptr, ist_usize count) {
     if (count == -1) isp_unreachable();
     for (ist_usize i = 0; i < count; ++i) ist_strbuf_append_raw(buffer, idxptr, "    ");
