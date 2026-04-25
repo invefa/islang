@@ -1,4 +1,5 @@
 #include "inttypes.h"
+#include "isl_context.h"
 #include "isl_dump.h"
 #include "isl_module.h"
 
@@ -104,7 +105,7 @@ ist_string ist_mostring_dump(ist_mostring* this, ist_dumpctx dctx) {
     dctx.idxptr = dctx.idxptr ?: (ist_usize[1]){};
     return ist_dumpimage_dump(
         &ist_dumpimage_{
-            // .name  = "ist_mostring",
+            .name  = NULL,
             .count = 2,
             ist_dumpitemar_{
                 {"kind", ist_cstring_dump_ident, &isl_moskind_names[this->kind]},
@@ -133,7 +134,7 @@ ist_string ist_module_dump(ist_module* this, ist_dumpctx dctx) {
                     isg_list_dumpack_dump,
                     &isg_list_dumpack_{
                         .name   = NULL,
-                        // .idxtag = "[%llu]",
+                        .idxtag = NULL,
                         .dowrap = false,
                         ist_mostring_dump,
                         &this->mostring_list,

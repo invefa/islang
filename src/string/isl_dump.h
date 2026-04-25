@@ -21,7 +21,7 @@ enum ist_dumpstyle {
 
     DFLAG_HEAD_NLTAB = DFLAG_HEAD_NL | DFLAG_HEAD_TAB,
 
-    /* the flag that will apply only once */
+    /* the collection of flag that will apply only once */
     DFLAG_MASK_ONCE = DFLAG_HEAD_NL | DFLAG_HEAD_TAB | DFLAG_BODY_AFT2SPACE | DFLAG_THIS_ONVALSIDE,
 };
 

@@ -5,6 +5,12 @@
 #include "isl_string.h"
 #include "isl_token.h"
 
+const ist_value_type isl_toklitype_to_valtype[] = {
+    [ISL_TOKENT_VL_INT]    = isl_valtype_i64,
+    [ISL_TOKENT_VL_REAL]   = isl_valtype_f64,
+    [ISL_TOKENT_VL_STRING] = isl_valtype_str,
+};
+
 ist_string ist_value_dump_old(
     ist_value* this,
     ist_u32     type,

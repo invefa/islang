@@ -7,8 +7,8 @@
 typedef struct ist_context {
     ist_module_list     module_list;
     ist_compentptr_list compent_list;
-
 } ist_context;
+#define ist_context_ (ist_context)
 
 ist_usize ist_context_register_compent(ist_context* this, ist_compent* _cpent);
 

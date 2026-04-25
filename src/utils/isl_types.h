@@ -38,19 +38,17 @@ typedef ist_i8 ist_bool;
 
 // declaration of the compiler structures
 
-union ist_value;
-
-struct ist_module;
-struct ist_context;
-
-struct ist_location;
-struct ist_token;
-struct ist_codepage;
-struct ist_lexer;
-struct ist_astnode;
-struct ist_parser;
-struct ist_compent;
-struct ist_compiler;
+typedef union ist_value     ist_value;
+typedef struct ist_module   ist_module;
+typedef struct ist_context  ist_context;
+typedef struct ist_location ist_location;
+typedef struct ist_token    ist_token;
+typedef struct ist_codepage ist_codepage;
+typedef struct ist_lexer    ist_lexer;
+typedef struct ist_astnode  ist_astnode;
+typedef struct ist_parser   ist_parser;
+typedef struct ist_compent  ist_compent;
+typedef struct ist_compiler ist_compiler;
 
 
 #endif // ISC_TYPES_H

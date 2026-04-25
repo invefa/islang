@@ -43,6 +43,7 @@ typedef union ist_value {
 } ist_value;
 
 typedef enum ist_value_type {
+    isl_valtype_unk,
     isl_valtype_i8,
     isl_valtype_u8,
     isl_valtype_i16,
@@ -80,6 +81,7 @@ typedef struct ist_tvalue {
 
 ist_string ist_tvalue_dump(ist_tvalue* this, ist_dumpctx dctx);
 
+extern const ist_value_type isl_toklitype_to_valtype[];
 
 #define ISG_VALUE_TYPE ist_value
 #include "isg_list_head.h"

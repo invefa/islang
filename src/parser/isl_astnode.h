@@ -109,7 +109,7 @@ void ist_ast_delete(void* this);
  * Dump the whole AST to the json format string.
  * Store the result to the buffer, and return the context of buffer.
  */
-ist_string ist_ast_dump_old(void* this, ist_string* buffer, ist_usize* idxptr);
+// ist_string ist_ast_dump_old(void* this, ist_string* buffer, ist_usize* idxptr);
 
 ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx);
 
