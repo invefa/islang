@@ -1,6 +1,8 @@
 #ifndef ISC_INSTREAM_H
 #define ISC_INSTREAM_H
+#include "isl_dump.h"
 #include "isl_instruction.h"
+
 
 #define ISG_VALUE_TYPE  ist_instruction
 #define ISG_STRUCT_NAME ist_instream
@@ -20,6 +22,16 @@ void ist_instream_append_u64(ist_instream* this, ist_u64 val);
 
 void ist_instream_append_f32(ist_instream* this, ist_f32 val);
 void ist_instream_append_f64(ist_instream* this, ist_f64 val);
+
+
+typedef struct ist_instream_dumpack {
+    ist_instream* instream;
+    ist_usize     index;
+} ist_instream_dumpack;
+#define ist_instream_dumpack_ (ist_instream_dumpack)
+
+
+ist_string ist_instream_dumpack_dump(ist_instream_dumpack* this, ist_dumpctx dctx);
 
 
 #endif // ISC_INSTREAM_H

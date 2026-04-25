@@ -43,7 +43,7 @@ typedef union ist_value {
 } ist_value;
 
 typedef enum ist_value_type {
-    isl_valtype_unk,
+    isl_valtype_void,
     isl_valtype_i8,
     isl_valtype_u8,
     isl_valtype_i16,

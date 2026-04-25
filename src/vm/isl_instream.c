@@ -51,3 +51,33 @@ inline void ist_instream_append_f64(ist_instream* this, ist_f64 val) {
     ist_instream_ensurc(this, sizeof(ist_f64));
     0 [(ist_f64*)(this->data + this->size)] = val, this->size += sizeof(ist_f64);
 }
+
+
+ist_string ist_instream_dumpack_dump(ist_instream_dumpack* this, ist_dumpctx dctx) {
+    dctx.idxptr = dctx.idxptr ?: (ist_usize[1]){};
+
+    ist_instream* instream = this->instream;
+    while (this->index < instream->size) {
+        ist_instruction inst     = instream->data[this->index++];
+        ist_instruction argcount = ist_instruction_argcounts[inst];
+        ist_strbuf_append_raw(dctx.buffer, dctx.idxptr, ist_instruction_names[inst]);
+        if (argcount) {
+            ist_strbuf_append_raw(dctx.buffer, dctx.idxptr, " ");
+            for (ist_u8 i = 0; i < argcount; ++i) {
+                if (i) ist_strbuf_append_raw(dctx.buffer, dctx.idxptr, ", ");
+                ist_instargtype argtype = ist_instruction_argtypes[inst][i];
+                ist_instargtype_dumpack_dump(
+                    &ist_instargtype_dumpack_{
+                        argtype,
+                        instream->data + this->index,
+                    },
+                    dctx
+                );
+                this->index += ist_instargtype_sizeof[argtype];
+            }
+        }
+        ist_strbuf_append_raw(dctx.buffer, dctx.idxptr, "\n");
+    }
+
+    return *dctx.buffer;
+}

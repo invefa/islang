@@ -222,7 +222,7 @@ ist_string isl_dump_tabs(ist_strbuf buffer, ist_usize* idxptr, ist_usize count) 
 #define _ist_x_dump_impl(_x)                                      \
     ist_string ist_##_x##_dump(ist_vptr this, ist_dumpctx dctx) { \
         dctx.idxptr = dctx.idxptr ?: (ist_usize[1]){};            \
-        return dumpf(PRI##_x, val(this, ist_##_x));               \
+        return dumpf("%" PRI##_x, val(this, ist_##_x));           \
     }
 
 _ist_x_dump_impl(u8);

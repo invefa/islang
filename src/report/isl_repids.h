@@ -130,3 +130,5 @@ manifest(
 manifest(not_expression, (PARSER, ERROR, USERLOC), "this is not an expression!")
 manifest(expect_nud_failed, (PARSER, ERROR, USERLOC), "expect a expression, but get the token:%s.")
 manifest(expect_fn_entity_after, (PARSER, ERROR, USERLOC), "expect an fn after token:<%s>!")
+
+manifest(binexpr_type_unmatch, (COMPILER, ERROR, USERLOC), "type unmatch!")

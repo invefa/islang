@@ -29,18 +29,24 @@ ist_vm* ist_vm_createby_instream(ist_instream _instream) {
     return ist_vm_initby_instream(isl_allocate(sizeof(ist_vm), false), _instream);
 }
 
-void ist_vm_run(ist_vm vm) {
-
+void ist_vm_run(ist_vm* _vm) {
+    ist_vm vm = *_vm;
     /** just a code highlight provider */
     enum __isl_typesign { i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, bool, str, strbuf };
 
-#define ip_as(ipv, _typesign)           (ist_##_typesign*)(ipv)
-#define ip_asv(ipv, _typesign)          (*ip_as(ipv, _typesign))
-#define ip_read_operand(ipv, _typesign) (*(ip_as(ipv, _typesign)++))
-#define ip_read_opcode(ipv)             (*(ipv)++)
-#define sp_pop(spv)                     (*(spv)--)
-#define sp_psh(spv, _value)             (*++(spv) = (_value))
-#define sp_pshas(spv, _as, _asvalue)    ((++(spv))->as_##_as = (_asvalue))
+#define signtype(_typesign)    ist_##_typesign
+#define ip_as(ipv, _typesign)  ((ist_##_typesign*)(ipv))
+#define ip_asv(ipv, _typesign) (*ip_as(ipv, _typesign))
+#define ip_read_operand(ipv, _typesign)                               \
+    ({                                                                \
+        signtype(_typesign) __operand  = ip_asv(ipv, _typesign);      \
+        (ipv)                         += sizeof(signtype(_typesign)); \
+        __operand;                                                    \
+    })
+#define ip_read_opcode(ipv)          (*(ipv)++)
+#define sp_pop(spv)                  (*(spv)--)
+#define sp_psh(spv, _value)          (*++(spv) = (_value))
+#define sp_pshas(spv, _as, _asvalue) ((++(spv))->as_##_as = (_asvalue))
 
 
     while (*vm.ip != ist_inst_end) {
@@ -281,4 +287,5 @@ void ist_vm_run(ist_vm vm) {
                 isp_unreachable();
         }
     }
+    *_vm = vm;
 }

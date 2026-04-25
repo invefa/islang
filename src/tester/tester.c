@@ -24,6 +24,7 @@
 #include <stdlib.h>
 
 #include "isl_test_astnode.h"
+#include "isl_test_compiler.h"
 #include "isl_test_generic.h"
 #include "isl_test_isg_list.h"
 #include "isl_test_isl_list.h"
@@ -34,7 +35,6 @@
 #include "isl_test_report.h"
 #include "isl_test_string.h"
 #include "isl_test_xssert.h"
-
 
 
 int main(int argc, char* argv[]) {
@@ -51,7 +51,8 @@ int main(int argc, char* argv[]) {
     // isl_test_astnode();
     isl_test_string();
     isl_test_parser();
-    
+    isl_test_compiler();
+
 
 
     return 0;

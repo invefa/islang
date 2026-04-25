@@ -35,14 +35,32 @@ ist_string ist_tvalue_dump(ist_tvalue* this, ist_dumpctx dctx) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
 
     switch (this->type) {
+        case isl_valtype_void:
+            return ist_strbuf_append_raw(dctx.buffer, dctx.idxptr, "void");
+        case isl_valtype_i8:
+            return ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, "%" PRId8, this->data.as_i8);
+        case isl_valtype_i16:
+            return ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, "%" PRId16, this->data.as_i16);
+        case isl_valtype_i32:
+            return ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, "%" PRId32, this->data.as_i32);
         case isl_valtype_i64:
             return ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, "%" PRId64, this->data.as_i64);
+        case isl_valtype_u8:
+            return ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, "%" PRIu8, this->data.as_u8);
+        case isl_valtype_u16:
+            return ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, "%" PRIu16, this->data.as_u16);
+        case isl_valtype_u32:
+            return ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, "%" PRIu32, this->data.as_u32);
+        case isl_valtype_u64:
+            return ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, "%" PRIu64, this->data.as_u64);
+        case isl_valtype_f32:
+            return ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, "%f", this->data.as_f32);
         case isl_valtype_f64:
             return ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, "%g", this->data.as_f64);
         case isl_valtype_str:
             return ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, "\"%s\"", this->data.as_str);
         default:
-            return ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, "(unknown)");
+            return ist_strbuf_append_raw(dctx.buffer, dctx.idxptr, "(unknown)");
     }
 }
 
