@@ -31,6 +31,6 @@ ist_parser* ist_parser_createby_module(ist_module* _module);
 void ist_parser_clean(ist_parser* this);
 void ist_parser_delete(ist_parser* this);
 
-void ist_parser_parse(ist_parser* this);
+void* ist_parser_parse(ist_parser* this);
 
 #endif // ISC_PARSER_H

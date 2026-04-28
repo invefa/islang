@@ -41,7 +41,7 @@ ISL_TEST_HEAD {
     ist_vm_run(&vm);
     ist_i64_dump(&vm.sp[0].as_i64, ist_dumpctx_{dump_buffer});
     printf("vm result: %s\n", *dump_buffer);
-    ist_i64_dump((ist_i64[1]){1 + (2 * 3 + (4 / 5 * (2 / 3)))}, ist_dumpctx_{dump_buffer});
+    ist_i64_dump(isl_span(ist_i64){1 + (2 * 3 + (4 / 5 * (2 / 3)))}, ist_dumpctx_{dump_buffer});
     printf("c  result: %s\n", *dump_buffer);
 
 

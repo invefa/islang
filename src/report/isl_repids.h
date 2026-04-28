@@ -113,7 +113,7 @@ manifest(
     "are you sure? is it the version code? the second dot and its suffix numbers will be ignored."
 )
 
-
+manifest(parse_error, (PARSER, ERROR, USERLOC), "parse error!")
 manifest(assert_tokentype_failed, (PARSER, ERROR, USERLOC), "expect token:%s, but got token:%s.")
 manifest(unexpected_token, (PARSER, ERROR, USERLOC), "expect token:%s.")
 manifest(expect_expression, (PARSER, ERROR, USERLOC), "expect an expression!")
@@ -130,5 +130,8 @@ manifest(
 manifest(not_expression, (PARSER, ERROR, USERLOC), "this is not an expression!")
 manifest(expect_nud_failed, (PARSER, ERROR, USERLOC), "expect a expression, but get the token:%s.")
 manifest(expect_fn_entity_after, (PARSER, ERROR, USERLOC), "expect an fn after token:<%s>!")
+manifest(expect_a_stmt_here, (PARSER, ERROR, USERLOC), "expect a statement here!")
+manifest(expect_a_use_stmt_here, (PARSER, ERROR, USERLOC), "expect a use statement here!")
+
 
 manifest(binexpr_type_unmatch, (COMPILER, ERROR, USERLOC), "type unmatch!")

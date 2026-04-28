@@ -28,22 +28,22 @@ manifest(unexpr, (struct {
              ist_astnode    base;
              ist_token_type optype: 8;
              ist_bool       onlhs;
-             ist_astnode*   sub_node;
+             ist_astnode*   sub;
          }))
 
 manifest(binexpr, (struct {
              ist_astnode    base;
              ist_token_type optype: 8;
-             ist_astnode*   lhs_node;
-             ist_astnode*   rhs_node;
+             ist_astnode*   lhs;
+             ist_astnode*   rhs;
          }))
 
 manifest(ternexpr, (struct {
              ist_astnode    base;
              ist_token_type optype: 8;
-             ist_astnode*   first_node;
-             ist_astnode*   second_node;
-             ist_astnode*   third_node;
+             ist_astnode*   first;
+             ist_astnode*   second;
+             ist_astnode*   third;
          }))
 
 manifest(fncall_expr, (struct {
@@ -55,7 +55,7 @@ manifest(fncall_expr, (struct {
 /* name parsent */
 manifest(name, (struct {
              ist_astnode base;
-             ist_string  name;
+             ist_cstring name;
          }))
 
 /* reference parsent */
@@ -73,7 +73,8 @@ manifest(import_stmt, (struct {
 
 manifest(use_stmt, (struct {
              ist_astnode  base;
-             ist_astnode* expr;
+             ist_astnode* lhs;
+             ist_astnode* rhs;
          }))
 
 manifest(do_stmt, (struct {

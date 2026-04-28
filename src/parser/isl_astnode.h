@@ -31,6 +31,7 @@ typedef struct ist_astnode {
     ist_astnode_typenum type;
     ist_location        location;
 } ist_astnode;
+#define ist_astnodeptr_ (ist_astnode*)
 
 /* define the list of the astnodeptr */
 #define ISG_STRUCT_NAME ist_astnodeptr_list

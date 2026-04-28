@@ -16,6 +16,9 @@ typedef struct ist_compiler {
 } ist_compiler;
 #define ist_compiler_ (ist_compiler)
 
+void ist_compiler_consby_full(ist_compiler* this);
+void ist_compiler_initby_full(ist_compiler* this);
+
 void ist_compiler_elaborate(ist_compiler* this);
 void ist_compiler_evalualte(ist_compiler* this);
 void ist_compiler_codegen(ist_compiler* this);

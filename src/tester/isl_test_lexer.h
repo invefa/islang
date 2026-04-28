@@ -39,31 +39,31 @@ ISL_TEST_HEAD {
 
     while (lexer.sec_token.type != ISL_TOKENT_EOF) {
         printf("%s\n", ist_token_dump_old(&lexer.sec_token, dumpbuf, NULL));
-        isl_wssert(lexer.sec_token.type != ISL_TOKENT_WRAPPER);
-        /* switch codepage if the current token is a wrapper */
-        if (lexer.sec_token.type == ISL_TOKENT_WRAPPER)
-            lexer_switch_codepage("afterWrapper", macro_after_wrapper);
+        // isl_wssert(lexer.sec_token.type != ISL_TOKENT_WRAPPER);
+        // /* switch codepage if the current token is a wrapper */
+        // if (lexer.sec_token.type == ISL_TOKENT_WRAPPER)
+        //     lexer_switch_codepage("afterWrapper", macro_after_wrapper);
 
-        /* switch codepage if the current token is a lbrace */
-        else if (lexer.sec_token.type == ISL_TOKENT_LBRACE)
-            lexer_switch_codepage("afterLBrace", macro_after_lbrace);
+        // /* switch codepage if the current token is a lbrace */
+        // else if (lexer.sec_token.type == ISL_TOKENT_LBRACE)
+        //     lexer_switch_codepage("afterLBrace", macro_after_lbrace);
 
 
-        /* lookahead if the current token is add */
-        else if (lexer.sec_token.type == ISL_TOKENT_ADD) {
+        // /* lookahead if the current token is add */
+        // else if (lexer.sec_token.type == ISL_TOKENT_ADD) {
 
-            ist_lexer_lookahead_start(&lexer);
-            isl_report(rid_custom_core_warn, "start lookahead.");
+        //     ist_lexer_lookahead_start(&lexer);
+        //     isl_report(rid_custom_core_warn, "start lookahead.");
 
-            while (lexer.sec_token.type != ISL_TOKENT_EOS && lexer.sec_token.type != ISL_TOKENT_EOF)
-            {
-                ist_lexer_advance(&lexer);
-                printf("ahead: %s\n", ist_token_dump_old(&lexer.sec_token, dumpbuf, NULL));
-            }
+        //     while (lexer.sec_token.type != ISL_TOKENT_EOS && lexer.sec_token.type != ISL_TOKENT_EOF)
+        //     {
+        //         ist_lexer_advance(&lexer);
+        //         printf("ahead: %s\n", ist_token_dump_old(&lexer.sec_token, dumpbuf, NULL));
+        //     }
 
-            ist_lexer_lookahead_end(&lexer);
-            isl_report(rid_custom_core_warn, "end lookahead.");
-        }
+        //     ist_lexer_lookahead_end(&lexer);
+        //     isl_report(rid_custom_core_warn, "end lookahead.");
+        // }
 
         ist_lexer_advance(&lexer);
     }

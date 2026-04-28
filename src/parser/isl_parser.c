@@ -40,6 +40,8 @@ enum ist_optbindpower;
 typedef enum ist_optbindpower ist_optbindpower;
 
 
+void* parse(ist_parser* this);
+
 /* parse statment */
 void* parse_stmts(ist_parser* this);
 
@@ -115,7 +117,7 @@ void* parse_literal(ist_parser* this);
         switch ((this)->pstate) {                            \
             case PRS_FUNREPROTED:                            \
                 handle_aheading(this, _node);                \
-                isl_report(_rid, _rptvargs);                 \
+                isl_report(_rid, ##_rptvargs);               \
                 (this)->pstate = PRS_FREPROTED;              \
             case PRS_FREPROTED:                              \
             case PRS_FAHEAD:                                 \
@@ -192,9 +194,75 @@ enum ist_optbindpower {
 };
 
 /* entrance method for parser */
-void ist_parser_parse(ist_parser* this) {
-    this->root = parse_expr(this, OBP_LOWEST);
+void* ist_parser_parse(ist_parser* this) {
+    this->root = ({
+        ist_astnode_node_list* list =
+            ist_astnode_createby_full(node_list, this->lexer.cur_token.location);
+        list->list = ist_astnodeptr_list_consm(8);
+        ist_vptr_ list;
+    });
+
+
+    while (this->lexer.cur_token.type != ISL_TOKENT_EOF) {
+        ist_vptr result = NULL;
+
+        result = parse(this);
+        handle_pstate_force(this, result, rid_parse_error);
+
+        ist_astnode_node_list_add(ist_vptr_ this->root, result);
+    }
+
+    return this->root;
 }
+
+void* parse(ist_parser* this) {
+    ist_vptr result = NULL;
+
+    while (match_token(this, ISL_TOKENT_EOS));
+    switch (cur_token(this).type) {
+        case ISL_TOKENT_KW_USE:
+        case ISL_TOKENT_KW_DO:
+            result = parse_stmt(this);
+            handle_pstate_force(this, result, rid_expect_a_stmt_here);
+            break;
+        default:
+            result = parse_expr(this, OBP_LOWEST);
+            handle_pstate_force(this, result, rid_expect_expression);
+            break;
+    }
+
+    return result;
+}
+
+void* parse_stmt(ist_parser* this) {
+    ist_vptr result = NULL;
+
+    while (match_token(this, ISL_TOKENT_EOS));
+    switch (cur_token(this).type) {
+        case ISL_TOKENT_KW_USE:
+            result = parse_use_stmt(this);
+            handle_pstate_force(this, result, rid_expect_a_use_stmt_here);
+            break;
+        default:
+            isp_unreachable();
+    }
+    match_token(this, ISL_TOKENT_EOS);
+    return result;
+}
+
+void* parse_use_stmt(ist_parser* this) {
+    ist_astnode_use_stmt* result = ist_astnode_createby_full(use_stmt, cur_token(this).location);
+    assert_token(this, result, ISL_TOKENT_KW_USE);
+    if (cur_token(this).type == ISL_TOKENT_ID) {
+        ist_astnode_name*       name = nud_name(this);
+        result->rhs                  = ist_vptr_ name;
+    }
+    assert_token(this, result, ISL_TOKENT_ASSIGN);
+    result->lhs = parse(this);
+    handle_pstate_force(this, result, rid_expect_a_use_stmt_here);
+    return result;
+}
+
 
 void* parse_do_stmt(ist_parser* this) {
     if (match_token(this, ISL_TOKENT_KW_DO)) return parse_expr(this, OBP_LOWEST);
@@ -274,7 +342,7 @@ struct ist_ledoptattr {
 void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
     ist_token curtoken = cur_token(this);
 
-    void* node;
+    void* node = NULL;
 
     if (curtoken.type == ISL_TOKENT_LPARE) {
 
@@ -296,7 +364,8 @@ void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
         node = nudoptattrs[curtoken.type].nud(this);
         handle_pstate_inert(this, node);
 
-    } else
+    } else if (match_token(this, ISL_TOKENT_EOS)) return node;
+    else
         raise_parsing_failed(
             ((this)),
             ((NULL)),
@@ -339,11 +408,11 @@ void* nud_literal(ist_parser* this) {
 }
 
 void* nud_name(ist_parser* this) {
-    ist_token curtoken = advance(this);
+    assert_token(this, NULL, ISL_TOKENT_ID);
+    ist_token curtoken = pre_token(this);
 
     ist_string name = ist_string_consby_ref(curtoken.extract, curtoken.length);
     ist_module_register_string(this->lexer.module, name, ISL_MOSKIND_IDENTIFER);
-
     return ist_astnode_createby_full(name, curtoken.location, res, res->name = name);
 }
 
@@ -352,9 +421,9 @@ void* nud_prefix_expr(ist_parser* this) {
 
     ist_astnode_defineby_full(node, unexpr, curtoken.location);
 
-    node->onlhs    = true;
-    node->optype   = curtoken.type;
-    node->sub_node = parse_expr(this, nudoptattrs[curtoken.type].rbp);
+    node->onlhs  = true;
+    node->optype = curtoken.type;
+    node->sub    = parse_expr(this, nudoptattrs[curtoken.type].rbp);
 
     handle_pstate_force(
         this,
@@ -372,9 +441,9 @@ void* led_suffix_expr(ist_parser* this, ist_astnode* lhs) {
 
     ist_astnode_defineby_full(node, unexpr, curtoken.location);
 
-    node->onlhs    = false;
-    node->optype   = curtoken.type;
-    node->sub_node = lhs;
+    node->onlhs  = false;
+    node->optype = curtoken.type;
+    node->sub    = lhs;
 
     handle_pstate_force(
         this,
@@ -392,9 +461,9 @@ void* led_infix_expr(ist_parser* this, ist_astnode* lhs) {
 
     ist_astnode_defineby_full(node, binexpr, curtoken.location);
 
-    node->lhs_node = lhs;
-    node->optype   = curtoken.type;
-    node->rhs_node = parse_expr(this, ledoptattrs[curtoken.type].rbp);
+    node->lhs    = lhs;
+    node->optype = curtoken.type;
+    node->rhs    = parse_expr(this, ledoptattrs[curtoken.type].rbp);
 
     handle_pstate_force(
         this,

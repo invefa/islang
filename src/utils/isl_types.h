@@ -29,6 +29,7 @@ typedef double ist_f64;
 typedef ist_u8 ist_byte;
 typedef char   ist_char;
 typedef void*  ist_vptr; /* void pointer, aka ptr */
+#define ist_vptr_ (ist_vptr)
 
 typedef ist_i8 ist_bool;
 #define ist_bool_(_expr) !!(_expr)
@@ -49,6 +50,10 @@ typedef struct ist_astnode  ist_astnode;
 typedef struct ist_parser   ist_parser;
 typedef struct ist_compent  ist_compent;
 typedef struct ist_compiler ist_compiler;
+
+
+/* This is using to make a temp variable for somewhere need a data pointer */
+#define isl_span(_type) (_type[1])
 
 
 #endif // ISC_TYPES_H

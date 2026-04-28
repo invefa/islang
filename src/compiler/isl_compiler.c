@@ -25,12 +25,12 @@ ist_value_type typecheck_ast_expr(ist_compiler* this, ist_astnode* node) {
     switch (node->type) {
         case isl_astnt_unexpr: {
             ist_astnode_unexpr* expr = (ist_astnode_unexpr*)node;
-            return typecheck_ast_expr(this, expr->sub_node);
+            return typecheck_ast_expr(this, expr->sub);
         }
         case isl_astnt_binexpr: {
             ist_astnode_binexpr* expr     = (ist_astnode_binexpr*)node;
-            ist_value_type       lhs_type = typecheck_ast_expr(this, expr->lhs_node);
-            ist_value_type       rhs_type = typecheck_ast_expr(this, expr->rhs_node);
+            ist_value_type       lhs_type = typecheck_ast_expr(this, expr->lhs);
+            ist_value_type       rhs_type = typecheck_ast_expr(this, expr->rhs);
             if (lhs_type != rhs_type) isl_report(rid_binexpr_type_unmatch);
             else return lhs_type;
         }
@@ -93,7 +93,7 @@ void codegen_ast_unexpr(ist_compiler* this) {
     if (!this->node) return;
     nodeas(ist_astnode_unexpr, expr);
 
-    this->node = expr->sub_node;
+    this->node = expr->sub;
     codegen_ast_expr(this);
 
     switch (expr->optype) {
@@ -113,9 +113,9 @@ void codegen_ast_binexpr(ist_compiler* this) {
     if (!this->node) return;
     nodeas(ist_astnode_binexpr, expr);
 
-    this->node = expr->lhs_node;
+    this->node = expr->lhs;
     codegen_ast_expr(this);
-    this->node = expr->rhs_node;
+    this->node = expr->rhs;
     codegen_ast_expr(this);
 
     switch (expr->optype) {

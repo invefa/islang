@@ -64,20 +64,20 @@ void ist_ast_delete(void* this) {
             break;
         }
         case isl_astnt_unexpr: {
-            ist_ast_delete(isl_as_unexpr(this)->sub_node);
+            ist_ast_delete(isl_as_unexpr(this)->sub);
             break;
         }
         case isl_astnt_binexpr: {
             ist_astnode_binexpr* node = this;
-            ist_ast_delete(node->lhs_node);
-            ist_ast_delete(node->rhs_node);
+            ist_ast_delete(node->lhs);
+            ist_ast_delete(node->rhs);
             break;
         }
         case isl_astnt_ternexpr: {
             ist_astnode_ternexpr* node = this;
-            ist_ast_delete(node->first_node);
-            ist_ast_delete(node->second_node);
-            ist_ast_delete(node->third_node);
+            ist_ast_delete(node->first);
+            ist_ast_delete(node->second);
+            ist_ast_delete(node->third);
             break;
         }
         case isl_astnt_fncall_expr: {
@@ -187,6 +187,12 @@ void ist_ast_delete(void* this) {
 
 
 
+ist_string ist_astptr_dump(ist_vptr* this, ist_dumpctx dctx) {
+    if (!this) return ist_strbuf_append_raw(dctx.buffer, dctx.idxptr, "null");
+    return ist_ast_dump(*this, dctx);
+}
+
+
 ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
     isl_dreport(rid_inform_dumping, "astnode", this);
     dctx.idxptr = dctx.idxptr ?: (ist_usize[1]){};
@@ -214,13 +220,13 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
                     ist_dumpitemar_{
                         {"location", ist_location_dump, &node_list->base.location},
                         {
-                            "nodeptr_list",
+                            "list",
                             isg_list_dumpack_dump,
                             &isg_list_dumpack_{
                                 .name   = NULL,
                                 .idxtag = "[%" PRIuPTR "]",
                                 .dowrap = true,
-                                ist_ast_dump,
+                                ist_astptr_dump,
                                 &node_list->list,
                                 ist_astnodeptr_list_capacity(&node_list->list),
                             },
@@ -268,8 +274,8 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
                     ist_dumpitemar_{
                         {"location", ist_location_dump, &expr->base.location},
                         {"optype", ist_cstring_dump_ident, &ist_token_names[expr->optype]},
-                        {"lhs_node", ist_ast_dump, expr->lhs_node},
-                        {"rhs_node", ist_ast_dump, expr->rhs_node},
+                        {"lhs", ist_ast_dump, expr->lhs},
+                        {"rhs", ist_ast_dump, expr->rhs},
                     },
                 },
                 ist_dumpctx_{dctx.buffer, dctx.idxptr, dctx.indent, dctx.style}
@@ -288,7 +294,7 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
                         {"location", ist_location_dump, &expr->base.location},
                         {"optype", ist_cstring_dump_ident, &ist_token_names[expr->optype]},
                         {"onlhs", ist_bool_dump, &expr->onlhs},
-                        {"sub_node", ist_ast_dump, expr->sub_node},
+                        {"sub", ist_ast_dump, expr->sub},
                     },
                 },
                 dctx
@@ -315,6 +321,26 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
             break;
         }
 
+        case isl_astnt_use_stmt: {
+            ist_astnode_use_stmt* stmt = this;
+            return ist_dumpimage_dump(
+                &ist_dumpimage_{
+                    .name    = ist_astnode_type_names[type],
+                    .wrapkey = "type",
+                    .count   = 3,
+                    ist_dumpitemar_{
+                        {"location", ist_location_dump, &stmt->base.location},
+                        {"lhs", ist_ast_dump, stmt->lhs},
+                        {"rhs", ist_ast_dump, stmt->rhs},
+                    },
+                },
+                dctx
+
+            );
+            break;
+        }
+
+
         case isl_astnt_fncall_expr: {
             ist_astnode_fncall_expr* fncall = this;
             return ist_dumpimage_dump(
@@ -332,7 +358,7 @@ ist_string ist_ast_dump(ist_vptr this, ist_dumpctx dctx) {
                                 .name   = NULL,
                                 .idxtag = "[%" PRIuPTR "]",
                                 .dowrap = true,
-                                ist_ast_dump,
+                                ist_astptr_dump,
                                 &fncall->arglist,
                                 ist_astnodeptr_list_capacity(&fncall->arglist),
                             },
