@@ -199,10 +199,10 @@ ist_parseYield ist_parser_parse(ist_parser* this) {
             }
         );
 
-    while (cur_token(this).type != ISL_TOKENT_EOF)
-        ist_parsentList_addm(
-            &this->root->as.scope.stmts, parse_force(this, parse(this), rid_parse_error)
-        );
+    while (cur_token(this).type != ISL_TOKENT_EOF) {
+        ist_astnode* node = parse_force(this, parse(this), rid_parse_error);
+        if (node) ist_parsentList_addm(&this->root->as.scope.stmts, node);
+    }
 
     return ist_parseYield_{this->root};
 }
