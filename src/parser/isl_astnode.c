@@ -119,7 +119,7 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
                                  ist_cstring_dump_ident,
                                  &ist_token_names[expr.as.binary.op]},
                                 {"lhs", ist_parsent_dump, expr.as.binary.lhs},
-                                {"rhs", ist_parsent_dump, expr.as.binary.lhs},
+                                {"rhs", ist_parsent_dump, expr.as.binary.rhs},
                             },
                         },
                         dctx

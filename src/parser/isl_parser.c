@@ -59,24 +59,10 @@ ist_parseYield parse_nud_literal(ist_parser* this);
 ist_parseYield parse_nud_name(ist_parser* this);
 ist_parseYield parse_nud_prefix_expr(ist_parser* this);
 
-ist_parseYield led_suffix_expr(ist_parser* this, ist_astnode* lhs);
-ist_parseYield led_infix_expr(ist_parser* this, ist_astnode* lhs);
-ist_parseYield led_fncall_expr(ist_parser* this, ist_astnode* lhs);
-ist_parseYield led_wrap_expr(ist_parser* this, ist_astnode* lhs);
-
-
-/* parse parsetime-entity */
-ist_parseYield parse_name(ist_parser* this);
-ist_parseYield parse_entref(ist_parser* this);
-
-ist_parseYield parse_fn(ist_parser* this);
-ist_parseYield parse_fnproto(ist_parser* this);
-ist_parseYield parse_type(ist_parser* this);
-
-ist_parseYield parse_regist(ist_parser* this);
-ist_parseYield parse_span(ist_parser* this);
-ist_parseYield parse_scope(ist_parser* this);
-ist_parseYield parse_literal(ist_parser* this);
+ist_parseYield parse_led_suffix_expr(ist_parser* this, ist_astnode* lhs);
+ist_parseYield parse_led_infix_expr(ist_parser* this, ist_astnode* lhs);
+ist_parseYield parse_led_fncall_expr(ist_parser* this, ist_astnode* lhs);
+ist_parseYield parse_led_wrap_expr(ist_parser* this, ist_astnode* lhs);
 
 
 
@@ -222,48 +208,48 @@ ist_parseYield ist_parser_parse(ist_parser* this) {
 }
 
 ist_parseYield parse(ist_parser* this) {
-    ist_astnode* ok = NULL;
+    ist_astnode* node = NULL;
 
     while (match_token(this, ISL_TOKENT_EOS));
     switch (cur_token(this).type) {
         case ISL_TOKENT_KW_USE:
         case ISL_TOKENT_KW_DO:
-            ok = parse_force(this, parse_stmt(this), rid_expect_parsent_stmt);
+            node = parse_force(this, parse_stmt(this), rid_expect_parsent_stmt);
             break;
         default:
-            ok = parse_force(this, parse_expr(this, OBP_LOWEST), rid_expect_parsent_expr);
+            node = parse_force(this, parse_expr(this, OBP_LOWEST), rid_expect_parsent_expr);
             break;
     }
 
-    return ist_parseYield_{ok};
+    return ist_parseYield_{node};
 }
 
 ist_parseYield parse_stmt(ist_parser* this) {
-    ist_astnode* ok = NULL;
+    ist_astnode* node = NULL;
 
     while (match_token(this, ISL_TOKENT_EOS));
     switch (cur_token(this).type) {
         case ISL_TOKENT_KW_USE:
-            ok = parse_force(this, parse_use_stmt(this), rid_expect_parsent_use_stmt);
+            node = parse_force(this, parse_use_stmt(this), rid_expect_parsent_use_stmt);
             break;
         default:
             isp_unreachable();
     }
     match_token(this, ISL_TOKENT_EOS);
-    return ist_parseYield_{ok};
+    return ist_parseYield_{node};
 }
 
 ist_parseYield parse_use_stmt(ist_parser* this) {
     assert_token(this, NULL, ISL_TOKENT_KW_USE);
-    ist_astnode* ok = ist_astnode_createby_full(
+    ist_astnode* node = ist_astnode_createby_full(
         ist_astnodeKind_use_stmt,
         cur_token(this).location,
         ist_astnodeAs_{.use_stmt.is_assign = true}
     );
-    ok->as.use_stmt.lhs = parse_force(this, parse_nud_name(this), rid_expect_parsent_name);
-    assert_token(this, ok, ISL_TOKENT_ASSIGN);
-    ok->as.use_stmt.rhs = parse_force(this, parse(this), rid_expect_parsent_expr);
-    return ist_parseYield_{ok};
+    node->as.use_stmt.lhs = parse_force(this, parse_nud_name(this), rid_expect_parsent_name);
+    assert_token(this, node, ISL_TOKENT_ASSIGN);
+    node->as.use_stmt.rhs = parse_force(this, parse(this), rid_expect_parsent_expr);
+    return ist_parseYield_{node};
 }
 
 
@@ -323,24 +309,24 @@ struct ist_ledoptattr {
 
     [ISL_TOKENT_RPARE] = {NULL, OBP_RPARE, OBP_NONE},
 
-    [ISL_TOKENT_ASSIGN]     = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_ADD_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_SUB_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_MUL_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_DIV_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_MOD_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_ASSIGN]     = {parse_led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_ADD_ASSIGN] = {parse_led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_SUB_ASSIGN] = {parse_led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_MUL_ASSIGN] = {parse_led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_DIV_ASSIGN] = {parse_led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+    [ISL_TOKENT_MOD_ASSIGN] = {parse_led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
 
-    [ISL_TOKENT_ADD] = {led_infix_expr, OBP_ARITH, OBP_ARITH},
-    [ISL_TOKENT_SUB] = {led_infix_expr, OBP_ARITH, OBP_ARITH},
-    [ISL_TOKENT_MUL] = {led_infix_expr, OBP_TERM, OBP_TERM},
-    [ISL_TOKENT_DIV] = {led_infix_expr, OBP_TERM, OBP_TERM},
-    [ISL_TOKENT_MOD] = {led_infix_expr, OBP_TERM, OBP_TERM},
+    [ISL_TOKENT_ADD] = {parse_led_infix_expr, OBP_ARITH, OBP_ARITH},
+    [ISL_TOKENT_SUB] = {parse_led_infix_expr, OBP_ARITH, OBP_ARITH},
+    [ISL_TOKENT_MUL] = {parse_led_infix_expr, OBP_TERM, OBP_TERM},
+    [ISL_TOKENT_DIV] = {parse_led_infix_expr, OBP_TERM, OBP_TERM},
+    [ISL_TOKENT_MOD] = {parse_led_infix_expr, OBP_TERM, OBP_TERM},
 
-    [ISL_TOKENT_SELFADD] = {led_suffix_expr, OBP_PREFIX, OBP_NONE},
-    [ISL_TOKENT_SELFSUB] = {led_suffix_expr, OBP_PREFIX, OBP_NONE},
+    [ISL_TOKENT_SELFADD] = {parse_led_suffix_expr, OBP_PREFIX, OBP_NONE},
+    [ISL_TOKENT_SELFSUB] = {parse_led_suffix_expr, OBP_PREFIX, OBP_NONE},
 
-    [ISL_TOKENT_LPARE]   = {led_fncall_expr, OBP_SUFFIX, OBP_NONE},
-    [ISL_TOKENT_WRAPPER] = {led_wrap_expr, OBP_SUFFIX, OBP_ATOM},
+    [ISL_TOKENT_LPARE]   = {parse_led_fncall_expr, OBP_SUFFIX, OBP_NONE},
+    [ISL_TOKENT_WRAPPER] = {parse_led_wrap_expr, OBP_SUFFIX, OBP_ATOM},
 
     [ISL_TOKENT_LATEST] = {NULL, OBP_NONE, OBP_NONE},
 
@@ -369,6 +355,7 @@ ist_parseYield parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
         yield.ok = parse_inert(this, nudoptattrs[curtoken.type].nud(this));
 
     else if (match_token(this, ISL_TOKENT_EOS)) return yield;
+    else if (match_token(this, ISL_TOKENT_EOF)) return yield;
     else
         raise_parsing_fail(
             (this),
@@ -469,7 +456,7 @@ ist_parseYield parse_nud_prefix_expr(ist_parser* this) {
     };
 }
 
-ist_parseYield led_suffix_expr(ist_parser* this, ist_astnode* lhs) {
+ist_parseYield parse_led_suffix_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token optok = advance(this);
     return ist_parseYield_{
         ist_astnode_createby_full(
@@ -485,7 +472,7 @@ ist_parseYield led_suffix_expr(ist_parser* this, ist_astnode* lhs) {
     };
 }
 
-ist_parseYield led_infix_expr(ist_parser* this, ist_astnode* lhs) {
+ist_parseYield parse_led_infix_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token optok = advance(this);
     return ist_parseYield_{
         ist_astnode_createby_full(
@@ -508,7 +495,7 @@ ist_parseYield led_infix_expr(ist_parser* this, ist_astnode* lhs) {
     };
 }
 
-ist_parseYield led_fncall_expr(ist_parser* this, ist_astnode* lhs) {
+ist_parseYield parse_led_fncall_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token optok = advance(this);
     return ist_parseYield_{
         ist_astnode_createby_full(
@@ -541,7 +528,7 @@ ist_parseYield led_fncall_expr(ist_parser* this, ist_astnode* lhs) {
     };
 }
 
-ist_parseYield led_wrap_expr(ist_parser* this, ist_astnode* lhs) {
+ist_parseYield parse_led_wrap_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token curtoken = advance(this);
     return ist_parseYield_{
         ist_astnode_createby_full(
