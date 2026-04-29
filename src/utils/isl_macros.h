@@ -31,4 +31,21 @@
 /* to avoid some trivial case, mute the noisy warning notice... */
 #define __ISL_MACRO_MAYBE_UNUSED(_some) (void)(_some)
 
+
+#define _isl_declare_initby_createby_with_consby(_paramspack, _type, _bywhat)         \
+    _type* _type##_initby_##_bywhat(_type* this, __ISL_MACRO_UNPACKAGER _paramspack); \
+    _type* _type##_createby_##_bywhat(__ISL_MACRO_UNPACKAGER _paramspack)
+
+#define _isl_define_initby_createby_with_consby(_paramspack, _paramnamespack, _type, _bywhat) \
+    _type* _type##_initby_##_bywhat(_type* this, __ISL_MACRO_UNPACKAGER _paramspack) {        \
+        *this = _type##_consby_##_bywhat(__ISL_MACRO_UNPACKAGER _paramnamespack);             \
+        return this;                                                                          \
+    }                                                                                         \
+    _type* _type##_createby_##_bywhat(__ISL_MACRO_UNPACKAGER _paramspack) {                   \
+        return _type##_initby_##_bywhat(                                                      \
+            isl_malloc(_type), __ISL_MACRO_UNPACKAGER _paramnamespack                         \
+        );                                                                                    \
+    }
+
+
 #endif // ISC_MACROS_H

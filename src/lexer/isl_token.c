@@ -86,7 +86,7 @@ inline ist_string ist_token_dump_json(ist_token* this, ist_string* buffer, ist_u
     return ist_strbuf_append_raw(buffer, idxptr, "}");
 }
 
-ist_token_type ist_string_is_keyword(ist_cstring this, ist_usize length) {
+ist_tokenType ist_string_is_keyword(ist_cstring this, ist_usize length) {
     for (ist_usize i = ISL_TOKENT_START_KEYWORDS + 1; i < ISL_TOKENT_END_KEYWORDS; ++i)
         if (!ist_token_reflects[i] || strlen(ist_token_reflects[i]) != length) continue;
         else if (!strncmp(this, ist_token_reflects[i], length)) return i;

@@ -5,11 +5,11 @@
 #include "isl_value.h"
 
 
-typedef enum ist_token_type {
+typedef enum ist_tokenType {
 #define manifest(_name, _reflect) ISL_TOKENT_##_name,
 #include "isl_tokens.h"
 #undef manifest
-} ist_token_type;
+} ist_tokenType;
 
 extern ist_cstring ist_token_reflects[];
 extern ist_cstring ist_token_names[];
@@ -20,11 +20,11 @@ extern ist_cstring ist_token_names[];
     the member:length is the length of extracted string
 */
 typedef struct ist_token {
-    ist_token_type type: 8;
-    ist_location   location;
-    ist_cstring    extract;
-    ist_usize      length;
-    ist_value      value;
+    ist_tokenType type: 8;
+    ist_location  location;
+    ist_cstring   extract;
+    ist_usize     length;
+    ist_value     value;
 } ist_token;
 
 #define ist_token_consby_null()           \
@@ -57,7 +57,7 @@ ist_string ist_token_dump_json(ist_token* this, ist_string* buffer, ist_usize* i
     if the string is a keyword, return the keyword type.
     otherwise, return ISL_TOKENT_ID.
 */
-ist_token_type ist_string_is_keyword(ist_cstring this, ist_usize length);
+ist_tokenType ist_string_is_keyword(ist_cstring this, ist_usize length);
 
 #define ISG_VALUE_TYPE ist_token
 #include "isg_list_head.h"

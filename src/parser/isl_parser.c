@@ -1,37 +1,29 @@
 #include "isl_parser.h"
 
-inline ist_parser ist_parser_consby_full(ist_lexer _lexer) {
-    return (ist_parser){.lexer = _lexer, .root = NULL, .pstate = PRS_SUCCESS};
+inline ist_parser ist_parser_consby_lexer(ist_lexer _lexer) {
+    return (ist_parser){
+        .lexer  = _lexer,
+        .module = _lexer.module,
+        .scope  = {ist_parsentList_consm(8)},
+    };
 }
+_isl_define_initby_createby_with_consby((ist_lexer _lexer), (_lexer), ist_parser, lexer);
+
 ist_parser ist_parser_consby_module(ist_module* _module) {
-    return ist_parser_consby_full(ist_lexer_consby_module(_module));
+    return ist_parser_consby_lexer(ist_lexer_consby_module(_module));
 }
-
-
-ist_parser* ist_parser_initby_full(ist_parser* this, ist_lexer _lexer) {
-    *this = ist_parser_consby_full(_lexer);
-    return this;
-}
-inline ist_parser* ist_parser_initby_module(ist_parser* this, ist_module* _module) {
-    *this = ist_parser_consby_module(_module);
-    return this;
-}
-
-inline ist_parser* ist_parser_createby_full(ist_lexer _lexer) {
-    return ist_parser_initby_full(isl_malloc(ist_parser), _lexer);
-}
-inline ist_parser* ist_parser_createby_module(ist_module* _module) {
-    return ist_parser_initby_module(isl_malloc(ist_parser), _module);
-}
+_isl_define_initby_createby_with_consby((ist_module * _module), (_module), ist_parser, module);
 
 
 void ist_parser_clean(ist_parser* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
-    if (this->root) ist_ast_delete(this->root);
+
+    isg_list_foreach (itp, this->scope.stmts) ist_parsent_delete(*itp);
     ist_lexer_clean(&this->lexer);
 }
 
 void ist_parser_delete(ist_parser* this) {
+    if (!this) return;
     ist_parser_clean(this);
     isl_free(this);
 }
@@ -40,47 +32,51 @@ enum ist_optbindpower;
 typedef enum ist_optbindpower ist_optbindpower;
 
 
-void* parse(ist_parser* this);
-
-/* parse statment */
-void* parse_stmts(ist_parser* this);
-
-void* parse_stmt(ist_parser* this);
-void* parse_import_stmt(ist_parser* this);
-void* parse_use_stmt(ist_parser* this);
-void* parse_do_stmt(ist_parser* this);
-
-/* parse common pattern */
-void* parse_codetail_patt(ist_parser* this);
-void* parse_codeblock_patt(ist_parser* this);
-void* parse_paramlist_patt(ist_parser* this);
-void* parse_arglist_patt(ist_parser* this);
-
-/* parse expression */
-void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp);
-
-void* nud_literal(ist_parser* this);
-void* nud_name(ist_parser* this);
-void* nud_prefix_expr(ist_parser* this);
-
-void* led_suffix_expr(ist_parser* this, ist_astnode* lhs);
-void* led_infix_expr(ist_parser* this, ist_astnode* lhs);
-void* led_fncall_expr(ist_parser* this, ist_astnode* lhs);
-void* led_wrap_expr(ist_parser* this, ist_astnode* lhs);
+ist_token advance(ist_parser* this);
+ist_bool  match_token(ist_parser* this, ist_tokenType _type);
 
 
-/* parse parsetime-entity */
-void* parse_name(ist_parser* this);
-void* parse_entref(ist_parser* this);
+ist_parseYield parse(ist_parser* this);
 
-void* parse_fn(ist_parser* this);
-void* parse_fnproto(ist_parser* this);
-void* parse_type(ist_parser* this);
+// /* parse statment */
+// void* parse_stmts(ist_parser* this);
 
-void* parse_regist(ist_parser* this);
-void* parse_span(ist_parser* this);
-void* parse_scope(ist_parser* this);
-void* parse_literal(ist_parser* this);
+// void* parse_stmt(ist_parser* this);
+// void* parse_import_stmt(ist_parser* this);
+// void* parse_use_stmt(ist_parser* this);
+// void* parse_do_stmt(ist_parser* this);
+
+// /* parse common pattern */
+// void* parse_codetail_patt(ist_parser* this);
+// void* parse_codeblock_patt(ist_parser* this);
+// void* parse_paramlist_patt(ist_parser* this);
+// void* parse_arglist_patt(ist_parser* this);
+
+// /* parse expression */
+// void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp);
+
+// void* nud_literal(ist_parser* this);
+// void* nud_name(ist_parser* this);
+// void* nud_prefix_expr(ist_parser* this);
+
+// void* led_suffix_expr(ist_parser* this, ist_astnode* lhs);
+// void* led_infix_expr(ist_parser* this, ist_astnode* lhs);
+// void* led_fncall_expr(ist_parser* this, ist_astnode* lhs);
+// void* led_wrap_expr(ist_parser* this, ist_astnode* lhs);
+
+
+// /* parse parsetime-entity */
+// void* parse_name(ist_parser* this);
+// void* parse_entref(ist_parser* this);
+
+// void* parse_fn(ist_parser* this);
+// void* parse_fnproto(ist_parser* this);
+// void* parse_type(ist_parser* this);
+
+// void* parse_regist(ist_parser* this);
+// void* parse_span(ist_parser* this);
+// void* parse_scope(ist_parser* this);
+// void* parse_literal(ist_parser* this);
 
 
 
@@ -90,67 +86,67 @@ void* parse_literal(ist_parser* this);
 #define sec_token(this) ((this)->lexer.sec_token)
 
 
-/**
- * handle ahead state, when aheading, do not report
- * anything about failure, just return to caller to notify it.
- */
-#define handle_aheading(this, _node)                 \
-    do {                                             \
-        if (ist_lexer_islookahead(&(this)->lexer)) { \
-            (this)->pstate = PRS_FAHEAD;             \
-            return _node;                            \
-        }                                            \
-    } while (0)
+// /**
+//  * handle ahead state, when aheading, do not report
+//  * anything about failure, just return to caller to notify it.
+//  */
+// #define handle_aheading(this, _node)                 \
+//     do {                                             \
+//         if (ist_lexer_islookahead(&(this)->lexer)) { \
+//             (this)->pstate = PRS_FAHEAD;             \
+//             return _node;                            \
+//         }                                            \
+//     } while (0)
 
-/* handle parsing state in inert */
-#define handle_pstate_inert(this, _node)  \
-    do {                                  \
-        if ((this)->pstate) return _node; \
-    } while (0)
+// /* handle parsing state in inert */
+// #define handle_pstate_inert(this, _node)  \
+//     do {                                  \
+//         if ((this)->pstate) return _node; \
+//     } while (0)
 
-/**
- * handle parsing state in force
- * this macro is designed for reporting the error message when the parsing failed.
- */
-#define handle_pstate_force(this, _node, _rid, _rptvargs...) \
-    do {                                                     \
-        switch ((this)->pstate) {                            \
-            case PRS_FUNREPROTED:                            \
-                handle_aheading(this, _node);                \
-                isl_report(_rid, ##_rptvargs);               \
-                (this)->pstate = PRS_FREPROTED;              \
-            case PRS_FREPROTED:                              \
-            case PRS_FAHEAD:                                 \
-                return _node;                                \
-            case PRS_SUCCESS:                                \
-                break;                                       \
-        }                                                    \
-    } while (0)
+// /**
+//  * handle parsing state in force
+//  * this macro is designed for reporting the error message when the parsing failed.
+//  */
+// #define handle_pstate_force(this, _node, _rid, _rptvargs...) \
+//     do {                                                     \
+//         switch ((this)->pstate) {                            \
+//             case PRS_FUNREPROTED:                            \
+//                 handle_aheading(this, _node);                \
+//                 isl_report(_rid, ##_rptvargs);               \
+//                 (this)->pstate = PRS_FREPROTED;              \
+//             case PRS_FREPROTED:                              \
+//             case PRS_FAHEAD:                                 \
+//                 return _node;                                \
+//             case PRS_SUCCESS:                                \
+//                 break;                                       \
+//         }                                                    \
+//     } while (0)
 
-/**
- * raise the parsing failed, and report the error message.
- */
-#define raise_parsing_failed(this, _node, _rid, _rptvargs...) \
-    do {                                                      \
-        handle_aheading(this, _node);                         \
-        isl_report(_rid, _rptvargs);                          \
-        (this)->pstate = PRS_FREPROTED;                       \
-        return _node;                                         \
-    } while (0)
+// /**
+//  * raise the parsing failed, and report the error message.
+//  */
+// #define raise_parsing_failed(this, _node, _rid, _rptvargs...) \
+//     do {                                                      \
+//         handle_aheading(this, _node);                         \
+//         isl_report(_rid, _rptvargs);                          \
+//         (this)->pstate = PRS_FREPROTED;                       \
+//         return _node;                                         \
+//     } while (0)
 
-#define assert_token(this, _node, _type)              \
-    do {                                              \
-        if (!match_token(this, _type)) {              \
-            raise_parsing_failed(                     \
-                this,                                 \
-                _node,                                \
-                rid_assert_tokentype_failed,          \
-                cur_token(this).location,             \
-                ist_token_names[_type],               \
-                ist_token_names[cur_token(this).type] \
-            );                                        \
-        }                                             \
-    } while (0)
+// #define assert_token(this, _node, _type)              \
+//     do {                                              \
+//         if (!match_token(this, _type)) {              \
+//             raise_parsing_failed(                     \
+//                 this,                                 \
+//                 _node,                                \
+//                 rid_assert_tokentype_failed,          \
+//                 cur_token(this).location,             \
+//                 ist_token_names[_type],               \
+//                 ist_token_names[cur_token(this).type] \
+//             );                                        \
+//         }                                             \
+//     } while (0)
 
 
 ist_token advance(ist_parser* this) {
@@ -158,7 +154,7 @@ ist_token advance(ist_parser* this) {
     return pre_token(this);
 }
 
-ist_bool match_token(ist_parser* this, ist_token_type _type) {
+ist_bool match_token(ist_parser* this, ist_tokenType _type) {
     if (cur_token(this).type != _type) return false;
     advance(this);
     return true;
@@ -193,366 +189,390 @@ enum ist_optbindpower {
     OBP_HIGHEST   = INT16_MAX, // highest of i16.
 };
 
+#define parse_force(this, _fncall, _rid, _rptvargs...)           \
+    ({                                                           \
+        ist_parseYield ___yield = _fncall;                       \
+        switch (___yield.status) {                               \
+            case isn_pasreYieldStatus_unreported:                \
+                isl_report(_rid, ##_rptvargs);                   \
+                ___yield.status = isn_pasreYieldStatus_reported; \
+            case isn_pasreYieldStatus_reported:                  \
+            case isn_pasreYieldStatus_aheading:                  \
+                return ___yield;                                 \
+                break;                                           \
+            case isn_pasreYieldStatus_success:                   \
+                break;                                           \
+            default:                                             \
+                isp_unreachable();                               \
+        }                                                        \
+        ___yield.ok;                                             \
+    })
+
+
+#define parse_inert(this, _fncall)            \
+    ({                                        \
+        ist_parseYield ___yield = _fncall;    \
+        if (___yield.status) return ___yield; \
+        ___yield.ok;                          \
+    })
+
+#define parse_ahead(this, _fncall)               \
+    ({                                           \
+        ist_lexer_lookahead_start(&this->lexer); \
+        ist_parseYield ___yield = _fncall;       \
+        ist_lexer_lookahead_end(&this->lexer);   \
+        ___yield;                                \
+    })
+
+
 /* entrance method for parser */
-void* ist_parser_parse(ist_parser* this) {
-    this->root = ({
-        ist_astnode_node_list* list =
-            ist_astnode_createby_full(node_list, this->lexer.cur_token.location);
-        list->list = ist_astnodeptr_list_consm(8);
-        ist_vptr_ list;
-    });
-
-
-    while (this->lexer.cur_token.type != ISL_TOKENT_EOF) {
-        ist_vptr result = NULL;
-
-        result = parse(this);
-        handle_pstate_force(this, result, rid_parse_error);
-
-        ist_astnode_node_list_add(ist_vptr_ this->root, result);
+ist_parseYield ist_parser_parse(ist_parser* this) {
+    ist_astnode* ok = NULL;
+    while (cur_token(this).type != ISL_TOKENT_EOF) {
+        ok = parse_force(this, parse(this), rid_parse_error);
+        ist_parsentList_addm(&this->scope.stmts, ok);
     }
-
-    return this->root;
+    return ist_parseYield_{ok};
 }
 
-void* parse(ist_parser* this) {
-    ist_vptr result = NULL;
+ist_parseYield parse(ist_parser* this) {
+    ist_parseYield yield = {};
 
     while (match_token(this, ISL_TOKENT_EOS));
     switch (cur_token(this).type) {
         case ISL_TOKENT_KW_USE:
         case ISL_TOKENT_KW_DO:
-            result = parse_stmt(this);
-            handle_pstate_force(this, result, rid_expect_a_stmt_here);
+            // result = parse_stmt(this);
+            // handle_pstate_force(this, result, rid_expect_a_stmt_here);
             break;
         default:
-            result = parse_expr(this, OBP_LOWEST);
-            handle_pstate_force(this, result, rid_expect_expression);
+            // result = parse_expr(this, OBP_LOWEST);
+            // handle_pstate_force(this, result, rid_expect_expression);
             break;
     }
 
-    return result;
+    return yield;
 }
 
-void* parse_stmt(ist_parser* this) {
-    ist_vptr result = NULL;
-
-    while (match_token(this, ISL_TOKENT_EOS));
-    switch (cur_token(this).type) {
-        case ISL_TOKENT_KW_USE:
-            result = parse_use_stmt(this);
-            handle_pstate_force(this, result, rid_expect_a_use_stmt_here);
-            break;
-        default:
-            isp_unreachable();
-    }
-    match_token(this, ISL_TOKENT_EOS);
-    return result;
-}
-
-void* parse_use_stmt(ist_parser* this) {
-    ist_astnode_use_stmt* result = ist_astnode_createby_full(use_stmt, cur_token(this).location);
-    assert_token(this, result, ISL_TOKENT_KW_USE);
-    if (cur_token(this).type == ISL_TOKENT_ID) {
-        ist_astnode_name*       name = nud_name(this);
-        result->rhs                  = ist_vptr_ name;
-    }
-    assert_token(this, result, ISL_TOKENT_ASSIGN);
-    result->lhs = parse(this);
-    handle_pstate_force(this, result, rid_expect_a_use_stmt_here);
-    return result;
-}
-
-
-void* parse_do_stmt(ist_parser* this) {
-    if (match_token(this, ISL_TOKENT_KW_DO)) return parse_expr(this, OBP_LOWEST);
-    ist_lexer_lookahead_start(&this->lexer);
-    parse_expr(this, OBP_LOWEST);
-    if (this->pstate == PRS_SUCCESS) return parse_expr(this, OBP_LOWEST);
-    return NULL;
-}
-
-
-/**
- * This concept come form TDOP(aka Top Down Operator Precedence / Pratt Parser)
- * pletnud: parselet of nud (null denotation)
- * pletled: parselet of led (left denotation)
- */
-typedef void* (*ist_pletnud_fn)(ist_parser*);
-typedef void* (*ist_pletled_fn)(ist_parser*, ist_astnode*);
-
-/* nud operator attributes */
-struct ist_nudoptattr {
-
-    ist_pletnud_fn   nud;
-    ist_optbindpower rbp: 16;
-
-} nudoptattrs[] = {
-
-    [ISL_TOKENT_ADD]     = {nud_prefix_expr, OBP_PREFIX},
-    [ISL_TOKENT_SUB]     = {nud_prefix_expr, OBP_PREFIX},
-    [ISL_TOKENT_SELFADD] = {nud_prefix_expr, OBP_PREFIX},
-    [ISL_TOKENT_SELFSUB] = {nud_prefix_expr, OBP_PREFIX},
-
-    [ISL_TOKENT_VL_INT]    = {nud_literal, OBP_NONE},
-    [ISL_TOKENT_VL_REAL]   = {nud_literal, OBP_NONE},
-    [ISL_TOKENT_VL_STRING] = {nud_literal, OBP_NONE},
-    [ISL_TOKENT_BV_FALSE]  = {nud_literal, OBP_NONE},
-    [ISL_TOKENT_BV_TRUE]   = {nud_literal, OBP_NONE},
-    [ISL_TOKENT_ID]        = {nud_name, OBP_NONE},
-
-    [ISL_TOKENT_LATEST] = {NULL, OBP_NONE},
-
-};
-
-/* led operator attributes */
-struct ist_ledoptattr {
-
-    ist_pletled_fn   led;
-    ist_optbindpower lbp: 16;
-    ist_optbindpower rbp: 16;
-
-} ledoptattrs[] = {
-
-    [ISL_TOKENT_RPARE] = {NULL, OBP_RPARE, OBP_NONE},
-
-    [ISL_TOKENT_ASSIGN]     = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_ADD_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_SUB_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_MUL_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_DIV_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
-    [ISL_TOKENT_MOD_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
-
-    [ISL_TOKENT_ADD] = {led_infix_expr, OBP_ARITH, OBP_ARITH},
-    [ISL_TOKENT_SUB] = {led_infix_expr, OBP_ARITH, OBP_ARITH},
-    [ISL_TOKENT_MUL] = {led_infix_expr, OBP_TERM, OBP_TERM},
-    [ISL_TOKENT_DIV] = {led_infix_expr, OBP_TERM, OBP_TERM},
-    [ISL_TOKENT_MOD] = {led_infix_expr, OBP_TERM, OBP_TERM},
-
-    [ISL_TOKENT_SELFADD] = {led_suffix_expr, OBP_PREFIX, OBP_NONE},
-    [ISL_TOKENT_SELFSUB] = {led_suffix_expr, OBP_PREFIX, OBP_NONE},
-
-    [ISL_TOKENT_LPARE]   = {led_fncall_expr, OBP_SUFFIX, OBP_NONE},
-    [ISL_TOKENT_WRAPPER] = {led_wrap_expr, OBP_SUFFIX, OBP_ATOM},
-
-    [ISL_TOKENT_LATEST] = {NULL, OBP_NONE, OBP_NONE},
-
-};
-
-void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
-    ist_token curtoken = cur_token(this);
-
-    void* node = NULL;
-
-    if (curtoken.type == ISL_TOKENT_LPARE) {
-
-        /* handle paren */
-        advance(this);
-        node = parse_expr(this, OBP_LOWEST);
-        handle_pstate_force(
-            this,
-            node,
-            rid_expect_expression_after,
-            curtoken.location,
-            ist_token_names[curtoken.type]
-        );
-        assert_token(this, node, ISL_TOKENT_RPARE);
-
-    } else if (nudoptattrs[curtoken.type].nud) {
-
-        /* handle prefix or literal */
-        node = nudoptattrs[curtoken.type].nud(this);
-        handle_pstate_inert(this, node);
-
-    } else if (match_token(this, ISL_TOKENT_EOS)) return node;
-    else
-        raise_parsing_failed(
-            ((this)),
-            ((NULL)),
-            rid_expect_nud_failed,
-            curtoken.location,
-            ist_token_names[curtoken.type]
-        );
-
-    /**
-     * if left-hand-side's right-binding-power is less than the current token's
-     * left-binding-power, then we should make sure the node that parsing by prefix
-     * will belong to the node of the current token.
-     */
-    while (lhsrbp < ledoptattrs[cur_token(this).type].lbp) {
-        curtoken = cur_token(this);
-
-        /* this for infix or suffix recognizing and parsing */
-        if (!ledoptattrs[curtoken.type].led) break;
-        node = ledoptattrs[curtoken.type].led(this, node);
-
-        handle_pstate_force(
-            this,
-            node,
-            rid_expect_expression_after,
-            curtoken.location,
-            ist_token_names[curtoken.type]
-        );
-    }
-    return node;
-}
-
-
-void* nud_literal(ist_parser* this) {
-    ist_token curtoken = advance(this);
-
-    return ist_astnode_createby_full(literal, curtoken.location, res, {
-        res->value  = curtoken.value;
-        res->litype = curtoken.type;
-    });
-}
-
-void* nud_name(ist_parser* this) {
-    assert_token(this, NULL, ISL_TOKENT_ID);
-    ist_token curtoken = pre_token(this);
-
-    ist_string name = ist_string_consby_ref(curtoken.extract, curtoken.length);
-    ist_module_register_string(this->lexer.module, name, ISL_MOSKIND_IDENTIFER);
-    return ist_astnode_createby_full(name, curtoken.location, res, res->name = name);
-}
-
-void* nud_prefix_expr(ist_parser* this) {
-    ist_token curtoken = advance(this);
-
-    ist_astnode_defineby_full(node, unexpr, curtoken.location);
-
-    node->onlhs  = true;
-    node->optype = curtoken.type;
-    node->sub    = parse_expr(this, nudoptattrs[curtoken.type].rbp);
-
-    handle_pstate_force(
-        this,
-        ((node)),
-        rid_expect_expression_after,
-        curtoken.location,
-        ist_token_names[curtoken.type]
-    );
-
-    return node;
-}
-
-void* led_suffix_expr(ist_parser* this, ist_astnode* lhs) {
-    ist_token curtoken = advance(this);
-
-    ist_astnode_defineby_full(node, unexpr, curtoken.location);
-
-    node->onlhs  = false;
-    node->optype = curtoken.type;
-    node->sub    = lhs;
-
-    handle_pstate_force(
-        this,
-        ((node)),
-        rid_expect_expression_after,
-        curtoken.location,
-        ist_token_names[curtoken.type]
-    );
-
-    return node;
-}
-
-void* led_infix_expr(ist_parser* this, ist_astnode* lhs) {
-    ist_token curtoken = advance(this);
-
-    ist_astnode_defineby_full(node, binexpr, curtoken.location);
-
-    node->lhs    = lhs;
-    node->optype = curtoken.type;
-    node->rhs    = parse_expr(this, ledoptattrs[curtoken.type].rbp);
-
-    handle_pstate_force(
-        this,
-        ((node)),
-        rid_expect_expression_after,
-        curtoken.location,
-        ist_token_names[curtoken.type]
-    );
-
-    return node;
-}
-
-void* led_fncall_expr(ist_parser* this, ist_astnode* lhs) {
-    ist_token curtoken = advance(this);
-    ist_astnode_defineby_full(node, fncall_expr, curtoken.location);
-
-    node->fn      = lhs;
-    node->arglist = ist_astnodeptr_list_consc(2);
-
-    /* if the pair closed immediately, then the parsing over! */
-    if (match_token(this, ISL_TOKENT_RPARE)) return node;
-
-    do {
-        curtoken = cur_token(this);
-
-        ist_astnodeptr_list_addc(&node->arglist, parse_expr(this, OBP_LOWEST));
-        handle_pstate_force(
-            this,
-            ((node)),
-            rid_expect_expression_before,
-            curtoken.location,
-            ist_token_names[curtoken.type]
-        );
-
-    } while (match_token(this, ISL_TOKENT_COMMA));
-
-    /**
-     * if the args has be handled, there are must
-     * a close paren to end the call of fn-entity.
-     */
-    assert_token(this, node, ISL_TOKENT_RPARE);
-
-    return node;
-}
-
-void* led_wrap_expr(ist_parser* this, ist_astnode* lhs) {
-    ist_token curtoken = advance(this);
-    ist_astnode_defineby_full(node, fncall_expr, curtoken.location);
-
-    node->arglist = ist_astnodeptr_list_consc(2);
-    ist_astnodeptr_list_addc(&node->arglist, lhs);
-
-    /* catch the fn-entity that will be called */
-    node->fn = parse_expr(this, ledoptattrs[curtoken.type].rbp);
-    handle_pstate_force(
-        this,
-        ((node)),
-        rid_expect_fn_entity_after,
-        curtoken.location,
-        ist_token_names[curtoken.type]
-    );
-
-    /**
-     * that means the paren pair can be omitted
-     * if there are no antoher args in wrap_expr.
-     */
-    if (!match_token(this, ISL_TOKENT_LPARE)) return node;
-    if (match_token(this, ISL_TOKENT_RPARE)) return node;
-
-    /* that means there are some args need to handle */
-    do {
-        curtoken = cur_token(this);
-
-        ist_astnodeptr_list_addc(&node->arglist, parse_expr(this, OBP_LOWEST));
-        handle_pstate_force(
-            this,
-            ((node)),
-            rid_expect_expression_after,
-            curtoken.location,
-            ist_token_names[curtoken.type]
-        );
-
-    } while (match_token(this, ISL_TOKENT_COMMA));
-
-    /**
-     * if the args has be handled, there are must
-     * a close paren to end the call of fn-entity.
-     */
-    assert_token(this, node, ISL_TOKENT_RPARE);
-
-    return node;
-}
+// void* parse_stmt(ist_parser* this) {
+//     ist_vptr result = NULL;
+
+//     while (match_token(this, ISL_TOKENT_EOS));
+//     switch (cur_token(this).type) {
+//         case ISL_TOKENT_KW_USE:
+//             result = parse_use_stmt(this);
+//             handle_pstate_force(this, result, rid_expect_a_use_stmt_here);
+//             break;
+//         default:
+//             isp_unreachable();
+//     }
+//     match_token(this, ISL_TOKENT_EOS);
+//     return result;
+// }
+
+// void* parse_use_stmt(ist_parser* this) {
+//     ist_astnode_use_stmt* result = ist_astnode_createby_full(use_stmt, cur_token(this).location);
+//     assert_token(this, result, ISL_TOKENT_KW_USE);
+//     if (cur_token(this).type == ISL_TOKENT_ID) {
+//         ist_astnode_name*       name = nud_name(this);
+//         result->rhs                  = ist_vptr_ name;
+//     }
+//     assert_token(this, result, ISL_TOKENT_ASSIGN);
+//     result->lhs = parse(this);
+//     handle_pstate_force(this, result, rid_expect_a_use_stmt_here);
+//     return result;
+// }
+
+
+// void* parse_do_stmt(ist_parser* this) {
+//     if (match_token(this, ISL_TOKENT_KW_DO)) return parse_expr(this, OBP_LOWEST);
+//     ist_lexer_lookahead_start(&this->lexer);
+//     parse_expr(this, OBP_LOWEST);
+//     if (this->pstate == PRS_SUCCESS) return parse_expr(this, OBP_LOWEST);
+//     return NULL;
+// }
+
+
+// /**
+//  * This concept come form TDOP(aka Top Down Operator Precedence / Pratt Parser)
+//  * pletnud: parselet of nud (null denotation)
+//  * pletled: parselet of led (left denotation)
+//  */
+// typedef void* (*ist_pletnud_fn)(ist_parser*);
+// typedef void* (*ist_pletled_fn)(ist_parser*, ist_astnode*);
+
+// /* nud operator attributes */
+// struct ist_nudoptattr {
+
+//     ist_pletnud_fn   nud;
+//     ist_optbindpower rbp: 16;
+
+// } nudoptattrs[] = {
+
+//     [ISL_TOKENT_ADD]     = {nud_prefix_expr, OBP_PREFIX},
+//     [ISL_TOKENT_SUB]     = {nud_prefix_expr, OBP_PREFIX},
+//     [ISL_TOKENT_SELFADD] = {nud_prefix_expr, OBP_PREFIX},
+//     [ISL_TOKENT_SELFSUB] = {nud_prefix_expr, OBP_PREFIX},
+
+//     [ISL_TOKENT_VL_INT]    = {nud_literal, OBP_NONE},
+//     [ISL_TOKENT_VL_REAL]   = {nud_literal, OBP_NONE},
+//     [ISL_TOKENT_VL_STRING] = {nud_literal, OBP_NONE},
+//     [ISL_TOKENT_BV_FALSE]  = {nud_literal, OBP_NONE},
+//     [ISL_TOKENT_BV_TRUE]   = {nud_literal, OBP_NONE},
+//     [ISL_TOKENT_ID]        = {nud_name, OBP_NONE},
+
+//     [ISL_TOKENT_LATEST] = {NULL, OBP_NONE},
+
+// };
+
+// /* led operator attributes */
+// struct ist_ledoptattr {
+
+//     ist_pletled_fn   led;
+//     ist_optbindpower lbp: 16;
+//     ist_optbindpower rbp: 16;
+
+// } ledoptattrs[] = {
+
+//     [ISL_TOKENT_RPARE] = {NULL, OBP_RPARE, OBP_NONE},
+
+//     [ISL_TOKENT_ASSIGN]     = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+//     [ISL_TOKENT_ADD_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+//     [ISL_TOKENT_SUB_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+//     [ISL_TOKENT_MUL_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+//     [ISL_TOKENT_DIV_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+//     [ISL_TOKENT_MOD_ASSIGN] = {led_infix_expr, OBP_ASSIGN + 1, OBP_ASSIGN},
+
+//     [ISL_TOKENT_ADD] = {led_infix_expr, OBP_ARITH, OBP_ARITH},
+//     [ISL_TOKENT_SUB] = {led_infix_expr, OBP_ARITH, OBP_ARITH},
+//     [ISL_TOKENT_MUL] = {led_infix_expr, OBP_TERM, OBP_TERM},
+//     [ISL_TOKENT_DIV] = {led_infix_expr, OBP_TERM, OBP_TERM},
+//     [ISL_TOKENT_MOD] = {led_infix_expr, OBP_TERM, OBP_TERM},
+
+//     [ISL_TOKENT_SELFADD] = {led_suffix_expr, OBP_PREFIX, OBP_NONE},
+//     [ISL_TOKENT_SELFSUB] = {led_suffix_expr, OBP_PREFIX, OBP_NONE},
+
+//     [ISL_TOKENT_LPARE]   = {led_fncall_expr, OBP_SUFFIX, OBP_NONE},
+//     [ISL_TOKENT_WRAPPER] = {led_wrap_expr, OBP_SUFFIX, OBP_ATOM},
+
+//     [ISL_TOKENT_LATEST] = {NULL, OBP_NONE, OBP_NONE},
+
+// };
+
+// void* parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
+//     ist_token curtoken = cur_token(this);
+
+//     void* node = NULL;
+
+//     if (curtoken.type == ISL_TOKENT_LPARE) {
+
+//         /* handle paren */
+//         advance(this);
+//         node = parse_expr(this, OBP_LOWEST);
+//         handle_pstate_force(
+//             this,
+//             node,
+//             rid_expect_expression_after,
+//             curtoken.location,
+//             ist_token_names[curtoken.type]
+//         );
+//         assert_token(this, node, ISL_TOKENT_RPARE);
+
+//     } else if (nudoptattrs[curtoken.type].nud) {
+
+//         /* handle prefix or literal */
+//         node = nudoptattrs[curtoken.type].nud(this);
+//         handle_pstate_inert(this, node);
+
+//     } else if (match_token(this, ISL_TOKENT_EOS)) return node;
+//     else
+//         raise_parsing_failed(
+//             ((this)),
+//             ((NULL)),
+//             rid_expect_nud_failed,
+//             curtoken.location,
+//             ist_token_names[curtoken.type]
+//         );
+
+//     /**
+//      * if left-hand-side's right-binding-power is less than the current token's
+//      * left-binding-power, then we should make sure the node that parsing by prefix
+//      * will belong to the node of the current token.
+//      */
+//     while (lhsrbp < ledoptattrs[cur_token(this).type].lbp) {
+//         curtoken = cur_token(this);
+
+//         /* this for infix or suffix recognizing and parsing */
+//         if (!ledoptattrs[curtoken.type].led) break;
+//         node = ledoptattrs[curtoken.type].led(this, node);
+
+//         handle_pstate_force(
+//             this,
+//             node,
+//             rid_expect_expression_after,
+//             curtoken.location,
+//             ist_token_names[curtoken.type]
+//         );
+//     }
+//     return node;
+// }
+
+
+// void* nud_literal(ist_parser* this) {
+//     ist_token curtoken = advance(this);
+
+//     return ist_astnode_createby_full(literal, curtoken.location, res, {
+//         res->value  = curtoken.value;
+//         res->litype = curtoken.type;
+//     });
+// }
+
+// void* nud_name(ist_parser* this) {
+//     assert_token(this, NULL, ISL_TOKENT_ID);
+//     ist_token curtoken = pre_token(this);
+
+//     ist_string name = ist_string_consby_ref(curtoken.extract, curtoken.length);
+//     ist_module_register_string(this->lexer.module, name, ISL_MOSKIND_IDENTIFER);
+//     return ist_astnode_createby_full(name, curtoken.location, res, res->name = name);
+// }
+
+// void* nud_prefix_expr(ist_parser* this) {
+//     ist_token curtoken = advance(this);
+
+//     ist_astnode_defineby_full(node, unexpr, curtoken.location);
+
+//     node->onlhs  = true;
+//     node->optype = curtoken.type;
+//     node->sub    = parse_expr(this, nudoptattrs[curtoken.type].rbp);
+
+//     handle_pstate_force(
+//         this,
+//         ((node)),
+//         rid_expect_expression_after,
+//         curtoken.location,
+//         ist_token_names[curtoken.type]
+//     );
+
+//     return node;
+// }
+
+// void* led_suffix_expr(ist_parser* this, ist_astnode* lhs) {
+//     ist_token curtoken = advance(this);
+
+//     ist_astnode_defineby_full(node, unexpr, curtoken.location);
+
+//     node->onlhs  = false;
+//     node->optype = curtoken.type;
+//     node->sub    = lhs;
+
+//     handle_pstate_force(
+//         this,
+//         ((node)),
+//         rid_expect_expression_after,
+//         curtoken.location,
+//         ist_token_names[curtoken.type]
+//     );
+
+//     return node;
+// }
+
+// void* led_infix_expr(ist_parser* this, ist_astnode* lhs) {
+//     ist_token curtoken = advance(this);
+
+//     ist_astnode_defineby_full(node, binexpr, curtoken.location);
+
+//     node->lhs    = lhs;
+//     node->optype = curtoken.type;
+//     node->rhs    = parse_expr(this, ledoptattrs[curtoken.type].rbp);
+
+//     handle_pstate_force(
+//         this,
+//         ((node)),
+//         rid_expect_expression_after,
+//         curtoken.location,
+//         ist_token_names[curtoken.type]
+//     );
+
+//     return node;
+// }
+
+// void* led_fncall_expr(ist_parser* this, ist_astnode* lhs) {
+//     ist_token curtoken = advance(this);
+//     ist_astnode_defineby_full(node, fncall_expr, curtoken.location);
+
+//     node->fn      = lhs;
+//     node->arglist = ist_astnodeptr_list_consc(2);
+
+//     /* if the pair closed immediately, then the parsing over! */
+//     if (match_token(this, ISL_TOKENT_RPARE)) return node;
+
+//     do {
+//         curtoken = cur_token(this);
+
+//         ist_astnodeptr_list_addc(&node->arglist, parse_expr(this, OBP_LOWEST));
+//         handle_pstate_force(
+//             this,
+//             ((node)),
+//             rid_expect_expression_before,
+//             curtoken.location,
+//             ist_token_names[curtoken.type]
+//         );
+
+//     } while (match_token(this, ISL_TOKENT_COMMA));
+
+//     /**
+//      * if the args has be handled, there are must
+//      * a close paren to end the call of fn-entity.
+//      */
+//     assert_token(this, node, ISL_TOKENT_RPARE);
+
+//     return node;
+// }
+
+// void* led_wrap_expr(ist_parser* this, ist_astnode* lhs) {
+//     ist_token curtoken = advance(this);
+//     ist_astnode_defineby_full(node, fncall_expr, curtoken.location);
+
+//     node->arglist = ist_astnodeptr_list_consc(2);
+//     ist_astnodeptr_list_addc(&node->arglist, lhs);
+
+//     /* catch the fn-entity that will be called */
+//     node->fn = parse_expr(this, ledoptattrs[curtoken.type].rbp);
+//     handle_pstate_force(
+//         this,
+//         ((node)),
+//         rid_expect_fn_entity_after,
+//         curtoken.location,
+//         ist_token_names[curtoken.type]
+//     );
+
+//     /**
+//      * that means the paren pair can be omitted
+//      * if there are no antoher args in wrap_expr.
+//      */
+//     if (!match_token(this, ISL_TOKENT_LPARE)) return node;
+//     if (match_token(this, ISL_TOKENT_RPARE)) return node;
+
+//     /* that means there are some args need to handle */
+//     do {
+//         curtoken = cur_token(this);
+
+//         ist_astnodeptr_list_addc(&node->arglist, parse_expr(this, OBP_LOWEST));
+//         handle_pstate_force(
+//             this,
+//             ((node)),
+//             rid_expect_expression_after,
+//             curtoken.location,
+//             ist_token_names[curtoken.type]
+//         );
+
+//     } while (match_token(this, ISL_TOKENT_COMMA));
+
+//     /**
+//      * if the args has be handled, there are must
+//      * a close paren to end the call of fn-entity.
+//      */
+//     assert_token(this, node, ISL_TOKENT_RPARE);
+
+//     return node;
+// }
