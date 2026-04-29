@@ -1,9 +1,12 @@
+#include "inttypes.h"
 #include "isl_astnode.h"
 
-// #define ISG_STRUCT_NAME             ist_astnodeList
-// #define ISG_VALUE_TYPE              ist_astnode
-// #define ISG_VALUE_FN_CLEAN(_node_p) ist_astnode_clean((_pent_p))
-// #include "isg_list_code.h"
+
+ist_string ist_astnodeKindNames[] = {
+#define manifest(_name, _struct) [ist_astnodeKind_##_name] = #_name,
+#include "isl_astnodes.h"
+#undef manifest
+};
 
 
 #define ISG_STRUCT_NAME             ist_parsentList
@@ -38,7 +41,184 @@ void ist_astnode_delete(ist_astnode* this) {
 
 void ist_parsent_delete(ist_parsent this) {}
 
+ist_string ist_parsentptr_dump(ist_parsent* this, ist_dumpctx dctx) {
+    dctx.idxptr = dctx.idxptr ?: (ist_usize[1]){};
+    if (!this) isp_unreachable();
+    return ist_parsent_dump(*this, dctx);
+}
+
 ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
+    isl_dreport(rid_inform_dumping, "astnode", this);
+    dctx.idxptr = dctx.idxptr ?: (ist_usize[1]){};
+    if (!this) return ist_strbuf_append_raw(dctx.buffer, dctx.idxptr, "null");
+
+    // dctx.style |= DFLAG_HEAD_DOWRAP;
+
+    switch (this->kind) {
+        case ist_astnodeKind_unk:
+            break;
+
+        case ist_astnodeKind_scope: {
+            ist_parsentList list = this->as.scope.stmts;
+            return ist_dumpimage_dump(
+                &ist_dumpimage_{
+                    .name    = ist_astnodeKindNames[this->kind],
+                    .wrapkey = "type",
+                    .count   = 2,
+                    ist_dumpitemar_{
+                        {"location", ist_location_dump, &this->location},
+                        {
+                            "list",
+                            isg_list_dumpack_dump,
+                            &isg_list_dumpack_{
+                                .name   = NULL,
+                                .idxtag = "[%zu]",
+                                .dowrap = true,
+                                ist_parsentptr_dump,
+                                &list,
+                                ist_parsentList_capacity(&list),
+                            },
+                        },
+                    },
+                },
+                dctx
+            );
+            break;
+        }
+
+        case ist_astnodeKind_literal: {
+            ist_astnodeAs_literal literal = this->as.literal;
+            return ist_dumpimage_dump(
+                &ist_dumpimage_{
+                    .name    = ist_astnodeKindNames[this->kind],
+                    .wrapkey = "type",
+                    .count   = 3,
+                    ist_dumpitemar_{
+                        {"location", ist_location_dump, &this->location},
+                        {"valtype", ist_cstring_dump_ident, &ist_valueTypeNames[literal.this.type]},
+                        {"value", ist_tvalue_dump, &literal.this},
+                    },
+                },
+                dctx
+            );
+            break;
+        }
+
+        case ist_astnodeKind_expr: {
+            ist_astnodeAs_expr expr = this->as.expr;
+            switch (expr.kind) {
+                case isn_psentExprKind_binary:
+                    return ist_dumpimage_dump(
+                        &ist_dumpimage_{
+                            .name    = "binexpr",
+                            .wrapkey = "type",
+                            .count   = 4,
+                            ist_dumpitemar_{
+                                {"location", ist_location_dump, &this->location},
+                                {"optype",
+                                 ist_cstring_dump_ident,
+                                 &ist_token_names[expr.as.binary.op]},
+                                {"lhs", ist_parsent_dump, expr.as.binary.lhs},
+                                {"rhs", ist_parsent_dump, expr.as.binary.lhs},
+                            },
+                        },
+                        dctx
+                    );
+                    break;
+
+                case isn_psentExprKind_unary:
+                    return ist_dumpimage_dump(
+                        &ist_dumpimage_{
+                            .name    = "unexpr",
+                            .wrapkey = "type",
+                            .count   = 4,
+                            ist_dumpitemar_{
+                                {"location", ist_location_dump, &this->location},
+                                {"optype",
+                                 ist_cstring_dump_ident,
+                                 &ist_token_names[expr.as.unary.op]},
+                                {"lhs", ist_parsent_dump, expr.as.unary.lhs},
+                                {"rhs", ist_parsent_dump, expr.as.unary.lhs},
+                            },
+                        },
+                        dctx
+                    );
+                    break;
+
+
+                case isn_psentExprKind_fncall:
+                    return ist_dumpimage_dump(
+                        &ist_dumpimage_{
+                            .name    = "fncallexpr",
+                            .wrapkey = "type",
+                            .count   = 3,
+                            ist_dumpitemar_{
+                                {"location", ist_location_dump, &this->location},
+                                {"fn", ist_parsent_dump, expr.as.fncall.fn},
+                                {
+                                    "arg_list",
+                                    isg_list_dumpack_dump,
+                                    &isg_list_dumpack_{
+                                        .name   = NULL,
+                                        .idxtag = "[%zu]",
+                                        .dowrap = true,
+                                        ist_parsentptr_dump,
+                                        &expr.as.fncall.args,
+                                        ist_parsentList_capacity(&expr.as.fncall.args),
+                                    },
+                                },
+                            },
+                        },
+                        dctx
+                    );
+                    break;
+                default:
+                    isp_unreachable();
+                    break;
+            }
+        }
+        case ist_astnodeKind_name: {
+            ist_astnodeAs_name name = this->as.name;
+            return ist_dumpimage_dump(
+                &ist_dumpimage_{
+                    .name    = ist_astnodeKindNames[this->kind],
+                    .wrapkey = "type",
+                    .count   = 2,
+                    ist_dumpitemar_{
+                        {"location", ist_location_dump, &this->location},
+                        {"name", ist_cstring_dump, &name.name},
+                    },
+                },
+                dctx
+
+            );
+            break;
+        }
+
+        case ist_astnodeKind_use_stmt: {
+            ist_astnodeAs_use_stmt stmt = this->as.use_stmt;
+            return ist_dumpimage_dump(
+                &ist_dumpimage_{
+                    .name    = ist_astnodeKindNames[this->kind],
+                    .wrapkey = "type",
+                    .count   = 3,
+                    ist_dumpitemar_{
+                        {"location", ist_location_dump, &this->location},
+                        {"lhs", ist_parsent_dump, stmt.lhs},
+                        {"rhs", ist_parsent_dump, stmt.rhs},
+                    },
+                },
+                dctx
+
+            );
+            break;
+        }
+
+        default:
+            isp_unreachable();
+            break;
+    }
+
     return *dctx.buffer;
 }
 
@@ -62,13 +242,6 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
 // #undef manifest
 // };
 
-// #define manifest(_name, _struct)                            \
-//     inline ist_astnode_##_name* isl_as_##_name(void* adr) { \
-//         isl_assert(adr);                                    \
-//         return adr;                                         \
-//     }
-// #include "isl_astnodes.h"
-// #undef manifest
 
 
 // void ist_astnode_delete(void* this) {
@@ -78,16 +251,12 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
 
 //     /**
 //      * Delete the astnode by the type. It serves for the counting of the memory.
-//      * Because the astnode have no constant length, we can not use the free function directly.
+//      * Because the astnode have no constant length, we can not use the free function
+//      directly.
 //      */
 //     switch (type) {
 
-// #define manifest(_name, _struct)              \
-//     case isl_astnt_##_name:                   \
-//         isl_free((ist_astnode_##_name*)this); \
-//         break;
-// #include "isl_astnodes.h"
-// #undef manifest
+
 
 //         default:
 //             isl_report(rid_unknown_enum_value, isp_catch_coreloc, type);
@@ -199,7 +368,8 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
 //                     .count   = 3,
 //                     ist_dumpitemar_{
 //                         {"location", ist_location_dump, &literal->base.location},
-//                         {"litype", ist_cstring_dump_ident, &ist_token_names[literal->litype]},
+//                         {"litype", ist_cstring_dump_ident,
+//                         &ist_token_names[literal->litype]},
 //                         {
 //                             "value",
 //                             ist_tvalue_dump,

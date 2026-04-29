@@ -23,7 +23,7 @@ ISL_TEST_HEAD {
     ist_strbuf dump_buffer = ist_strbuf_cons(1024);
 
     printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, NULL, -1, DKIND_INDENT}));
-    printf("%s\n", ist_ast_dump(parser.root, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_INDENT}));
+    printf("%s\n", ist_parsent_dump(parser.root, ist_dumpctx_{dump_buffer, NULL, 0, DKIND_INDENT}));
 
     compiler.node = parser.root;
     ist_compiler_compile(&compiler);

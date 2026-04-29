@@ -47,7 +47,6 @@ manifest(KW_RETURN, "return")
 manifest(KW_DONE, "done")
 
 manifest(KW_LET, "let")
-manifest(KW_VAR, "var")
 
 /* value types */
 manifest(START_VALUE_TYPES, NULL)

@@ -2,7 +2,6 @@
 #define ISC_PARSER_H
 
 #include "isl_lexer.h"
-#include "isl_parsent.h"
 
 
 // typedef enum ist_pstate {
@@ -24,9 +23,9 @@ typedef struct ist_parseYield {
 #define ist_parseYield_ (ist_parseYield)
 
 typedef struct ist_parser {
-    ist_module*         module;
-    ist_lexer           lexer;
-    ist_astnodeAs_scope scope;
+    ist_module*  module;
+    ist_lexer    lexer;
+    ist_astnode* root;
 } ist_parser;
 
 ist_parser ist_parser_consby_lexer(ist_lexer _lexer);

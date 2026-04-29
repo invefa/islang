@@ -13,8 +13,10 @@ manifest(fnparam_list, (ist_astnodeAs_list))
 manifest(formparam_list, (ist_astnodeAs_list))
 manifest(formarg_list, (ist_astnodeAs_list))
 
-/* literal parsent */
+/* some basic parsent */
+manifest(scope, (struct { ist_parsentList stmts; }))
 manifest(literal, (struct { ist_tvalue this; }))
+manifest(name, (struct { ist_cstring name; }))
 
 /* expr parsent */
 manifest(expr, (struct {
@@ -48,7 +50,14 @@ manifest(expr, (struct {
              } as;
          }))
 
-manifest(scope, (struct { ist_parsentList stmts; }))
+manifest(use_stmt, (struct {
+             ist_bool     is_assign;
+             ist_astnode* lhs;
+             ist_astnode* rhs;
+         }))
+
+manifest(do_stmt, (struct { ist_astnode* expr; }))
+
 
 // /* unknown */
 // manifest(unknown, (ist_astnode))

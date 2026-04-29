@@ -42,7 +42,7 @@ typedef union ist_value {
     ist_value_str    as_str;
 } ist_value;
 
-typedef enum ist_value_type {
+typedef enum ist_valueType {
     isl_valtype_void,
     isl_valtype_i8,
     isl_valtype_u8,
@@ -58,7 +58,25 @@ typedef enum ist_value_type {
     isl_valtype_usize,
     isl_valtype_strbuf,
     isl_valtype_str,
-} ist_value_type;
+} ist_valueType;
+
+static ist_cstring ist_valueTypeNames[] = {
+    [isl_valtype_void]   = "void",
+    [isl_valtype_i8]     = "i8",
+    [isl_valtype_u8]     = "u8",
+    [isl_valtype_i16]    = "i16",
+    [isl_valtype_u16]    = "u16",
+    [isl_valtype_i32]    = "i32",
+    [isl_valtype_u32]    = "u32",
+    [isl_valtype_i64]    = "i64",
+    [isl_valtype_u64]    = "u64",
+    [isl_valtype_f32]    = "f32",
+    [isl_valtype_f64]    = "f64",
+    [isl_valtype_bool]   = "bool",
+    [isl_valtype_usize]  = "usize",
+    [isl_valtype_strbuf] = "strbuf",
+    [isl_valtype_str]    = "str",
+};
 
 #define ist_value_cons                   (ist_value)
 #define ist_value_consby_null()          ((ist_value){.as_i64 = 0})
@@ -74,14 +92,14 @@ typedef enum ist_value_type {
 ist_string ist_value_dump_old(ist_value* this, ist_u32 type, ist_string* buffer, ist_usize* idxptr);
 
 typedef struct ist_tvalue {
-    ist_value_type type;
-    ist_value      data;
+    ist_valueType type;
+    ist_value     data;
 } ist_tvalue;
 #define ist_tvalue_ (ist_tvalue)
 
 ist_string ist_tvalue_dump(ist_tvalue* this, ist_dumpctx dctx);
 
-extern const ist_value_type isl_toklitype_to_valtype[];
+extern const ist_valueType isl_toklitype_to_valtype[];
 
 #define ISG_VALUE_TYPE ist_value
 #include "isg_list_head.h"

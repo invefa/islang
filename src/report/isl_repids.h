@@ -113,25 +113,38 @@ manifest(
     "are you sure? is it the version code? the second dot and its suffix numbers will be ignored."
 )
 
+manifest(syntax_info, (PARSER, INFO, CUSTOM), NULL)
+manifest(syntax_note, (PARSER, NOTE, CUSTOM), NULL)
+manifest(syntax_warn, (PARSER, WARNING, CUSTOM), NULL)
+manifest(syntax_error, (PARSER, ERROR, CUSTOM), NULL)
+manifest(syntax_panic, (PARSER, PANIC, CUSTOM), NULL)
+manifest(syntax_fatal, (PARSER, FATAL, CUSTOM), NULL)
+
 manifest(parse_error, (PARSER, ERROR, USERLOC), "parse error!")
-manifest(assert_tokentype_failed, (PARSER, ERROR, USERLOC), "expect token:%s, but got token:%s.")
-manifest(unexpected_token, (PARSER, ERROR, USERLOC), "expect token:%s.")
-manifest(expect_expression, (PARSER, ERROR, USERLOC), "expect an expression!")
+manifest(assert_tokentype_failed, (PARSER, ERROR, USERLOC), "expect token:`%s`, but got token:`%s`.")
+manifest(unexpected_token, (PARSER, ERROR, USERLOC), "expect token:`%s`.")
+manifest(expect_parsent_expr, (PARSER, ERROR, USERLOC), "expect an expression!")
 manifest(
-    expect_expression_after,
+    expect_parsent_expr_after,
     (PARSER, ERROR, USERLOC),
-    "expect an expression after token:<%s>!"
+    "expect an expression after token:`%s`!"
 )
 manifest(
-    expect_expression_before,
+    expect_parsent_expr_before,
     (PARSER, ERROR, USERLOC),
-    "expect an expression before token:<%s>!"
+    "expect an expression before token:`%s`!"
 )
-manifest(not_expression, (PARSER, ERROR, USERLOC), "this is not an expression!")
-manifest(expect_nud_failed, (PARSER, ERROR, USERLOC), "expect a expression, but get the token:%s.")
-manifest(expect_fn_entity_after, (PARSER, ERROR, USERLOC), "expect an fn after token:<%s>!")
-manifest(expect_a_stmt_here, (PARSER, ERROR, USERLOC), "expect a statement here!")
-manifest(expect_a_use_stmt_here, (PARSER, ERROR, USERLOC), "expect a use statement here!")
+manifest(not_parsent_expr, (PARSER, ERROR, USERLOC), "this is not an expression!")
+manifest(expect_nud_failed, (PARSER, ERROR, USERLOC), "expect a expression, but get the token:`%s`.")
+manifest(expect_fn_entity_after, (PARSER, ERROR, USERLOC), "expect an fn after token:`%s`!")
+manifest(expect_parsent_stmt, (PARSER, ERROR, USERLOC), "expect a statement here!")
+manifest(expect_parsent_use_stmt, (PARSER, ERROR, USERLOC), "expect a use statement here!")
+manifest(expect_parsent_name, (PARSER, ERROR, USERLOC), "expect an identifier here!")
+manifest(
+    expect_parsent_literal_but,
+    (PARSER, ERROR, USERLOC),
+    "expect a literal here, but got token:`%s`."
+)
 
 
 manifest(binexpr_type_unmatch, (COMPILER, ERROR, USERLOC), "type unmatch!")
