@@ -60,23 +60,7 @@ typedef enum ist_valueType {
     isl_valtype_str,
 } ist_valueType;
 
-static ist_cstring ist_valueTypeNames[] = {
-    [isl_valtype_void]   = "void",
-    [isl_valtype_i8]     = "i8",
-    [isl_valtype_u8]     = "u8",
-    [isl_valtype_i16]    = "i16",
-    [isl_valtype_u16]    = "u16",
-    [isl_valtype_i32]    = "i32",
-    [isl_valtype_u32]    = "u32",
-    [isl_valtype_i64]    = "i64",
-    [isl_valtype_u64]    = "u64",
-    [isl_valtype_f32]    = "f32",
-    [isl_valtype_f64]    = "f64",
-    [isl_valtype_bool]   = "bool",
-    [isl_valtype_usize]  = "usize",
-    [isl_valtype_strbuf] = "strbuf",
-    [isl_valtype_str]    = "str",
-};
+extern ist_cstring ist_valueTypeNames[];
 
 #define ist_value_cons                   (ist_value)
 #define ist_value_consby_null()          ((ist_value){.as_i64 = 0})

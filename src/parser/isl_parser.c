@@ -224,6 +224,34 @@ ist_parseYield parse(ist_parser* this) {
     return ist_parseYield_{node};
 }
 
+ist_parseYield parse_stmts(ist_parser* this) {
+    ist_astnode* stmts = ist_astnode_createby_full(
+        ist_astnodeKind_list,
+        cur_token(this).location,
+        ist_astnodeAs_{
+            .list.this = ist_parsentList_consm(4),
+        }
+    );
+
+    while (cur_token(this).type != ISL_TOKENT_EOF || cur_token(this).type != ISL_TOKENT_RBRACE) {
+        ist_parseYield yield = parse_stmt(this);
+        if (yield.ok) ist_parsentList_addm(&stmts->as.list.this, yield.ok);
+        switch (yield.status) {
+            case isn_pasreYieldStatus_aheading:
+                return ist_parseYield_{stmts, isn_pasreYieldStatus_aheading};
+            case isn_pasreYieldStatus_unreported:
+                isl_report(rid_expect_stmt_parsent);
+            case isn_pasreYieldStatus_reported:
+                while (pre_token(this).type != ISL_TOKENT_EOS) advance(this);
+            case isn_pasreYieldStatus_success:
+                break;
+            default:
+                isp_unreachable();
+        }
+    }
+    return ist_parseYield_{stmts};
+}
+
 ist_parseYield parse_stmt(ist_parser* this) {
     ist_astnode* node = NULL;
 
@@ -240,6 +268,7 @@ ist_parseYield parse_stmt(ist_parser* this) {
 }
 
 ist_parseYield parse_use_stmt(ist_parser* this) {
+    // BUGFIX: there implies a terrible case: when parse_force do return, the `node` will be leak!
     assert_token(this, NULL, ISL_TOKENT_KW_USE);
     ist_astnode* node = ist_astnode_createby_full(
         ist_astnodeKind_use_stmt,

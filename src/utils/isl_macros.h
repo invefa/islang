@@ -31,6 +31,8 @@
 /* to avoid some trivial case, mute the noisy warning notice... */
 #define __ISL_MACRO_MAYBE_UNUSED(_some) (void)(_some)
 
+#define _ISL_UNUSED (void)
+
 
 #define _isl_declare_initby_createby_with_consby(_paramspack, _type, _bywhat)         \
     _type* _type##_initby_##_bywhat(_type* this, __ISL_MACRO_UNPACKAGER _paramspack); \

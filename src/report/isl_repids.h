@@ -121,7 +121,12 @@ manifest(syntax_panic, (PARSER, PANIC, CUSTOM), NULL)
 manifest(syntax_fatal, (PARSER, FATAL, CUSTOM), NULL)
 
 manifest(parse_error, (PARSER, ERROR, USERLOC), "parse error!")
-manifest(assert_tokentype_failed, (PARSER, ERROR, USERLOC), "expect token:`%s`, but got token:`%s`.")
+manifest(expect_stmt_parsent, (PARSER, ERROR, USERLOC), "expect a statement!")
+manifest(
+    assert_tokentype_failed,
+    (PARSER, ERROR, USERLOC),
+    "expect token:`%s`, but got token:`%s`."
+)
 manifest(unexpected_token, (PARSER, ERROR, USERLOC), "expect token:`%s`.")
 manifest(expect_parsent_expr, (PARSER, ERROR, USERLOC), "expect an expression!")
 manifest(
@@ -135,7 +140,11 @@ manifest(
     "expect an expression before token:`%s`!"
 )
 manifest(not_parsent_expr, (PARSER, ERROR, USERLOC), "this is not an expression!")
-manifest(expect_nud_failed, (PARSER, ERROR, USERLOC), "expect a expression, but get the token:`%s`.")
+manifest(
+    expect_nud_failed,
+    (PARSER, ERROR, USERLOC),
+    "expect a expression, but get the token:`%s`."
+)
 manifest(expect_fn_entity_after, (PARSER, ERROR, USERLOC), "expect an fn after token:`%s`!")
 manifest(expect_parsent_stmt, (PARSER, ERROR, USERLOC), "expect a statement here!")
 manifest(expect_parsent_use_stmt, (PARSER, ERROR, USERLOC), "expect a use statement here!")

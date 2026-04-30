@@ -5,11 +5,30 @@
 #include "isl_string.h"
 #include "isl_token.h"
 
+ist_cstring ist_valueTypeNames[] = {
+    [isl_valtype_void]   = "void",
+    [isl_valtype_i8]     = "i8",
+    [isl_valtype_u8]     = "u8",
+    [isl_valtype_i16]    = "i16",
+    [isl_valtype_u16]    = "u16",
+    [isl_valtype_i32]    = "i32",
+    [isl_valtype_u32]    = "u32",
+    [isl_valtype_i64]    = "i64",
+    [isl_valtype_u64]    = "u64",
+    [isl_valtype_f32]    = "f32",
+    [isl_valtype_f64]    = "f64",
+    [isl_valtype_bool]   = "bool",
+    [isl_valtype_usize]  = "usize",
+    [isl_valtype_strbuf] = "strbuf",
+    [isl_valtype_str]    = "str",
+};
+
 const ist_valueType isl_toklitype_to_valtype[] = {
     [ISL_TOKENT_VL_INT]    = isl_valtype_i64,
     [ISL_TOKENT_VL_REAL]   = isl_valtype_f64,
     [ISL_TOKENT_VL_STRING] = isl_valtype_str,
 };
+
 
 ist_string ist_value_dump_old(
     ist_value* this,
