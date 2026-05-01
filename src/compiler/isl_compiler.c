@@ -4,7 +4,7 @@
 
 
 #define _INST_UNWRAPER(_size, _data) (ist_instream_append_##_size(this->instream, _data))
-#define _INST_GEN_0()                _ISL_UNUSED NULL
+#define _INST_GEN_0()                _ISL_MAYBE_UNUSED NULL
 #define _INST_GEN_1(_1)              _INST_UNWRAPER _1
 #define _INST_GEN_2(_1, _2)          _INST_UNWRAPER _1, _INST_UNWRAPER _2
 #define _INST_GEN_3(_1, _2, _3)      _INST_UNWRAPER _1, _INST_UNWRAPER _2, _INST_UNWRAPER _3

@@ -22,7 +22,7 @@ typedef struct ist_astnode*    ist_parsent;
 
 
 /* the automatic definition of all the payload kind of astnodes */
-#define manifest(_name, _struct) typedef __ISL_MACRO_UNPACKAGER _struct ist_astnodeAs_##_name;
+#define manifest(_name, _struct) typedef _ISL_MACRO_UNPACK _struct ist_astnodeAs_##_name;
 #include "isl_astnodes.h"
 #undef manifest
 
@@ -130,7 +130,7 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx);
 // #include "isg_list_head.h"
 
 // /* define all the astnode struct */
-// #define manifest(_name, _struct) typedef __ISL_MACRO_UNPACKAGER _struct ist_astnode_##_name;
+// #define manifest(_name, _struct) typedef _ISL_MACRO_UNPACK _struct ist_astnode_##_name;
 // #include "isl_astnodes.h"
 // #undef manifest
 

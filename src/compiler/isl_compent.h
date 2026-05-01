@@ -18,7 +18,7 @@ typedef struct ist_compent {
     ist_location         location;
 } ist_compent;
 
-#define manifest(_name, _struct) typedef __ISL_MACRO_UNPACKAGER _struct ist_compent_##_name;
+#define manifest(_name, _struct) typedef _ISL_MACRO_UNPACK _struct ist_compent_##_name;
 #include "isl_compents.h"
 #undef manifest
 

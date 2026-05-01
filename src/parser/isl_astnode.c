@@ -39,7 +39,54 @@ void ist_astnode_delete(ist_astnode* this) {
 }
 
 
-void ist_parsent_delete(ist_parsent this) {}
+void ist_parsent_delete(ist_parsent this) {
+    if (!this) return;
+    switch (this->kind) {
+        case ist_astnodeKind_unk:
+        case ist_astnodeKind_literal:
+        case ist_astnodeKind_name:
+            break;
+        case ist_astnodeKind_list:
+            ist_parsentList_clean(&this->as.list.this);
+            break;
+        case ist_astnodeKind_expr: {
+            ist_astnodeAs_expr expr = this->as.expr;
+            switch (this->as.expr.kind) {
+                case isn_psentExprKind_unary:
+                    ist_parsent_delete(expr.as.unary.lhs);
+                    ist_parsent_delete(expr.as.unary.rhs);
+                    break;
+                case isn_psentExprKind_binary:
+                    ist_parsent_delete(expr.as.binary.lhs);
+                    ist_parsent_delete(expr.as.binary.rhs);
+                    break;
+                case isn_psentExprKind_ternary:
+                    ist_parsent_delete(expr.as.ternary.st);
+                    ist_parsent_delete(expr.as.ternary.nd);
+                    ist_parsent_delete(expr.as.ternary.rd);
+                    break;
+                case isn_psentExprKind_fncall:
+                    ist_parsent_delete(expr.as.fncall.fn);
+                    ist_parsentList_clean(&expr.as.fncall.args);
+                    break;
+            }
+            break;
+        }
+        case ist_astnodeKind_scope:
+            ist_parsentList_clean(&this->as.scope.stmts);
+            break;
+        case ist_astnodeKind_use_stmt:
+            ist_parsent_delete(this->as.use_stmt.lhs);
+            ist_parsent_delete(this->as.use_stmt.rhs);
+            break;
+        case ist_astnodeKind_do_stmt:
+            ist_parsent_delete(this->as.do_stmt.expr);
+            break;
+        default:
+            isp_unreachable();
+    }
+    isl_free(this);
+}
 
 ist_string ist_parsentptr_dump(ist_parsent* this, ist_dumpctx dctx) {
     dctx.idxptr = dctx.idxptr ?: (ist_usize[1]){};

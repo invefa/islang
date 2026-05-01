@@ -267,7 +267,7 @@
          ++_ISL_LIST_FOREACH_IDXVNAME(_names))                                                    \
         for (ist_bool isl_list_foreach_flag = 1; isl_list_foreach_flag;)                          \
             for (typeof((_listv)[0])* _iterpid = ((_listv) + _ISL_LIST_FOREACH_IDXVNAME(_names)); \
-                 __ISL_MACRO_MAYBE_UNUSED(_iterpid), isl_list_foreach_flag;                       \
+                 _ISL_MAYBE_UNUSED(_iterpid), isl_list_foreach_flag;                              \
                  isl_list_foreach_flag = 0)
 
 /**

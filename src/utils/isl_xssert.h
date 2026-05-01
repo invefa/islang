@@ -50,7 +50,7 @@
 #define __ISL_XSSERT_EXT_TEXT_3(_expl, _details_fmt, _fmt_args_package) \
     __ISL_XSSERT_EXT_TEXT_2(_expl, _details_fmt)
 #define __ISL_XSSERT_EXT_ARGS_3(_expl, _details_fmt, _fmt_args_package) \
-    ,__ISL_MACRO_UNPACKAGER _fmt_args_package
+    ,_ISL_MACRO_UNPACK _fmt_args_package
 
 
 

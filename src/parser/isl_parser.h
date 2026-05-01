@@ -4,20 +4,13 @@
 #include "isl_lexer.h"
 
 
-// typedef enum ist_pstate {
-//     PRS_SUCCESS     = 0, /* success */
-//     PRS_FUNREPROTED = 1, /* failure unreported */
-//     PRS_FREPROTED   = 2, /* failure reported */
-//     PRS_FAHEAD      = 3, /* failure aheading */
-// } ist_pstate;
-
 typedef struct ist_parseYield {
     ist_parsent ok;
     enum ist_parseYieldStatus {
-        isn_pasreYieldStatus_success,    /* success */
-        isn_pasreYieldStatus_reported,   /* failure and unreported */
-        isn_pasreYieldStatus_unreported, /* failure and reported */
-        isn_pasreYieldStatus_aheading,   /* failure while aheading */
+        isn_pasreYieldStatus_success    = 0, /* success */
+        isn_pasreYieldStatus_reported   = 1, /* failure and unreported */
+        isn_pasreYieldStatus_unreported = 2, /* failure and reported */
+        isn_pasreYieldStatus_aheading   = 3, /* failure while aheading */
     } status;
 } ist_parseYield;
 #define ist_parseYield_ (ist_parseYield)
