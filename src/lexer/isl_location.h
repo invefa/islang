@@ -10,8 +10,8 @@ typedef struct ist_module ist_module;
 typedef struct ist_location {
     ist_module* module;
     ist_string  pagename;
-    ist_usize   line;
-    ist_usize   column;
+    ist_u32     line;
+    ist_u32     column;
 } ist_location;
 
 ist_string ist_location_dump_old(ist_location* this, ist_string* buffer, ist_usize* idxptr);

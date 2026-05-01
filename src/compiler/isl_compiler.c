@@ -15,67 +15,6 @@
 #define inst(_inst, _vargs...) ist_instream_append_ins(this->instream, _inst), _INST_GEN(_vargs)
 
 
-// ist_valueType typecheck_ast_expr(ist_compiler* this, ist_astnode* node) {
-//     switch (node->type) {
-//         case isl_astnt_unexpr: {
-//             ist_astnode_unexpr* expr = (ist_astnode_unexpr*)node;
-//             return typecheck_ast_expr(this, expr->sub);
-//         }
-//         case isl_astnt_binexpr: {
-//             ist_astnode_binexpr* expr     = (ist_astnode_binexpr*)node;
-//             ist_valueType       lhs_type = typecheck_ast_expr(this, expr->lhs);
-//             ist_valueType       rhs_type = typecheck_ast_expr(this, expr->rhs);
-//             if (lhs_type != rhs_type) isl_report(rid_binexpr_type_unmatch);
-//             else return lhs_type;
-//         }
-
-//         case isl_astnt_literal: {
-//             ist_astnode_literal* literal = (ist_astnode_literal*)this->node;
-//             return isl_toklitype_to_valtype[literal->litype];
-//         }
-//         default:
-//             isp_unreachable();
-//     }
-//     return isl_valtype_void;
-// }
-
-
-
-// void elaborate_expr(ist_compiler* this) {
-//     switch (this->node->type) {
-//         case isl_astnt_unexpr:
-//         case isl_astnt_binexpr:
-//         case isl_astnt_ternexpr: {
-//             ist_compent_defineby_full(res, expr, this->node->location);
-//             res->is_const = false;
-//             res->node     = this->node;
-//             ist_context_register_compent(this->ctx, (void*)res);
-//             break;
-//         }
-//         default:
-//             isp_unreachable();
-//     }
-// }
-
-// void ist_compiler_elaborate(ist_compiler* this) {
-//     switch (this->node->type) {
-//         case isl_astnt_unexpr:
-//         case isl_astnt_binexpr:
-//         case isl_astnt_ternexpr:
-//             elaborate_expr(this);
-//             break;
-//         default:
-//             isp_unreachable();
-//             break;
-//     }
-// }
-
-
-
-void ist_compiler_evalualte(ist_compiler* this) {}
-
-
-
 void codegen_ast_expr(ist_compiler* this);
 void codegen_ast_unexpr(ist_compiler* this);
 void codegen_ast_binexpr(ist_compiler* this);
@@ -163,6 +102,7 @@ void codegen_ast_expr(ist_compiler* this) {
                 default:
                     isp_unreachable();
             }
+            break;
         case ist_astnodeKind_literal:
             codegen_ast_literal(this);
             break;
@@ -178,5 +118,8 @@ void ist_compiler_codegen(ist_compiler* this) {}
 void ist_compiler_compile(ist_compiler* this) {
     if (!this->instream) this->instream = ist_instream_calloc(16);
     if (!this->node) return;
-    codegen_ast_expr(this);
+    isg_list_foreach (psent_p, this->node->as.scope.stmts) {
+        this->node = *psent_p;
+        codegen_ast_expr(this);
+    }
 }

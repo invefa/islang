@@ -19,8 +19,7 @@ _isl_define_initby_createby_with_consby((ist_module * _module), (_module), ist_p
 
 void ist_parser_clean(ist_parser* this) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
-    if (this->root)
-        isg_list_foreach (itp, this->root->as.scope.stmts) ist_parsent_delete(*itp);
+    if (this->root) ist_parsent_delete(this->root);
     ist_lexer_clean(&this->lexer);
 }
 
@@ -287,7 +286,6 @@ ist_parseYield parse_stmt(ist_parser* this) {
 }
 
 ist_parseYield parse_use_stmt(ist_parser* this) {
-    // BUGFIX: there implies a terrible case: when parse_force do return, the `node` will be leak!
     ist_astnodeAs_use_stmt use_stmt = {.is_assign = true};
     assert_token(ISL_TOKENT_KW_USE, null);
     use_stmt.lhs = parse_force(parse_nud_name(this), (rid_expect_parsent_name));
@@ -580,6 +578,7 @@ ist_parseYield parse_led_wrap_expr(ist_parser* this, ist_astnode* lhs) {
                     (rid_expect_fn_entity_after, curtoken.location, ist_token_names[curtoken.type]),
                     (lhs)
                 ),
+
                 .expr.as.fncall.args = ({
                     ist_parsentList arglist = ist_parsentList_consm(2);
                     ist_parsentList_addm(&arglist, lhs);
@@ -604,6 +603,7 @@ ist_parseYield parse_led_wrap_expr(ist_parser* this, ist_astnode* lhs) {
                     } while (0);
                     arglist;
                 })
+
             }
         ),
     };

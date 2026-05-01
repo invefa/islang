@@ -27,7 +27,7 @@ inline ist_string ist_token_dump_old(ist_token* this, ist_string* buffer, ist_us
     ist_strbuf_sprintf(
         buffer,
         idxptr,
-        "token<0x%zX> {location=<%s:%s:%zu:%zu>,type=%s,extract[%zu]=\"%.*s\"",
+        "token<0x%zX> {location=<%s:%s:%u:%u>,type=%s,extract[%zu]=\"%.*s\"",
         (ist_usize)this,
         this->location.module->name,
         this->location.pagename ?: (ist_string) "\b",

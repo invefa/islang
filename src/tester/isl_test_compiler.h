@@ -44,11 +44,17 @@ ISL_TEST_HEAD {
     ist_i64_dump(isl_span(ist_i64){1 + (2 * 3 + (4 / 5 * (2 / 3)))}, ist_dumpctx_{dump_buffer});
     printf("c  result: %s\n", *dump_buffer);
 
+    printf("sizeof(astnodeKind): %zu\n", sizeof(ist_astnodeKind));
+    printf("sizeof(location): %zu\n", sizeof(ist_location));
+    printf("sizeof(astnodeAs): %zu\n", sizeof(ist_astnodeAs));
+    printf("sizeof(astnodeAs_expr): %zu\n", sizeof(ist_astnodeAs_expr));
+    printf("sizeof(astnode): %zu\n", sizeof(ist_astnode));
 
     ist_module_clean(&module);
     ist_parser_clean(&parser);
     ist_string_delete(dump_buffer);
     ist_instream_delete(compiler.instream);
+    ist_vm_clean(&vm);
 }
 ISL_TEST_TAIL
 #include "isg_test_undefs.h"

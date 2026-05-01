@@ -10,24 +10,28 @@ ist_vm ist_vm_consby_full(ist_instream _instream, ist_value_stack* _stack) {
         .px       = ist_value_consby_null(),
     };
 }
-ist_vm* ist_vm_initby_full(ist_vm* this, ist_instream _instream, ist_value_stack* _stack) {
-    *this = ist_vm_consby_full(_instream, _stack);
-    return this;
-}
-ist_vm* ist_vm_createby_full(ist_instream _instream, ist_value_stack* _stack) {
-    return ist_vm_initby_full(isl_allocate(sizeof(ist_vm), false), _instream, _stack);
-}
+_isl_define_initby_createby_with_consby(
+    (ist_instream _instream, ist_value_stack* _stack),
+    (_instream, _stack),
+    ist_vm,
+    full
+);
 
 ist_vm ist_vm_consby_instream(ist_instream _instream) {
     return ist_vm_consby_full(_instream, ist_value_stack_create(64, false));
 }
-ist_vm* ist_vm_initby_instream(ist_vm* this, ist_instream _instream) {
-    *this = ist_vm_consby_instream(_instream);
-    return this;
+_isl_define_initby_createby_with_consby((ist_instream _instream), (_instream), ist_vm, instream);
+
+void ist_vm_clean(ist_vm* this) {
+    if (!this) isp_unreachable();
+    if (this->stack) ist_value_stack_delete(this->stack);
 }
-ist_vm* ist_vm_createby_instream(ist_instream _instream) {
-    return ist_vm_initby_instream(isl_allocate(sizeof(ist_vm), false), _instream);
+void ist_vm_delete(ist_vm* this) {
+    if (!this) isp_unreachable();
+    ist_vm_clean(this);
+    isl_free(this);
 }
+
 
 void ist_vm_run(ist_vm* _vm) {
     ist_vm vm = *_vm;

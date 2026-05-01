@@ -143,7 +143,7 @@ void isl_report(isp_repid rid, ...) {
         snprintf(
             buffer,
             ISP_BUFFER_SIZE,
-            "%s%s %s:" ANSI_RST " in module %s:%s<%zu:%zu>: %s\n",
+            "%s%s %s:" ANSI_RST " in module %s:%s<%u:%u>: %s\n",
             level_colors[reploc.level],
             domain_fmts[reploc.domain],
             level_fmts[reploc.level],

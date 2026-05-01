@@ -11,7 +11,7 @@ ist_string ist_location_dump_old(ist_location* this, ist_string* buffer, ist_usi
         this->module ? this->module->name : (ist_string) "(unknown)"
     );
     if (this->pagename) ist_strbuf_sprintf(buffer, idxptr, ":%s", this->pagename);
-    return ist_strbuf_sprintf(buffer, idxptr, ":%zu:%zu\"", this->line, this->column);
+    return ist_strbuf_sprintf(buffer, idxptr, ":%u:%u\"", this->line, this->column);
 }
 
 ist_string ist_location_dump(ist_location* this, ist_dumpctx dctx) {
@@ -20,5 +20,5 @@ ist_string ist_location_dump(ist_location* this, ist_dumpctx dctx) {
         dctx.buffer, dctx.idxptr, "\"%s", this->module ? this->module->name : "(unknown)"
     );
     if (this->pagename) ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, ":%s", this->pagename);
-    return ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, ":%zu:%zu\"", this->line, this->column);
+    return ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, ":%u:%u\"", this->line, this->column);
 }

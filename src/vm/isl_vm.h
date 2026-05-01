@@ -22,6 +22,9 @@ ist_vm  ist_vm_consby_instream(ist_instream _instream);
 ist_vm* ist_vm_initby_instream(ist_vm* this, ist_instream _instream);
 ist_vm* ist_vm_createby_instream(ist_instream _instream);
 
+void ist_vm_clean(ist_vm* this);
+void ist_vm_delete(ist_vm* this);
+
 void ist_vm_run(ist_vm* vm);
 
 #endif // ISC_VM_H

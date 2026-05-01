@@ -85,7 +85,7 @@ void ist_parsent_delete(ist_parsent this) {
         default:
             isp_unreachable();
     }
-    isl_free(this);
+    ist_astnode_delete(this);
 }
 
 ist_string ist_parsentptr_dump(ist_parsent* this, ist_dumpctx dctx) {
