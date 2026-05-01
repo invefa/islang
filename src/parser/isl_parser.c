@@ -252,7 +252,7 @@ ist_parseYield parse_stmts(ist_parser* this) {
         }
     );
 
-    while (cur_token().type != ISL_TOKENT_EOF || cur_token().type != ISL_TOKENT_RBRACE) {
+    while (cur_token().type != ISL_TOKENT_EOF && cur_token().type != ISL_TOKENT_RBRACE) {
         ist_parseYield yield = parse_stmt(this);
         if (yield.ok) ist_parsentList_addm(&stmts->as.list.this, yield.ok);
         switch (yield.status) {
