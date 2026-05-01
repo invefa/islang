@@ -27,23 +27,23 @@ manifest(expr, (struct {
                  isn_psentExprKind_fncall,
              } kind;
              union {
-                 struct {
+                 struct ist_astnodeAs_exprAs_unary{
                      ist_tokenType op;
                      ist_astnode*  lhs;
                      ist_astnode*  rhs;
                  } unary;
-                 struct {
+                 struct ist_astnodeAs_exprAs_binary{
                      ist_tokenType op;
                      ist_astnode*  lhs;
                      ist_astnode*  rhs;
                  } binary;
-                 struct {
+                 struct ist_astnodeAs_exprAs_ternary{
                      ist_tokenType op;
                      ist_astnode*  st;
                      ist_astnode*  nd;
                      ist_astnode*  rd;
                  } ternary;
-                 struct {
+                 struct ist_astnodeAs_exprAs_fncall{
                      ist_astnode*    fn;
                      ist_parsentList args;
                  } fncall;
