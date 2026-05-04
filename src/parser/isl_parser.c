@@ -286,7 +286,7 @@ ist_parseYield parse_stmt(ist_parser* this) {
 }
 
 ist_parseYield parse_use_stmt(ist_parser* this) {
-    ist_astnodeAs_use_stmt use_stmt = {.is_assign = true};
+    ist_astnodeAs_use_stmt use_stmt = {};
     assert_token(ISL_TOKENT_KW_USE, null);
     use_stmt.lhs = parse_force(parse_nud_name(this), (rid_expect_parsent_name));
     assert_token(ISL_TOKENT_ASSIGN, use_stmt.lhs);

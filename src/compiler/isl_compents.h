@@ -1,18 +1,11 @@
 
-manifest(unknown, (ist_compent))
+manifest(unk, (ist_usize))
 
-manifest(entref, (struct {
-             ist_compent base;
-             ist_usize   index;
-         }))
+manifest(entref, (struct { ist_u32 index; }))
 
-manifest(name, (struct {
-             ist_compent base;
-             ist_string  name;
-         }))
+manifest(name, (struct { ist_string name; }))
 
 manifest(expr, (struct {
-             ist_compent  base;
-             ist_astnode* node;
-             ist_bool     is_const;
+             ist_vptr ceirs;
+             ist_bool is_const;
          }))

@@ -5,68 +5,45 @@
 #include "isl_string.h"
 #include "isl_types.h"
 
-
-typedef ist_u8 ist_compent_kindenum;
-enum ist_compent_kindenum {
-#define manifest(_name, _struct) isl_cpentkind_##_name,
+// TODO: make the enum name form more concord!
+typedef enum ist_compentKind {
+#define manifest(_name, _struct) ist_compentKind_##_name,
 #include "isl_compents.h"
 #undef manifest
-};
+} ist_compentKind;
+
+
+#define manifest(_name, _struct) typedef _ISL_MACRO_UNPACK _struct ist_compentAs_##_name;
+#include "isl_compents.h"
+#undef manifest
+
+typedef union ist_compentAs {
+#define manifest(_name, _struct) ist_compentAs_##_name _name;
+#include "isl_compents.h"
+#undef manifest
+} ist_compentAs;
 
 typedef struct ist_compent {
-    ist_compent_kindenum kind;
-    ist_location         location;
+    ist_compentKind kind;
+    ist_location    location;
+    ist_compentAs   as;
 } ist_compent;
+#define ist_compent_ (ist_compent)
 
-#define manifest(_name, _struct) typedef _ISL_MACRO_UNPACK _struct ist_compent_##_name;
-#include "isl_compents.h"
-#undef manifest
+ist_compent ist_compent_consby_full(ist_compentKind kind, ist_location loc, ist_compentAs as);
+_isl_declare_initby_createby_with_consby(
+    (ist_compentKind kind, ist_location loc, ist_compentAs as),
+    ist_compent,
+    full
+);
+
+void ist_compent_clean(ist_compent* this);
+void ist_compent_delete(ist_compent* this);
+
+
 
 #define ISG_STRUCT_NAME ist_compentptr_list
 #define ISG_VALUE_TYPE  ist_compent*
 #include "isg_list_head.h"
-
-void ist_compent_clean(ist_compent* this);
-
-/* rkind means raw kind name, for example `ist_compent_expr` (kind) => `expr` (rkind) */
-#define ist_compent_createm(_rkind, _cons) (void*)isl_malloc_cons(ist_compent_##_rkind, _cons)
-#define ist_compent_createc(_rkind, _cons) (void*)isl_calloc_cons(ist_compent_##_rkind, _cons)
-
-#define ist_compent_consby_full(_kind, _location) \
-    ((ist_compent){.kind = (_kind), .location = (_location)})
-
-
-#define __IST_COMPENT_CREATEBY_FULL_CONS_0()
-#define __IST_COMPENT_CREATEBY_FULL_CONS_1(_cons)        _cons
-#define __IST_COMPENT_CREATEBY_FULL_CONS_2(_name, _cons) _cons
-#define __IST_COMPENT_CREATEBY_FULL_CONS(_cons...) \
-    _isl_overload(__IST_COMPENT_CREATEBY_FULL_CONS, ##_cons)
-
-#define __IST_COMPENT_CREATEBY_FULL_RESULT_NAME_0()             __RESULT__
-#define __IST_COMPENT_CREATEBY_FULL_RESULT_NAME_1(_cons)        __RESULT__
-#define __IST_COMPENT_CREATEBY_FULL_RESULT_NAME_2(_name, _cons) _name
-#define __IST_COMPENT_CREATEBY_FULL_RESULT_NAME(_cons...) \
-    _isl_overload(__IST_COMPENT_CREATEBY_FULL_RESULT_NAME, ##_cons)
-
-/**
- * Create an sub of compent by the raw type and the location and optional cons.
- * Raw type means the suffix of the type enum, for example, if you want to create
- * `ist_compent_scope`, you should provide the raw type as `scope`.
- *
- * Optionally, you can provide the constructor argument to initialize the compent,
- * just pass the argument in the form of a tuple to varg:cons.
- */
-#define ist_compent_createby_full(_rkind, _location, _cons...)              \
-    ({                                                                      \
-        ist_compent_##_rkind* __IST_COMPENT_CREATEBY_FULL_RESULT_NAME(_cons \
-        ) = isl_calloc(ist_compent_##_rkind);                               \
-        *(ist_compent*)__IST_COMPENT_CREATEBY_FULL_RESULT_NAME(_cons        \
-        ) = ist_compent_consby_full(isl_cpentkind_##_rkind, _location);     \
-        __IST_COMPENT_CREATEBY_FULL_CONS(_cons);                            \
-        (void*)__IST_COMPENT_CREATEBY_FULL_RESULT_NAME(_cons);              \
-    })
-
-#define ist_compent_defineby_full(varid, _rkind, _location, _cons...) \
-    ist_compent_##_rkind* varid = ist_compent_createby_full(_rkind, _location, _cons)
 
 #endif // ISC_COMPENT_H
