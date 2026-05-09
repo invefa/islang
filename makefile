@@ -6,68 +6,88 @@
 ###########################
 
 #compiler relevants
-compiler_name			:= gcc
-compiler_flags			:= -fdiagnostics-color=always -std=gnu11
-release_version_flags	:= -s -O3
-todebug_version_flags	:= -g -DISL_DEBUG
-enable_warnings			:= all shadow no-pointer-sign inline unreachable-code
-optional_macros			:= ISL_BWMF #islang build with makefile
+compiler_name         := gcc
+compiler_flags        := -fdiagnostics-color=always -std=gnu11
+release_version_flags := -s -O3
+todebug_version_flags := -g -DISL_DEBUG
+enable_warnings	      := all shadow no-pointer-sign inline unreachable-code
+optional_macros	      := ISL_BWMF #islang build with makefile
+
+
+#target relevants
+target_driver_name   := is
+target_tester_name   := tester
+target_driver_srcdir  = $(srcdir_root)/driver
+target_tester_srcdir  = $(srcdir_root)/tester
+
+
+#source dir relevants
+srcdir_root := src
+rsubdirs = \
+	$(filter %/,\
+		$(foreach d,\
+			$(wildcard $(1:=/*/)),\
+			$(call rsubdirs,$(d:%/=%)) $d\
+		)\
+	)
+
+srcdirs := \
+	$(filter-out $(target_driver_srcdir) $(target_tester_srcdir),\
+		$(srcdir_root) $(patsubst %/,%,$(call rsubdirs,$(srcdir_root)))\
+	)
 
 
 #debugger relevants
-debugger_name	:= gdb
-debugger_flags	:=
-
-#source files relevants
-source_dir		:= src
-source_subdirs	:= \
-	utils memgr string report lexer parser compiler vm generic
+debugger_name  := gdb
+debugger_flags :=
 
 #depend files relevants
-depend_flags	:=
+depend_flags :=
 
 #build relevants
-build_base_dir	:= builds
-build_target_dir:= target
-build_depend_dir:= depend
+build_base_dir   := builds
+build_target_dir := target
+build_depend_dir := depend
 
 #run relevants
-run_args		:=
+run_args :=
 
 #symbols
-symbol_empty	:=
-symbol_space	:= $(symbol_empty) $(symbol_empty)
-symbol_comma	:= ,
+symbol_empty :=
+symbol_space := $(symbol_empty) $(symbol_empty)
+symbol_comma := ,
 
+
+#target indicate
 ifdef dt # quickly indicate to debug-tester
-    build_target	:= tester
-    source_subdirs	:= $(source_subdirs) tester
+    build_target := $(target_tester_name)
+    srcdirs      += $(target_tester_srcdir)
 else ifndef target
-    build_target	:= is
-    source_subdirs	:= $(source_subdirs) driver
-else ifeq ($(target),driver)
-    build_target	:= is
-    source_subdirs	:= $(source_subdirs) driver
-else ifeq ($(target),tester)
-    build_target	:= tester
-    source_subdirs	:= $(source_subdirs) tester
+    build_target := $(target_driver_name)
+    srcdirs      += $(target_driver_srcdir)
+else ifeq ($(target),$(target_driver_name))
+    build_target := $(target_driver_name)
+    srcdirs      += $(target_driver_srcdir)
+else ifeq ($(target),$(target_tester_name))
+    build_target := $(target_tester_name)
+    srcdirs      += $(target_tester_srcdir)
 else
     $(error You must indicate a value between driver and tester for target!)
 endif
 
 #options for Compatibility (different from OS, capable for Windows / Linux / MacOS)
 ifeq ($(OS),Windows_NT)
-    build_target	:= $(build_target).exe
-    dir_slash		:= $(symbol_empty)\$(symbol_empty)
-    rmfile_cmd		:= del /Q
-    rmdir_cmd		:= rmdir /Q /S
+    build_target := $(build_target).exe
+    dir_slash    := $(symbol_empty)\$(symbol_empty)
+    rmfile_cmd   := del /Q
+    rmdir_cmd    := rmdir /Q /S
 else
-    rmfile_cmd		:= rm -rf
-    rmdir_cmd		:= rm -rf
-    dir_slash		:= $(symbol_empty)/$(symbol_empty)
+    rmfile_cmd := rm -rf
+    rmdir_cmd  := rm -rf
+    dir_slash  := $(symbol_empty)/$(symbol_empty)
 endif
-mkdir_cmd	:= mkdir
-echo_cmd	:= echo
+mkdir_cmd := mkdir
+echo_cmd  := echo
 
 
 ###################################
@@ -76,45 +96,46 @@ echo_cmd	:= echo
 
 #full expanding and redirecting for variables
 
-build_depend_dir	:= $(build_base_dir)/$(build_depend_dir)
+build_depend_dir := $(build_base_dir)/$(build_depend_dir)
 
 ifdef dt # quickly indicate to debug-tester
-    build_version_flags	:= $(todebug_version_flags)
-    build_dir			:= $(build_base_dir)/debug
+    build_version_flags := $(todebug_version_flags)
+    build_dir           := $(build_base_dir)/debug
 else ifndef mode
-    build_version_flags	:= $(release_version_flags)
-    build_dir			:= $(build_base_dir)/release
+    build_version_flags := $(release_version_flags)
+    build_dir           := $(build_base_dir)/release
 else ifeq ($(mode),debug)
-    build_version_flags	:= $(todebug_version_flags)
-    build_dir			:= $(build_base_dir)/debug
+    build_version_flags := $(todebug_version_flags)
+    build_dir           := $(build_base_dir)/debug
 else ifeq ($(mode),release)
-    build_version_flags	:= $(release_version_flags)
-    build_dir			:= $(build_base_dir)/release
+    build_version_flags := $(release_version_flags)
+    build_dir           := $(build_base_dir)/release
 else
     $(error You must indicate a value between release and debug for mode!)
 endif
 
-build_target_dir:= $(build_dir)/$(build_target_dir)
+build_target_dir := $(build_dir)/$(build_target_dir)
 
-source_subdirs	:= $(foreach _dir,$(source_subdirs),$(source_dir)/$(_dir))
-source_dirs		:= $(source_dir) $(source_subdirs)
+# source_subdirs	:= $(foreach _dir,$(source_subdirs),$(srcdir_root)/$(_dir))
+# source_subdirs := $(call rsubdirs,$(srcdir_root))
+# source_dirs    := $(srcdir_root) $(source_subdirs)
 
-compile_header	:= $(compiler_name) $(compiler_flags) $(build_version_flags)
-compile_header	+= $(foreach _waring,$(enable_warnings),-W$(_waring))
-compile_header	+= $(foreach _dir,$(source_dirs),-I$(_dir))
-compile_header	+= $(foreach _macro,$(optional_macros),-D$(_macro))
+compile_header := $(compiler_name) $(compiler_flags) $(build_version_flags)
+compile_header += $(foreach _waring,$(enable_warnings),-W$(_waring))
+compile_header += $(foreach _dir,$(srcdirs),-I$(_dir))
+compile_header += $(foreach _macro,$(optional_macros),-D$(_macro))
 
-build_dirs		:= $(build_base_dir) $(build_depend_dir) $(build_dir) $(build_target_dir)
-build_dirs		+= $(foreach _dir,$(source_dirs),$(build_depend_dir)/$(_dir))
-build_dirs		+= $(foreach _dir,$(source_dirs),$(build_dir)/$(_dir))
-build_target	:= $(build_target_dir)/$(build_target)
+build_dirs   := $(build_base_dir) $(build_depend_dir) $(build_dir) $(build_target_dir)
+build_dirs   += $(foreach _dir,$(srcdirs),$(build_depend_dir)/$(_dir))
+build_dirs   += $(foreach _dir,$(srcdirs),$(build_dir)/$(_dir))
+build_target := $(build_target_dir)/$(build_target)
 
-source_files	:= $(foreach _dir,$(source_dirs),$(wildcard $(_dir)/*.c))
-object_files	:= $(foreach _file,$(source_files),$(build_dir)/$(_file:.c=.o))
-depend_files	:= $(foreach _file,$(source_files),$(build_depend_dir)/$(_file:.c=.d))
+source_files := $(foreach _dir,$(srcdirs),$(wildcard $(_dir)/*.c))
+object_files := $(foreach _file,$(source_files),$(build_dir)/$(_file:.c=.o))
+depend_files := $(foreach _file,$(source_files),$(build_depend_dir)/$(_file:.c=.d))
 
-phony_depend_files	:= $(foreach _file,$(depend_files),phony$(_file))
-existed_depend_files:= $(wildcard $(depend_files))
+phony_depend_files   := $(foreach _file,$(depend_files),phony$(_file))
+existed_depend_files := $(wildcard $(depend_files))
 
 ###############
 #### rules ####
@@ -203,7 +224,7 @@ test_escapes = -o $@ $< -MM -MT $(@:.d=.o)
 echo:
 	@$(echo_cmd) source_subdirs: $(source_subdirs)
 	@$(echo_cmd) ---------------------------------------------
-	@$(echo_cmd) source_dirs: $(source_dirs)
+	@$(echo_cmd) srcdirs: $(srcdirs)
 	@$(echo_cmd) ---------------------------------------------
 	@$(echo_cmd) build_dirs: $(build_dirs)
 	@$(echo_cmd) ---------------------------------------------
@@ -226,6 +247,8 @@ echo:
 	@$(echo_cmd) subst_with_dir_slash: $(subst /,$(dir_slash), build/src/utils)
 	@$(echo_cmd) ---------------------------------------------
 	@$(echo_cmd) test_escapes: $(test_escapes)
+	@$(echo_cmd) ---------------------------------------------
+	@$(echo_cmd) test_rsubdirs: $(call rsubdirs,src)
 
 help:
 ifeq ($(OS),Windows_NT)
