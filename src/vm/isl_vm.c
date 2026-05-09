@@ -1,5 +1,7 @@
 #include "isl_vm.h"
 
+#include "isl_genmacros.h"
+
 ist_vm ist_vm_consby_full(ist_instream _instream, ist_value_stack* _stack) {
     return (ist_vm){
         .instream = _instream,
