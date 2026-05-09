@@ -72,10 +72,8 @@ inline void ist_module_clean(ist_module* this) {
     this->name     = NULL;
     this->filepath = NULL;
 }
-inline void ist_module_delete(ist_module* this) {
-    ist_module_clean(this);
-    isl_free(this);
-}
+_isl_define_delete_with_clean(ist_module);
+
 
 
 inline ist_usize ist_module_register_string(ist_module* this, ist_string _str, ist_moskind _kind) {

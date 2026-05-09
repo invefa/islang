@@ -9,13 +9,13 @@
 // TODO: add an error signal.
 typedef struct ist_lexer {
 
-    ist_module*   module;               /*  the module which this lexer belongs to               */
-    ist_codepage* codepage;             /*  the codepage currently being read                    */
-    ist_token                           /*  the lexer will provide a table of token              */
-        pre_token,                      /*  previous token, the token before the current token   */
-        cur_token,                      /*  current token, the current token                     */
-        nex_token,                      /*  next token, the token after the current token        */
-        sec_token;                      /*  second token, the token after the next token         */
+    ist_module*   module;              /*  the module which this lexer belongs to               */
+    ist_codepage* codepage;            /*  the codepage currently being read                    */
+    ist_token                          /*  the lexer will provide a table of token              */
+        pre_token,                     /*  previous token, the token before the current token   */
+        cur_token,                     /*  current token, the current token                     */
+        nex_token,                     /*  next token, the token after the current token        */
+        sec_token;                     /*  second token, the token after the next token         */
 
     ist_token_list ahead_token_list;   /*  the list of ahead tokens            */
     ist_usize      ahead_token_index;  /*  the index of current ahead token    */

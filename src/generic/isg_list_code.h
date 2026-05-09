@@ -21,21 +21,11 @@ inline ISG_STRUCT_NAME* ISG_FN_NAME(initc)(ISG_STRUCT_NAME* this, ist_usize _cap
     return this;
 }
 
-inline ISG_STRUCT_NAME* ISG_FN_NAME(malloc)(ist_usize _capacity) {
-    return ISG_FN_NAME(initm)(isl_malloc(ISG_STRUCT_NAME), _capacity);
-}
-inline ISG_STRUCT_NAME* ISG_FN_NAME(calloc)(ist_usize _capacity) {
-    return ISG_FN_NAME(initc)(isl_malloc(ISG_STRUCT_NAME), _capacity);
-}
-
 inline ISG_STRUCT_NAME* ISG_FN_NAME(createm)(ist_usize _capacity) {
     return ISG_FN_NAME(initm)(isl_malloc(ISG_STRUCT_NAME), _capacity);
 }
 inline ISG_STRUCT_NAME* ISG_FN_NAME(createc)(ist_usize _capacity) {
     return ISG_FN_NAME(initc)(isl_malloc(ISG_STRUCT_NAME), _capacity);
-}
-inline ISG_STRUCT_NAME* ISG_FN_NAME(create)(ist_usize _capacity, ist_bool _doclean) {
-    return _doclean ? ISG_FN_NAME(calloc)(_capacity) : ISG_FN_NAME(malloc)(_capacity);
 }
 
 inline void ISG_FN_NAME(resizm)(ISG_STRUCT_NAME* this, ist_usize _newcap) {

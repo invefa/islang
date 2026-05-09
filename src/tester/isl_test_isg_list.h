@@ -5,7 +5,7 @@
 #include "isg_test_defines.h"
 ISL_TEST_HEAD {
 
-    ist_usize_list* list = ist_usize_list_calloc(128);
+    ist_usize_list* list = ist_usize_list_createc(128);
 
     isg_list_foreach (itemp, *list, index) *itemp = index;
     isg_list_foreach (itemp, *list, index)

@@ -12,7 +12,7 @@ ISL_TEST_HEAD {
     ist_compiler compiler = ist_compiler_{
         .module   = &module,
         .parser   = &parser,
-        .instream = ist_instream_calloc(16),
+        .instream = ist_instream_createc(16),
     };
 
 

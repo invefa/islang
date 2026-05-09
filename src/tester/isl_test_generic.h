@@ -10,7 +10,7 @@ ISL_TEST_HEAD {
 
     // isp_report_option_enable(ISP_ROPTM_NO_CORE_INFO);
 
-    ist_value_list* value_list = ist_value_list_create(10, 1);
+    ist_value_list* value_list = ist_value_list_createc(10);
 
     struct timespec start, end;
     clock_gettime(CLOCK_REALTIME, &start);
@@ -31,7 +31,7 @@ ISL_TEST_HEAD {
     //     printf("value[%zu] = %" PRId64 "\n", idx, iterp->int_value);
 
 
-    ist_moduleList* module_list = ist_moduleList_calloc(10);
+    ist_moduleList* module_list = ist_moduleList_createc(10);
     ist_moduleList_addc(
         module_list, ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is"))
     );

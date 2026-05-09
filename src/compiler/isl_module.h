@@ -80,7 +80,7 @@ ist_module* ist_module_initby_filepath(ist_module* this, ist_string _filepath);
 ist_module* ist_module_createby_filepath(ist_string _filepath);
 
 void ist_module_clean(ist_module* this);
-void ist_module_delete(ist_module* this);
+_isl_declare_delete_with_clean(ist_module);
 
 /**
  * module reference is depend on ist_context,

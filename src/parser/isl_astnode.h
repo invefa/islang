@@ -2,8 +2,9 @@
 #define ISC_ASTNODE_H
 
 #include "isl_dump.h"
-#include "isl_token.h"
 #include "isl_genmacros.h"
+#include "isl_token.h"
+
 
 typedef enum ist_astnodeKind ist_astnodeKind;
 typedef union ist_astnodeAs  ist_astnodeAs;
@@ -68,8 +69,6 @@ _isl_declare_initby_createby_with_consby(
 
 void ist_astnode_clean(ist_astnode* this);
 void ist_astnode_delete(ist_astnode* this);
-
-ist_string ist_astnode_dump(ist_astnode* this, ist_dumpctx dctx);
 
 
 /**

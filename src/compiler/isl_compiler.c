@@ -116,7 +116,7 @@ void ist_compiler_codegen(ist_compiler* this) {}
 
 
 void ist_compiler_compile(ist_compiler* this) {
-    if (!this->instream) this->instream = ist_instream_calloc(16);
+    if (!this->instream) this->instream = ist_instream_createc(16);
     if (!this->node) return;
     isg_list_foreach (psent_p, this->node->as.scope.stmts) {
         this->node = *psent_p;
