@@ -48,7 +48,7 @@ ISL_TEST_HEAD {
         printf(
             "module[%zu] = %s\n",
             idx,
-            ist_module_dump(iterp, ist_dumpctx_{buffer, NULL, 0, DKIND_JSON})
+            ist_module_dump(iterp, ist_dumpctx_{buffer, NULL, DKIND_JSON})
         );
     }
 

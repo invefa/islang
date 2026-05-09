@@ -41,7 +41,7 @@ typedef ist_i8 ist_bool;
 
 typedef union ist_value     ist_value;
 typedef struct ist_module   ist_module;
-typedef struct ist_context  ist_context;
+typedef struct ist_compctx  ist_compctx;
 typedef struct ist_location ist_location;
 typedef struct ist_token    ist_token;
 typedef struct ist_codepage ist_codepage;

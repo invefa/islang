@@ -42,8 +42,8 @@ void ist_compent_delete(ist_compent* this);
 
 
 /**
- * compent reference is depend on `ist_context`,
- * it is the index of compent in `ist_context::compents` */
+ * compent reference is depend on `ist_compctx`,
+ * it is the index of compent in `ist_compctx::compents` */
 typedef ist_usize ist_compentRef;
 
 #define ISG_STRUCT_NAME ist_compentRefList

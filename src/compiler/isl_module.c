@@ -1,5 +1,5 @@
 #include "inttypes.h"
-#include "isl_context.h"
+#include "isl_compctx.h"
 #include "isl_dump.h"
 #include "isl_module.h"
 

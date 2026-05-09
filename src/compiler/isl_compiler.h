@@ -2,12 +2,12 @@
 #define ISC_COMPILER_H
 
 #include "isl_astnode.h"
-#include "isl_context.h"
+#include "isl_compctx.h"
 #include "isl_instream.h"
 #include "isl_parser.h"
 
 typedef struct ist_compiler {
-    ist_context*  ctx;
+    ist_compctx*  ctx;
     ist_parser*   parser;
     ist_module*   module;
     ist_astnode*  node;

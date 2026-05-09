@@ -49,7 +49,7 @@ typedef struct ist_module {
      * The compiling context that this module belong to.
      * It use to query and register compents.
      */
-    ist_context* ctx;
+    ist_compctx* ctx;
     /**
      * The list of module owned string for this module, it will store all string of module.
      * Including the name of all c-structures which serving this module (including the name of it
@@ -62,7 +62,7 @@ typedef struct ist_module {
 
     /**
      * The list of all exist compile-time entities.
-     * module don't have the ownership of compent, the compent own by `ist_context` where store all
+     * module don't have the ownership of compent, the compent own by `ist_compctx` where store all
      * the information of the artifact.
      */
     ist_compentPtrList compents;
@@ -83,8 +83,8 @@ void ist_module_clean(ist_module* this);
 _isl_declare_delete_with_clean(ist_module);
 
 /**
- * module reference is depend on `ist_context`,
- * it is the index of module in `ist_context::modules` */
+ * module reference is depend on `ist_compctx`,
+ * it is the index of module in `ist_compctx::modules` */
 typedef ist_usize ist_moduleRef;
 
 /**
