@@ -28,16 +28,16 @@ enum ist_dumpstyle {
 
 typedef struct ist_dumpctx {
     ist_string*   buffer;
-    ist_usize*    idxptr;
     ist_dumpstyle style;
+    ist_usize*    idxptr;
     ist_usize     indent;
 } ist_dumpctx;
 /**
  * dumping context
  * buffer : the buffer for dumping
+ * style  : store the format and flag info
  * idxptr : pointer of index
  * indent : indent level
- * style  : store the format and flag info
  */
 #define ist_dumpctx_ (ist_dumpctx)
 

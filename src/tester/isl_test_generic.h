@@ -45,11 +45,7 @@ ISL_TEST_HEAD {
     ist_strbuf buffer = ist_strbuf_cons(142);
 
     isg_list_foreach (iterp, *module_list, idx) {
-        printf(
-            "module[%zu] = %s\n",
-            idx,
-            ist_module_dump(iterp, ist_dumpctx_{buffer, NULL, DKIND_JSON})
-        );
+        printf("module[%zu] = %s\n", idx, ist_module_dump(iterp, ist_dumpctx_{buffer, DKIND_JSON}));
     }
 
     ist_strbuf_clean(&buffer);

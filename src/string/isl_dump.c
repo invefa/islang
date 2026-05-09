@@ -11,7 +11,7 @@
 #define dumprs(_raws...)       ist_strbuf_append_raws(dctx.buffer, dctx.idxptr, ##_raws)
 #define asdumper(_adr)         ((ist_dumper)(_adr))
 #define appdumper(_dumper, _valp, _indent, _style) \
-    asdumper(_dumper)(_valp, ist_dumpctx_{dctx.buffer, dctx.idxptr, _style, _indent})
+    asdumper(_dumper)(_valp, ist_dumpctx_{dctx.buffer, _style, dctx.idxptr, _indent})
 
 #define nl()                                dumpr("\n")
 #define nltab(_count)                       dumpr("\n"), tab(_count)
