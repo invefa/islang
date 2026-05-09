@@ -45,6 +45,47 @@ int main(){
         if (a % 23 == 1) break Some(a);
     } else None;
 
+    use test_fn1 = fn(x: int, y: int): int => x + y;
+    use test_fn2 = fn(x: int, y: int): int {x + y};
+    use test_fn3 = fn(x, y): int => x + y;  // unconducted fn there
+    use test_fn4 = fn(x, y) => x + y;       // unconducted fn there
+    use test_fn5_type = fn(int, int): int;
+    use test_fn5_protocol1 = fn(x: int, y: int): int;
+    use test_fn5_protocol2 = test_fn5_type(x, y);
+    use test_fn5_protocol3 = fn(int, int): int` (x, y);
+    use test_fn5 = test_fn5_protocol1 {x + y};
+    use test_fn6 = test_fn5_protocol2 => x + y;
+    use test_fn7 = test_fn5_protocol3 => x + y;
+    use test_fn8 = fn:int(int x, int y) => x + y;
+    use test_fn8 = fn:int(int x, int y) {x + y};
+    println(test_fn1(1, 2));
+    println(test_fn2(1, 2));
+    println(test_fn3(1, 2)); // conducted fn there
+    println(test_fn4(1, 2)); // conducted fn there
+    println(test_fn5(1, 2));
+    println(test_fn6(1, 2));
+    println(test_fn7(1, 2));
+    println(test_fn8(1, 2));
+
+    use std::'type::is::[Intger, String] in {
+        /* form<x: int, y: int>: expr<int> */
+        use test_form1_1 = form<x: int, y: int>:int {x + y};
+        use test_form1_2 = form<x: int, y: int> {x + y};
+        use test_form1_3 = form<x: int, y: int> x + y;
+        
+        /* form<x: Integer, y: String>: std::compent::expr::arith_expr<str> */
+        use test_form2_1 = form<x: type, y: type> where x: Integer, y: String {span:x(6)->str + span:y("=lord")};
+        use test_form2_2 = form<x: type, y: type> where x: Integer, y: String => span:x(6)->str + span:y("=lord");
+        use test_form2_3 = form<x: type, y: type> where x: Integer, y: String` span:x(6)->str + span:y("=lord");
+        use test_form2_4 = form<x: Integer, y: String>: str => span:x(6)->str + span:y("=lord");
+        use test_form3_1 = form<x: type, y: type> where x: Integer, y: String => const{span:x(6)->str + span:y("=lord")};
+
+        /* form<x: Integer, y: String>: std::compent::expr::scope_expr<str> */
+        use test_form3_1 = form<x: type, y: type> where x: Integer, y: String => {span:x(6)->str + span:y("=lord")};
+        use test_form3_2 = form<x: type, y: type> where x: Integer, y: String => {span:x(6)->str + span:y("=lord")};
+        use test_form3_3 = form<x: Integer, y: String>: str => {span:x(6)->str + span:y("=lord")};
+    }!;
+
     println(found1.unwrap(), found2.unwrap());
 
     return 0;
