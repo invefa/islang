@@ -238,7 +238,6 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
                     },
                 },
                 dctx
-
             );
             break;
         }
@@ -257,7 +256,6 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
                     },
                 },
                 dctx
-
             );
             break;
         }

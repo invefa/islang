@@ -198,8 +198,8 @@ enum ist_optbindpower {
     OBP_TERM      = 0xB0,      // * / %
     OBP_FACTOR    = 0xC0,      // ^
     OBP_PREFIX    = 0xD0,      // ++ -- * & ! ~
-    OBP_SUFFIX    = 0xE0,      // ++ -- * & ^ !
-    OBP_CALL      = 0xF0,      // (...) [...] . ->
+    OBP_SUFFIX    = 0xE0,      // ++ -- * & ^ ! ?
+    OBP_CALL      = 0xF0,      // (...) [...] <...> . ->
     OBP_ATOM      = 0XFFF,     // reserved for identifier or unit.
     OBP_HIGHEST   = INT16_MAX, // highest of i16.
 };
