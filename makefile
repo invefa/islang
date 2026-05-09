@@ -27,7 +27,7 @@ rsubdirs = \
 	$(filter %/,\
 		$(foreach d,\
 			$(wildcard $(1:=/*/)),\
-			$(call rsubdirs,$(d:%/=%)) $d\
+			$d $(call rsubdirs,$(d:%/=%))\
 		)\
 	)
 
