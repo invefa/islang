@@ -65,7 +65,7 @@ typedef struct ist_module {
      * module don't have the ownership of compent, the compent own by ist_context where store all
      * the information of the artifact.
      */
-    ist_compentptr_list compent_list;
+    ist_compentPtrList compents;
 
 
 } ist_module;
@@ -83,12 +83,23 @@ void ist_module_clean(ist_module* this);
 void ist_module_delete(ist_module* this);
 
 /**
+ * module reference is depend on ist_context,
+ * it is the index of module in ist_context::modules */
+typedef ist_usize ist_moduleRef;
+
+/**
  * Register a long live string to the module, and return the index of it.
  * It will return the index of the string in the mostring_list:
  * If the string buffer is already registered, it will update the type of it, and return the index.
  * If the string buffer is NULL, it will return the size of the mostring_list.
  */
-ist_usize ist_module_register_string(ist_module* this, ist_string _strbuf, ist_moskind _type);
+ist_usize  ist_module_register_string(ist_module* this, ist_string _str, ist_moskind _kind);
+ist_string ist_module_acquire_string(
+    ist_module* this,
+    ist_cstring _cstr,
+    ist_usize   _len,
+    ist_moskind _kind
+);
 
 ist_string ist_module_dump(ist_module* this, ist_dumpctx dctx);
 
@@ -97,7 +108,8 @@ ist_string ist_module_dump(ist_module* this, ist_dumpctx dctx);
  * Define the list of modules.
  * It will store all modules in the compilation.
  */
-#define ISG_VALUE_TYPE ist_module
+#define ISG_STRUCT_NAME ist_moduleList
+#define ISG_VALUE_TYPE  ist_module
 #include "isg_list_head.h"
 
 #endif // ISC_MODULE_H

@@ -1,8 +1,18 @@
 #include "isl_compent.h"
 
-#define ISG_STRUCT_NAME              ist_compentptr_list
+#define ISG_STRUCT_NAME ist_compentRefList
+#define ISG_VALUE_TYPE  ist_compentRef
+#define ISG_VALUE_DONT_CLEAN
+#include "isg_list_code.h"
+
+#define ISG_STRUCT_NAME              ist_compentPtrList
 #define ISG_VALUE_TYPE               ist_compent*
 #define ISG_VALUE_FN_CLEAN(cpent_pp) ist_compent_clean(*(cpent_pp))
+#include "isg_list_code.h"
+
+#define ISG_STRUCT_NAME             ist_compentList
+#define ISG_VALUE_TYPE              ist_compent
+#define ISG_VALUE_FN_CLEAN(cpent_p) ist_compent_clean(cpent_p)
 #include "isg_list_code.h"
 
 ist_compent ist_compent_consby_full(ist_compentKind kind, ist_location loc, ist_compentAs as) {

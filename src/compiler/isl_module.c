@@ -8,7 +8,8 @@
 #define ISG_VALUE_FN_CLEAN(_entp) ist_string_clean(&(_entp)->data)
 #include "isg_list_code.h"
 
-#define ISG_VALUE_TYPE ist_module
+#define ISG_STRUCT_NAME ist_moduleList
+#define ISG_VALUE_TYPE  ist_module
 #include "isg_list_code.h"
 
 inline ist_string isl_filename_catchby_filepath(ist_cstring _filepath) {
@@ -77,20 +78,34 @@ inline void ist_module_delete(ist_module* this) {
 }
 
 
-inline ist_usize ist_module_register_string(
-    ist_module* this,
-    ist_string  _strbuf,
-    ist_moskind _kind
-) {
-    if (!_strbuf) return this->mostring_list.size;
+inline ist_usize ist_module_register_string(ist_module* this, ist_string _str, ist_moskind _kind) {
+    if (!_str) return this->mostring_list.size;
 
     isg_list_foreach (itp, this->mostring_list, idx)
-        if (itp->data == _strbuf) return itp->kind = _kind, idx;
+        if (itp->data == _str) return itp->kind = _kind, idx;
 
     return ist_mostring_list_addm(
-        &this->mostring_list, (ist_mostring){.kind = _kind, .data = _strbuf}
+        &this->mostring_list, (ist_mostring){.kind = _kind, .data = _str}
     );
 }
+
+ist_string ist_module_acquire_string(
+    ist_module* this,
+    ist_cstring _cstr,
+    ist_usize   _len,
+    ist_moskind _kind
+) {
+    if (!_cstr) return null;
+
+    isg_list_foreach (itp, this->mostring_list)
+        if (_len == isl_list_catch_length(itp->data))
+            if (!strncmp(itp->data, _cstr, _len)) return itp->kind = _kind, itp->data;
+    ist_string str = ist_string_consby_ref(_cstr, _len);
+    ist_mostring_list_addm(&this->mostring_list, (ist_mostring){.kind = _kind, .data = str});
+    return str;
+}
+
+
 
 static ist_cstring isl_moskind_names[] = {
     [ISL_MOSKIND_UNKNOWN]   = "unknown",
