@@ -84,5 +84,15 @@
  * _ISL_MACRO_GET_ARGS_COUNT(...), then to concat test_overload and the result with underline.
  */
 
+ 
+#define __ISL_BINARY_OVERLOAD_FORWARD_CALL(_fn, _vargs...) \
+    __ISL_MACRO_CONCAT_WITH(_fn, _, __ISL_MACRO_HAS_ARG(_vargs))(_vargs)
+
+/**
+ * Binary overload forward only two case:
+ *  1. _vargs has no content, it will forward to _fn##_0
+ *  2. _vargs has    content, it will forward to _fn##_1 */
+#define _isl_binary_overload(_fn, _vargs...) __ISL_BINARY_OVERLOAD_FORWARD_CALL(_fn, ##_vargs)
+
 
 #endif // ISC_OVERLOAD_H

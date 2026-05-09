@@ -31,14 +31,14 @@ ISL_TEST_HEAD {
     //     printf("value[%zu] = %" PRId64 "\n", idx, iterp->int_value);
 
 
-    ist_module_list* module_list = ist_module_list_calloc(10);
-    ist_module_list_addc(
+    ist_moduleList* module_list = ist_moduleList_calloc(10);
+    ist_moduleList_addc(
         module_list, ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is"))
     );
-    ist_module_list_addc(
+    ist_moduleList_addc(
         module_list, ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is"))
     );
-    ist_module_list_addc(
+    ist_moduleList_addc(
         module_list, ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is"))
     );
 
@@ -53,7 +53,7 @@ ISL_TEST_HEAD {
     }
 
     ist_strbuf_clean(&buffer);
-    ist_module_list_delete(module_list);
+    ist_moduleList_delete(module_list);
     ist_value_list_delete(value_list);
 
     // isp_report_option_disable(ISP_ROPTM_NO_CORE_INFO);

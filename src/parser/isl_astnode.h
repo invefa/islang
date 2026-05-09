@@ -3,6 +3,7 @@
 
 #include "isl_dump.h"
 #include "isl_token.h"
+#include "isl_genmacros.h"
 
 typedef enum ist_astnodeKind ist_astnodeKind;
 typedef union ist_astnodeAs  ist_astnodeAs;
