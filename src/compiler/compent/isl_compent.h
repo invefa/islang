@@ -1,9 +1,13 @@
 #ifndef ISC_COMPENT_H
 #define ISC_COMPENT_H
+
 #include "isl_astnode.h"
 #include "isl_genmacros.h"
 #include "isl_string.h"
 #include "isl_types.h"
+
+#include "isl_compent_basetype.h"
+
 
 // TODO: make the enum name form more concord!
 typedef enum ist_compentKind {
