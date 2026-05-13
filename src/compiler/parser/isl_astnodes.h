@@ -20,7 +20,7 @@ manifest(name, (struct { ist_cstring name; }))
 
 /* expr parsent */
 manifest(expr, (struct {
-             enum ist_astnodeAs_exprKind {
+             enum isn_psentExprKind {
                  isn_psentExprKind_unary,
                  isn_psentExprKind_binary,
                  isn_psentExprKind_ternary,
@@ -29,30 +29,30 @@ manifest(expr, (struct {
              union {
                  struct ist_astnodeAs_exprAs_unary {
                      ist_tokenType op;
-                     ist_astnode*  lhs;
-                     ist_astnode*  rhs;
+                     ist_parsent   lhs;
+                     ist_parsent   rhs;
                  } unary;
                  struct ist_astnodeAs_exprAs_binary {
                      ist_tokenType op;
-                     ist_astnode*  lhs;
-                     ist_astnode*  rhs;
+                     ist_parsent   lhs;
+                     ist_parsent   rhs;
                  } binary;
                  struct ist_astnodeAs_exprAs_ternary {
                      ist_tokenType op;
-                     ist_astnode*  st;
-                     ist_astnode*  nd;
-                     ist_astnode*  rd;
+                     ist_parsent   st;
+                     ist_parsent   nd;
+                     ist_parsent   rd;
                  }* ternary;
                  struct ist_astnodeAs_exprAs_fncall {
-                     ist_astnode*    fn;
+                     ist_parsent     fn;
                      ist_parsentList args;
                  } fncall;
              } as;
          }))
 
 manifest(use_stmt, (struct {
-             ist_astnode* lhs;
-             ist_astnode* rhs;
+             ist_parsent lhs;
+             ist_parsent rhs;
          }))
 
-manifest(do_stmt, (struct { ist_astnode* expr; }))
+manifest(do_stmt, (struct { ist_parsent expr; }))

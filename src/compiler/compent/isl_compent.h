@@ -3,10 +3,16 @@
 
 #include "isl_astnode.h"
 #include "isl_genmacros.h"
+#include "isl_semnode.h"
 #include "isl_string.h"
 #include "isl_types.h"
 
 #include "isl_compent_basetype.h"
+
+
+#define ISG_STRUCT_NAME ist_compentRefList
+#define ISG_VALUE_TYPE  ist_compentRef
+#include "isg_list_head.h"
 
 
 // TODO: make the enum name form more concord!
@@ -45,14 +51,6 @@ void ist_compent_clean(ist_compent* this);
 void ist_compent_delete(ist_compent* this);
 
 
-/**
- * compent reference is depend on `ist_compctx`,
- * it is the index of compent in `ist_compctx::compents` */
-typedef ist_usize ist_compentRef;
-
-#define ISG_STRUCT_NAME ist_compentRefList
-#define ISG_VALUE_TYPE  ist_compentRef
-#include "isg_list_head.h"
 
 #define ISG_STRUCT_NAME ist_compentPtrList
 #define ISG_VALUE_TYPE  ist_compent*

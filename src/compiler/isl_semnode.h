@@ -28,6 +28,9 @@ typedef union ist_semnodeAs  ist_semnodeAs;
 typedef struct ist_semnode   ist_semnode;
 typedef struct ist_semnode*  ist_semtree;
 
+/* semantical tree array, must be `isl_list` */
+typedef struct ist_semnode* ist_semtrees;
+
 /* define the list of the parsent */
 #define ISG_STRUCT_NAME ist_semtreeList
 #define ISG_VALUE_TYPE  ist_semtree
@@ -44,7 +47,6 @@ typedef enum ist_semnodeKind {
 #include "isl_semnodes.h"
 #undef manifest
 } ist_semnodeKind;
-#define ist_parsentKind_ (ist_semnodeKind)
 
 extern ist_string ist_semnodeKindNames[];
 
@@ -63,7 +65,9 @@ typedef union ist_semnodeAs {
  * that contain the various infomation of this semnode.
  */
 typedef struct ist_semnode {
-    ist_semnodeKind kind;
+    ist_semnodeKind kind     : 8;
+    ist_bool        evaluated: 1;
+    ist_bool        errored  : 1;
     ist_location    location;
     ist_semnodeAs   as;
 } ist_semnode;

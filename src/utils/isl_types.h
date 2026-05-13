@@ -31,7 +31,7 @@ typedef char   ist_char;
 typedef void*  ist_vptr; /* void pointer, aka ptr */
 #define ist_vptr_ (ist_vptr)
 
-typedef ist_i8 ist_bool;
+typedef ist_u8 ist_bool;
 #define ist_bool_(_expr) !!(_expr)
 
 #define true  1
@@ -50,6 +50,13 @@ typedef struct ist_astnode  ist_astnode;
 typedef struct ist_parser   ist_parser;
 typedef struct ist_compent  ist_compent;
 typedef struct ist_compiler ist_compiler;
+
+
+/**
+ * compent reference is depend on `ist_compctx`,
+ * it is the index of compent in `ist_compctx::compents` */
+typedef ist_usize ist_compentRef;
+
 
 
 /* This is using to make a temp variable for somewhere need a data pointer */

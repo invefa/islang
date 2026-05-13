@@ -1,0 +1,28 @@
+
+
+use i32+str = fn(i, s) => i->str + s;
+use i32+str = fn(i: i32, s: str): str => i->str + s;
+
+use _+_ = fn(i: i32, s: str): str => i->str + s;
+use !_  = fn(s: str): str => s->enbrace(str::embrace::quote);
+
+fn i32+str`(i, s) => i->str + s;
+
+use scope1 = {
+    use x = 1;
+    use y = 99;
+    std::lang::primitive::apply<'+',x,y>->println();
+    std::lang::primitive::apply<'-',x,y>->println();
+    std::lang::primitive::apply<'*',x,y>->println();
+};
+
+use std::lang::compent::name in
+use name::from<'+'> = symbol{
+    form(x: i16, y: i16): i16 => extern"i16+i16"(x, y);
+    form(x: i32, y: i32): i32 => extern"i32+i32"(x, y);
+    form(x: i64, y: i64): i64 => extern"i64+i64"(x, y);
+};
+
+/* form(x: i32, y: i32): i32 => extern"i32+i32"(x, y);(1i32, 2i32) */
+/* extern"i32+i32"(1i32, 2i32) */
+use a = 1i32 + 2i32;
