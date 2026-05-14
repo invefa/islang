@@ -76,11 +76,11 @@ void codegen_ast_literal(ist_compiler* this) {
     ist_astnode* node = this->node;
 
     switch (node->as.literal.this.type) {
-        case isl_valtype_i64:
-            inst(ist_inst_pshi, (i64, node->as.literal.this.data.as_i64));
+        case isn_valueType_i64:
+            inst(ist_inst_pshi, (i64, node->as.literal.this.as.i64));
             break;
-        case isl_valtype_f64:
-            inst(ist_inst_pshd, (f64, node->as.literal.this.data.as_f64));
+        case isn_valueType_f64:
+            inst(ist_inst_pshd, (f64, node->as.literal.this.as.f64));
             break;
         default:
             isp_unreachable();

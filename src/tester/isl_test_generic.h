@@ -16,7 +16,7 @@ ISL_TEST_HEAD {
     clock_gettime(CLOCK_REALTIME, &start);
 
     for (ist_usize i = 0; i < 123456; ++i)
-        ist_value_list_addm(value_list, ist_value_consby_i64(i * 13));
+        ist_value_list_addm(value_list, ist_value_{.as.i64 = i * 13});
 
     clock_gettime(CLOCK_REALTIME, &end);
 
@@ -25,7 +25,7 @@ ISL_TEST_HEAD {
         (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1000000000.
     );
 
-    ist_value_list_addc(value_list, ist_value_consby_i64(1234567890));
+    ist_value_list_addc(value_list, ist_value_{.as.i64 = 1234567890});
 
     // isg_list_foreach (iterp, *value_list, idx)
     //     printf("value[%zu] = %" PRId64 "\n", idx, iterp->int_value);
@@ -56,16 +56,16 @@ ISL_TEST_HEAD {
 
     ist_value_stack* stack = ist_value_stack_calloc(16);
     for (ist_usize i = 0; i < 18; ++i) {
-        ist_value_stack_pushc(stack, ist_value_consby_u64(i));
+        ist_value_stack_pushc(stack, ist_value_{.as.u64 = i});
     }
 
     isg_list_foreach (vp, *stack) {
-        printf("%" PRIu64 " ", vp->as_u64);
+        printf("%" PRIu64 " ", vp->as.u64);
     }
     printf("\n");
 
     for (ist_usize i = 0; i < 18; ++i) {
-        isl_assert(ist_value_stack_pop(stack).as_u64 == 17 - i);
+        isl_assert(ist_value_stack_pop(stack).as.u64 == 17 - i);
     }
     // ist_value_stack_pop(stack);
 

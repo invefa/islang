@@ -453,7 +453,7 @@ ist_parseYield parse_nud_literal(ist_parser* this) {
                 .literal.this =
                     ist_tvalue_{
                         .type = isl_toklitype_to_valtype[pre_token().type],
-                        .data = pre_token().value,
+                        .as = pre_token().value.as,
                     },
             }
         ),

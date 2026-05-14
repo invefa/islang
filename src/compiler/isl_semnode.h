@@ -86,8 +86,6 @@ _isl_declare_initby_createby_with_consby(
 void ist_semnode_clean(ist_semnode* this);
 void ist_semnode_delete(ist_semnode* this);
 
-ist_string ist_semnode_dump(ist_semnode* this, ist_dumpctx dctx);
-
 
 typedef struct ist_semnode* ist_semtree;
 

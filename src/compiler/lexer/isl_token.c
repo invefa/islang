@@ -40,13 +40,13 @@ inline ist_string ist_token_dump_old(ist_token* this, ist_string* buffer, ist_us
     );
     switch (this->type) {
         case ISL_TOKENT_VL_INT:
-            ist_strbuf_sprintf(buffer, idxptr, ",value=%" PRId64, this->value.as_i64);
+            ist_strbuf_sprintf(buffer, idxptr, ",value=%" PRId64, this->value.as.i64);
             break;
         case ISL_TOKENT_VL_REAL:
-            ist_strbuf_sprintf(buffer, idxptr, ",value=%lf", this->value.as_f64);
+            ist_strbuf_sprintf(buffer, idxptr, ",value=%lf", this->value.as.f64);
             break;
         case ISL_TOKENT_VL_STRING:
-            ist_strbuf_sprintf(buffer, idxptr, ",value=\"%s\"", this->value.as_str);
+            ist_strbuf_sprintf(buffer, idxptr, ",value=\"%s\"", this->value.as.str);
             break;
         default:
             break;
@@ -72,13 +72,13 @@ inline ist_string ist_token_dump_json(ist_token* this, ist_string* buffer, ist_u
     );
     switch (this->type) {
         case ISL_TOKENT_VL_INT:
-            ist_strbuf_sprintf(buffer, idxptr, ",\"value\":%" PRId64, this->value.as_i64);
+            ist_strbuf_sprintf(buffer, idxptr, ",\"value\":%" PRId64, this->value.as.i64);
             break;
         case ISL_TOKENT_VL_REAL:
-            ist_strbuf_sprintf(buffer, idxptr, ",\"value\":%lf", this->value.as_f64);
+            ist_strbuf_sprintf(buffer, idxptr, ",\"value\":%lf", this->value.as.f64);
             break;
         case ISL_TOKENT_VL_STRING:
-            ist_strbuf_sprintf(buffer, idxptr, ",\"value\":\"%s\"", this->value.as_str);
+            ist_strbuf_sprintf(buffer, idxptr, ",\"value\":\"%s\"", this->value.as.str);
             break;
         default:
             break;

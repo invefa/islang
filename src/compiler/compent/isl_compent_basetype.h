@@ -31,7 +31,7 @@ typedef enum iscet_basetype {
     iscen_basetype_str,
     iscen_basetype_ptr,
 
-} iscet_basetype;
+} iscen_basetype;
 
 
 

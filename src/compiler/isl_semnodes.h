@@ -7,3 +7,11 @@ manifest(apply, (struct {
              ist_semtrees   operands;
              ist_compentRef type;
          }))
+
+manifest(use, (struct {
+             ist_semtree lhs;
+             ist_semtree rhs;
+         }))
+
+manifest(name, (ist_compentRef))
+manifest(literal, (ist_tvalue))

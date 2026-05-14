@@ -28,7 +28,7 @@ typedef double ist_f64;
 
 typedef ist_u8 ist_byte;
 typedef char   ist_char;
-typedef void*  ist_vptr; /* void pointer, aka ptr */
+typedef void*  ist_vptr; /* void pointer, aka adr */
 #define ist_vptr_ (ist_vptr)
 
 typedef ist_u8 ist_bool;
@@ -39,7 +39,7 @@ typedef ist_u8 ist_bool;
 
 // declaration of the compiler structures
 
-typedef union ist_value     ist_value;
+typedef struct ist_value    ist_value;
 typedef struct ist_module   ist_module;
 typedef struct ist_compctx  ist_compctx;
 typedef struct ist_location ist_location;
