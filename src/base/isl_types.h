@@ -39,6 +39,8 @@ typedef ist_u8 ist_bool;
 
 // declaration of the compiler structures
 
+typedef enum ist_tokenType ist_tokenType;
+
 typedef struct ist_value    ist_value;
 typedef struct ist_module   ist_module;
 typedef struct ist_compctx  ist_compctx;
@@ -50,7 +52,6 @@ typedef struct ist_astnode  ist_astnode;
 typedef struct ist_parser   ist_parser;
 typedef struct ist_compent  ist_compent;
 typedef struct ist_compiler ist_compiler;
-
 
 /**
  * compent reference is depend on `ist_compctx`,

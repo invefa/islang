@@ -322,14 +322,14 @@ inline ist_codepoint ist_lexer_skip_blanks(ist_lexer* this) {
         ist_lexer_advance_codepoint(this);
 
     /* when skip blanks was done, we should reset analysis_token again */
-    analysis_token = ist_token_consby_full(
+    analysis_token = ist_token_{
         ISL_TOKENT_EOF,
         this->codepage->location,
         this->codepage->source + this->codepage->next_sequence_index
             - this->codepage->decode_codepoint_length,
-        0,
-        ist_value_{0}
-    );
+        .length = 0,
+        ist_value_{},
+    };
 
     return ist_lexer_get_current_codepoint(this);
 }

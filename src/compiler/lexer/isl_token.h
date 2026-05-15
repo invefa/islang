@@ -26,6 +26,7 @@ typedef struct ist_token {
     ist_usize     length;
     ist_value     value;
 } ist_token;
+#define ist_token_ (ist_token)
 
 #define ist_token_consby_null()           \
     ((ist_token                           \

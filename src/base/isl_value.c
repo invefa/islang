@@ -23,7 +23,7 @@ ist_cstring ist_valueTypeNames[] = {
     [isn_valueType_str]    = "str",
 };
 
-const ist_valueType isl_toklitype_to_valtype[] = {
+const ist_valueType isl_toklitype_to_valueType[] = {
     [ISL_TOKENT_VL_INT]    = isn_valueType_i64,
     [ISL_TOKENT_VL_REAL]   = isn_valueType_f64,
     [ISL_TOKENT_VL_STRING] = isn_valueType_str,
@@ -32,9 +32,9 @@ const ist_valueType isl_toklitype_to_valtype[] = {
 
 ist_string ist_value_dump_old(
     ist_value* this,
-    ist_u32     type,
-    ist_string* buffer,
-    ist_usize*  idxptr
+    ist_tokenType type,
+    ist_string*   buffer,
+    ist_usize*    idxptr
 ) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
 

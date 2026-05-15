@@ -56,6 +56,7 @@ typedef enum ist_valueType {
     isn_valueType_i16,
     isn_valueType_i32,
     isn_valueType_i64,
+    isn_valueType_isize,
 
     isn_valueType_u8,
     isn_valueType_u16,
@@ -71,10 +72,12 @@ typedef enum ist_valueType {
     isn_valueType_str,
     isn_valueType_strbuf,
 
+    isn_valueType_ptr,
+
 } ist_valueType;
 
 extern ist_cstring         ist_valueTypeNames[];
-extern const ist_valueType isl_toklitype_to_valtype[];
+extern const ist_valueType isl_toklitype_to_valueType[];
 
 typedef struct ist_tvalue {
     ist_valueType type;
@@ -89,7 +92,12 @@ typedef struct ist_value {
 } ist_value;
 #define ist_value_ (ist_value)
 
-ist_string ist_value_dump_old(ist_value* this, ist_u32 type, ist_string* buffer, ist_usize* idxptr);
+ist_string ist_value_dump_old(
+    ist_value* this,
+    ist_tokenType type,
+    ist_string*   buffer,
+    ist_usize*    idxptr
+);
 
 
 #define ISG_VALUE_TYPE ist_value
