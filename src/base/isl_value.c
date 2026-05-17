@@ -6,7 +6,7 @@
 #include "isl_token.h"
 
 ist_cstring ist_valueTypeNames[] = {
-    [isn_valueType_void]   = "void",
+    [isn_valueType_unk]    = "unk",
     [isn_valueType_i8]     = "i8",
     [isn_valueType_u8]     = "u8",
     [isn_valueType_i16]    = "i16",
@@ -23,11 +23,20 @@ ist_cstring ist_valueTypeNames[] = {
     [isn_valueType_str]    = "str",
 };
 
-const ist_valueType isl_toklitype_to_valueType[] = {
+const isn_valueType isl_toklitype_to_valueType[] = {
     [ISL_TOKENT_VL_INT]    = isn_valueType_i64,
     [ISL_TOKENT_VL_REAL]   = isn_valueType_f64,
     [ISL_TOKENT_VL_STRING] = isn_valueType_str,
 };
+
+ist_u8 isn_valueType_sizeof(isn_valueType v) {
+    _isn_valueTypeCons kind = v & isn_valueTypeMask_kind;
+    _isn_valueTypeCons size = v & isn_valueTypeMask_size;
+    if (kind == isn_valueTypeKind_p) size = isn_valueTypeSize_arch;
+    if (size == isn_valueTypeSize_arch) size = isn_valueTypeSize_64;
+    return size;
+}
+
 
 
 ist_string ist_value_dump_old(
@@ -54,8 +63,8 @@ ist_string ist_tvalue_dump(ist_tvalue* this, ist_dumpctx dctx) {
     isl_ifnreport(this, rid_catch_nullptr, isp_catch_coreloc);
 
     switch (this->type) {
-        case isn_valueType_void:
-            return ist_strbuf_append_raw(dctx.buffer, dctx.idxptr, "void");
+        case isn_valueType_unk:
+            return ist_strbuf_append_raw(dctx.buffer, dctx.idxptr, "unk");
         case isn_valueType_i8:
             return ist_strbuf_sprintf(dctx.buffer, dctx.idxptr, "%" PRId8, this->as.i8);
         case isn_valueType_i16:
