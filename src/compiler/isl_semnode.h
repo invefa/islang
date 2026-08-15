@@ -29,7 +29,7 @@ typedef struct ist_semnode   ist_semnode;
 typedef struct ist_semnode*  ist_semtree;
 
 /* semantical tree array, must be `isl_list` */
-typedef struct ist_semnode* ist_semtrees;
+typedef struct ist_semnode*  ist_semtrees;
 
 /* define the list of the parsent */
 #define ISG_STRUCT_NAME ist_semtreeList
@@ -65,9 +65,9 @@ typedef union ist_semnodeAs {
  * that contain the various infomation of this semnode.
  */
 typedef struct ist_semnode {
-    ist_semnodeKind kind     : 8;
-    ist_bool        evaluated: 1;
-    ist_bool        errored  : 1;
+    ist_semnodeKind kind      : 8;
+    ist_bool        evaluated : 1;
+    ist_bool        errored   : 1;
     ist_location    location;
     ist_semnodeAs   as;
 } ist_semnode;
@@ -76,12 +76,12 @@ typedef struct ist_semnode {
 ist_semnode ist_semnode_consby_location(ist_location loc);
 ist_semnode ist_semnode_consby_full(ist_semnodeKind kind, ist_location loc, ist_semnodeAs as);
 
-_isl_declare_initby_createby_with_consby((ist_location loc), ist_semnode, location);
+_isl_declare_initby_createby_with_consby(
+    (ist_location loc),
+    ist_semnode, location);
 _isl_declare_initby_createby_with_consby(
     (ist_semnodeKind kind, ist_location loc, ist_semnodeAs as),
-    ist_semnode,
-    full
-);
+    ist_semnode, full);
 
 void ist_semnode_clean(ist_semnode* this);
 void ist_semnode_delete(ist_semnode* this);
@@ -91,7 +91,6 @@ typedef struct ist_semnode* ist_semtree;
 
 void       ist_semtree_delete(ist_semtree this);
 ist_string ist_semtree_dump(ist_semtree this, ist_dumpctx dctx);
-
 
 
 #endif // ISC_SEMNODE_H

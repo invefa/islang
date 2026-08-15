@@ -2,10 +2,10 @@
 
 
 inline ist_string isl_read_file(ist_cstring _filepath) {
-    FILE* file = fopen(_filepath, "rb");
+    FILE*      file   = fopen(_filepath, "rb");
     isl_ifnreport(file, rid_open_file_failed, isp_catch_coreloc, _filepath);
     fseek(file, 0, SEEK_END);
-    ist_usize length = ftell(file);
+    ist_usize  length = ftell(file);
     fseek(file, 0, SEEK_SET);
     ist_string source = isl_list_malloc(ist_byte, length + 1);
     fread(source, 1, length, file);
@@ -40,8 +40,8 @@ ist_codepage* ist_codepage_createby_full(
     this->decode_codepoint_length = 0;
 
     /* decode the first utf8 sequence */
-    this->current_codepoint =
-        isl_utf8_decode(&this->source, this->next_sequence_index, &this->decode_codepoint_length);
+    this->current_codepoint
+        = isl_utf8_decode(&this->source, this->next_sequence_index, &this->decode_codepoint_length);
     this->next_sequence_index += this->decode_codepoint_length;
 
     /* initialize the location */

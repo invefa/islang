@@ -1,5 +1,6 @@
-#include "isl_overload.h"
 #include "isl_parser.h"
+#include "isl_overload.h"
+
 
 
 inline ist_parser ist_parser_consby_lexer(ist_lexer _lexer) {
@@ -92,12 +93,13 @@ ist_parseYield parse_led_wrap_expr(ist_parser* this, ist_astnode* lhs);
  * handle ahead state, when aheading, do not report
  * anything about failure, just return to caller to notify it.
  */
-#define _handle_aheading(_node, _packs...)                                          \
-    do {                                                                            \
-        if (ist_lexer_islookahead(&this->lexer))                                    \
-            _parse_fail_return(                                                     \
-                (ist_parseYield_{(_node), isn_pasreYieldStatus_aheading}), ##_packs \
-            );                                                                      \
+#define _handle_aheading(_node, _packs...)                                 \
+    do {                                                                   \
+        if (ist_lexer_islookahead(&this->lexer))                           \
+            _parse_fail_return(                                            \
+                (ist_parseYield_{(_node), isn_pasreYieldStatus_aheading}), \
+                ##_packs                                                   \
+            );                                                             \
     } while (0)
 
 /* raise the parsing fail, and report the error message */
@@ -110,7 +112,6 @@ ist_parseYield parse_led_wrap_expr(ist_parser* this, ist_astnode* lhs);
 
 /**
  * parse in force
- *
  */
 #define parse_force(_fncall, _rargs, _packs...)                 \
     ({                                                          \
@@ -130,6 +131,7 @@ ist_parseYield parse_led_wrap_expr(ist_parser* this, ist_astnode* lhs);
         }                                                       \
         _yield_.ok;                                             \
     })
+
 
 /* handle parsing state in inert */
 #define parse_inert(_fncall, _packs...)                            \
@@ -310,8 +312,7 @@ ist_parseYield parse_do_stmt(ist_parser* this) {
             ist_astnodeKind_do_stmt,
             cur_token().location,
             ist_astnodeAs_{
-                .do_stmt.expr =
-                    parse_force(parse_expr(this, OBP_LOWEST), (rid_expect_parsent_expr)),
+                .do_stmt.expr = parse_force(parse_expr(this, OBP_LOWEST), (rid_expect_parsent_expr)),
             }
         ),
     };
@@ -408,7 +409,8 @@ ist_parseYield parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
     else if (match_token(this, ISL_TOKENT_EOF)) return yield;
     else
         raise_parsing_fail(
-            (rid_expect_nud_failed, curtoken.location, ist_token_names[curtoken.type]), yield.ok
+            (rid_expect_nud_failed, curtoken.location, ist_token_names[curtoken.type]),
+            yield.ok
         );
 
     /**
@@ -442,7 +444,8 @@ ist_parseYield parse_nud_literal(ist_parser* this) {
             break;
         default:
             raise_parsing_fail(
-                (rid_expect_parsent_literal_but, ist_token_names[cur_token().type]), null
+                (rid_expect_parsent_literal_but, ist_token_names[cur_token().type]),
+                null
             );
     }
     return ist_parseYield_{
@@ -453,7 +456,7 @@ ist_parseYield parse_nud_literal(ist_parser* this) {
                 .literal.this =
                     ist_tvalue_{
                         .type = isl_toklitype_to_valueType[pre_token().type],
-                        .as = pre_token().value.as,
+                        .as   = pre_token().value.as,
                     },
             }
         ),
