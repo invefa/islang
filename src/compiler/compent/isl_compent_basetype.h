@@ -5,10 +5,32 @@
 
 
 /**
- * `iscen_baseType` is a mapping for `isn_valueType`,
+ * `iscen_basetype` is a mapping for `isn_valueType`,
  * ISlang_CompEnt_sTruct::basetype  => iscet_basetype
  * ISlang_CompEnt_eNum::basetype::X => iscen_basetype_X
  */
+
+
+typedef void iscet_basetype_void;
+
+typedef ist_valueAs_bool iscet_basetype_bool;
+
+typedef ist_valueAs_i8  iscet_basetype_i8;
+typedef ist_valueAs_i16 iscet_basetype_i16;
+typedef ist_valueAs_i32 iscet_basetype_i32;
+typedef ist_valueAs_i64 iscet_basetype_i64;
+
+typedef ist_valueAs_u8    iscet_basetype_u8;
+typedef ist_valueAs_u16   iscet_basetype_u16;
+typedef ist_valueAs_u32   iscet_basetype_u32;
+typedef ist_valueAs_u64   iscet_basetype_u64;
+typedef ist_valueAs_usize iscet_basetype_usize;
+
+typedef ist_valueAs_f32 iscet_basetype_f32;
+typedef ist_valueAs_f64 iscet_basetype_f64;
+
+typedef ist_valueAs_str iscet_basetype_str;
+typedef ist_valueAs_adr iscet_basetype_adr;
 
 
 typedef enum _iscen_basetypeCons {
@@ -57,28 +79,9 @@ typedef enum iscen_basetype {
 
 } iscen_basetype;
 
-typedef void iscet_basetype_void;
+isn_valueType iscen_basetype_to_isn_valueType(iscen_basetype v);
+ist_u8        iscen_basetype_sizeof(iscen_basetype v);
 
-typedef ist_valueAs_bool iscet_basetype_bool;
-
-typedef ist_valueAs_i8  iscet_basetype_i8;
-typedef ist_valueAs_i16 iscet_basetype_i16;
-typedef ist_valueAs_i32 iscet_basetype_i32;
-typedef ist_valueAs_i64 iscet_basetype_i64;
-
-typedef ist_valueAs_u8    iscet_basetype_u8;
-typedef ist_valueAs_u16   iscet_basetype_u16;
-typedef ist_valueAs_u32   iscet_basetype_u32;
-typedef ist_valueAs_u64   iscet_basetype_u64;
-typedef ist_valueAs_usize iscet_basetype_usize;
-
-typedef ist_valueAs_f32 iscet_basetype_f32;
-typedef ist_valueAs_f64 iscet_basetype_f64;
-
-typedef ist_valueAs_str iscet_basetype_str;
-typedef ist_valueAs_adr iscet_basetype_adr;
-
-ist_u8 iscen_basetype_sizeof(iscen_basetype v);
 
 
 #endif // ISC_COMPENT_BASETYPE_H

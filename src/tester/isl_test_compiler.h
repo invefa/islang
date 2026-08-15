@@ -25,7 +25,7 @@ ISL_TEST_HEAD {
     printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, DKIND_INDENT}));
     printf("%s\n", ist_parsent_dump(parser.root, ist_dumpctx_{dump_buffer, DKIND_INDENT}));
 
-    compiler.node = parser.root;
+    compiler.curpsent = parser.root;
     ist_compiler_compile(&compiler);
 
     ist_instream_dumpack_dump(&ist_instream_dumpack_{compiler.instream}, ist_dumpctx_{dump_buffer});
@@ -44,11 +44,11 @@ ISL_TEST_HEAD {
     ist_i64_dump(isl_span(ist_i64){1 + (2 * 3 + (4 / 5 * (2 / 3)))}, ist_dumpctx_{dump_buffer});
     printf("c  result: %s\n", *dump_buffer);
 
-    printf("sizeof(astnodeKind): %zu\n", sizeof(ist_astnodeKind));
-    printf("sizeof(location): %zu\n", sizeof(ist_location));
-    printf("sizeof(astnodeAs): %zu\n", sizeof(ist_astnodeAs));
+    printf("sizeof(astnodeKind):    %zu\n", sizeof(ist_astnodeKind));
+    printf("sizeof(location):       %zu\n", sizeof(ist_location));
+    printf("sizeof(astnodeAs):      %zu\n", sizeof(ist_astnodeAs));
     printf("sizeof(astnodeAs_expr): %zu\n", sizeof(ist_astnodeAs_expr));
-    printf("sizeof(astnode): %zu\n", sizeof(ist_astnode));
+    printf("sizeof(astnode):        %zu\n", sizeof(ist_astnode));
 
     ist_module_clean(&module);
     ist_parser_clean(&parser);

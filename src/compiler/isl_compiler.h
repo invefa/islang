@@ -10,7 +10,8 @@ typedef struct ist_compiler {
     ist_compctx*  ctx;
     ist_parser*   parser;
     ist_module*   module;
-    ist_astnode*  node;
+    ist_parsent   curpsent;
+    ist_semtree   cursemt;
     ist_compent*  cpent;
     ist_instream* instream;
 } ist_compiler;
@@ -21,6 +22,7 @@ void ist_compiler_initby_full(ist_compiler* this);
 
 void ist_compiler_elaborate(ist_compiler* this);
 void ist_compiler_evalualte(ist_compiler* this);
+void ist_compiler_project(ist_compiler* this);
 void ist_compiler_codegen(ist_compiler* this);
 void ist_compiler_compile(ist_compiler* this);
 
