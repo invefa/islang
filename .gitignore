@@ -6,3 +6,4 @@ builds/
 build/
 dumps/
 docs/islang-design/
+uncrustify.cfg
