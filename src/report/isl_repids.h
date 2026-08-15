@@ -156,4 +156,11 @@ manifest(
 )
 
 
+manifest(semantic_info, (COMPILER, INFO, CUSTOM), NULL)
+manifest(semantic_note, (COMPILER, NOTE, CUSTOM), NULL)
+manifest(semantic_warn, (COMPILER, WARNING, CUSTOM), NULL)
+manifest(semantic_error, (COMPILER, ERROR, CUSTOM), NULL)
+manifest(semantic_panic, (COMPILER, PANIC, CUSTOM), NULL)
+manifest(semantic_fatal, (COMPILER, FATAL, CUSTOM), NULL)
+
 manifest(binexpr_type_unmatch, (COMPILER, ERROR, USERLOC), "type unmatch!")
