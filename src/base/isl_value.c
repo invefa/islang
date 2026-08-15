@@ -40,7 +40,7 @@ ist_u8 isn_valueType_sizeof(isn_valueType v) {
 
 
 ist_string ist_value_dump_old(
-    ist_value* this,
+    ist_value*    this,
     ist_tokenType type,
     ist_string*   buffer,
     ist_usize*    idxptr

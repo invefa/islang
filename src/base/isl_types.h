@@ -7,39 +7,37 @@
 
 
 typedef size_t ist_usize;
-static_assert(
-    sizeof(ist_usize) == sizeof(void*),
-    "ist_usize(aka size_t) must be the same size as pointer."
-);
+static_assert(sizeof(ist_usize) == sizeof(void*),
+    "ist_usize(aka size_t) must be the same size as pointer.");
 
 
-typedef int8_t  ist_i8;
-typedef int16_t ist_i16;
-typedef int32_t ist_i32;
-typedef int64_t ist_i64;
+typedef int8_t   ist_i8;
+typedef int16_t  ist_i16;
+typedef int32_t  ist_i32;
+typedef int64_t  ist_i64;
 
 typedef uint8_t  ist_u8;
 typedef uint16_t ist_u16;
 typedef uint32_t ist_u32;
 typedef uint64_t ist_u64;
 
-typedef float  ist_f32;
-typedef double ist_f64;
+typedef float    ist_f32;
+typedef double   ist_f64;
 
-typedef ist_u8 ist_byte;
-typedef char   ist_char;
-typedef void*  ist_vptr; /* void pointer, aka adr */
+typedef ist_u8   ist_byte;
+typedef char     ist_char;
+typedef void*    ist_vptr; /* void pointer, aka adr */
 #define ist_vptr_ (ist_vptr)
 
-typedef ist_u8 ist_bool;
+typedef ist_u8   ist_bool;
 #define ist_bool_(_expr) !!(_expr)
 
-#define true  1
-#define false 0
+#define true  ist_bool_(1)
+#define false ist_bool_(0)
 
 // declaration of the compiler structures
 
-typedef enum ist_tokenType ist_tokenType;
+typedef enum ist_tokenType  ist_tokenType;
 
 typedef struct ist_value    ist_value;
 typedef struct ist_module   ist_module;
@@ -56,7 +54,7 @@ typedef struct ist_compiler ist_compiler;
 /**
  * compent reference is depend on `ist_compctx`,
  * it is the index of compent in `ist_compctx::compents` */
-typedef ist_usize ist_compentRef;
+typedef ist_usize           ist_compentRef;
 
 
 
