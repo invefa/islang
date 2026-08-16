@@ -71,12 +71,12 @@ typedef enum _isn_valueTypeCons {
     isn_valueTypeSize_64   = 0x08,
     isn_valueTypeSize_arch = 0x0F,
 
-    isn_valueTypeKind_v = 0x10,
-    isn_valueTypeKind_b = 0x20,
-    isn_valueTypeKind_i = 0x30,
-    isn_valueTypeKind_u = 0x40,
-    isn_valueTypeKind_f = 0x50,
-    isn_valueTypeKind_p = 0xF0,
+    isn_valueTypeKind_v = 0x10, // void
+    isn_valueTypeKind_b = 0x20, // bool
+    isn_valueTypeKind_i = 0x30, // int
+    isn_valueTypeKind_u = 0x40, // unsinged int
+    isn_valueTypeKind_f = 0x50, // float
+    isn_valueTypeKind_p = 0xF0, // ptr
 } _isn_valueTypeCons;
 typedef enum isn_valueType {
 
@@ -111,7 +111,7 @@ extern const isn_valueType isl_toklitype_to_valueType[];
 
 ist_u8 isn_valueType_sizeof(isn_valueType v);
 
-
+// islang typed value
 typedef struct ist_tvalue {
     isn_valueType type;
     isu_valueAs   as;
