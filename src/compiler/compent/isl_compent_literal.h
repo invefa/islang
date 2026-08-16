@@ -5,6 +5,6 @@
 #include "isl_types.h"
 #include "isl_value.h"
 
-typedef struct ist_tvalue iscet_literal;
+typedef struct ist_tvalue isct_literal;
 
 #endif // ISC_COMPENT_LITERAL_H
