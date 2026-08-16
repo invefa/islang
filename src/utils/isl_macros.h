@@ -39,7 +39,7 @@
 // for easy...
 #define null NULL
 
-
+// clang-format off
 #define __ISL_UNPACK_CONCAT_WITH_IMPL(_x, _with, _y) _x##_with##_y
 #define __ISL_UNPACK_CONCAT_WITH(_x, _with, _y)      __ISL_UNPACK_CONCAT_WITH_IMPL(_x, _with, _y)
 
@@ -47,11 +47,14 @@
 #define __ISL_UNPACK_GET_ARGS_COUNT(_vargs...) \
     __ISL_UNPACK_GET_TWELFTH_ARG(, ##_vargs, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
 
-#define __ISL_UNPACK_FORWARD_0(_fn, _)              _ISL_MAYBE_UNUSED 0
-#define __ISL_UNPACK_FORWARD_1(_fn, _1)             _fn(_1)
-#define __ISL_UNPACK_FORWARD_2(_fn, _1, _2)         __ISL_UNPACK_FORWARD_1(_fn, _1), _fn(_2)
-#define __ISL_UNPACK_FORWARD_3(_fn, _1, _2, _3)     __ISL_UNPACK_FORWARD_2(_fn, _1, _2), _fn(_3)
-#define __ISL_UNPACK_FORWARD_4(_fn, _1, _2, _3, _4) __ISL_UNPACK_FORWARD_3(_fn, _1, _2, _3), _fn(_4)
+#define __ISL_UNPACK_FORWARD_0(_fn, _)  _ISL_MAYBE_UNUSED 0
+#define __ISL_UNPACK_FORWARD_1(_fn, _1) _fn(_1)
+#define __ISL_UNPACK_FORWARD_2(_fn, _1, _2) \
+    __ISL_UNPACK_FORWARD_1(_fn, _1), _fn(_2)
+#define __ISL_UNPACK_FORWARD_3(_fn, _1, _2, _3) \
+    __ISL_UNPACK_FORWARD_2(_fn, _1, _2), _fn(_3)
+#define __ISL_UNPACK_FORWARD_4(_fn, _1, _2, _3, _4) \
+    __ISL_UNPACK_FORWARD_3(_fn, _1, _2, _3), _fn(_4)
 #define __ISL_UNPACK_FORWARD_5(_fn, _1, _2, _3, _4, _5) \
     __ISL_UNPACK_FORWARD_4(_fn, _1, _2, _3, _4), _fn(_5)
 #define __ISL_UNPACK_FORWARD_6(_fn, _1, _2, _3, _4, _5, _6) \
@@ -65,9 +68,9 @@
 #define __ISL_UNPACK_FORWARD_10(_fn, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10) \
     __ISL_UNPACK_FORWARD_9(_fn, _1, _2, _3, _4, _5, _6, _7, _8, _9), _fn(_10)
 
-#define _ISL_UNPACK_FORWARD(_fn, _vargs...)                                                \
-    __ISL_UNPACK_CONCAT_WITH(__ISL_UNPACK_FORWARD, _, __ISL_UNPACK_GET_ARGS_COUNT(_vargs)) \
-    (_fn, _vargs)
+#define _ISL_UNPACK_FORWARD(_fn, _vargs...) \
+    __ISL_UNPACK_CONCAT_WITH(__ISL_UNPACK_FORWARD, _, __ISL_UNPACK_GET_ARGS_COUNT(_vargs))(_fn, _vargs)
+// clang-format on
 
 
 #endif // ISC_MACROS_H
