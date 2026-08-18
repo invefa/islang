@@ -33,49 +33,52 @@ typedef ist_valueAs_str isct_basetype_str;
 typedef ist_valueAs_adr isct_basetype_adr;
 
 
-typedef enum _iscn_basetypeCons {
+typedef enum _isn_valueTypeCons {
 
-    iscn_basetypeMask_kind = isn_valueTypeMask_kind,
-    iscn_basetypeMask_size = isn_valueTypeMask_size,
+    iscn_basetypeMask_kind = 0xF0,
+    iscn_basetypeMask_size = 0x0F,
 
-    iscn_basetypeSize_0    = isn_valueTypeSize_0,
-    iscn_basetypeSize_1    = isn_valueTypeSize_8,
-    iscn_basetypeSize_2    = isn_valueTypeSize_16,
-    iscn_basetypeSize_4    = isn_valueTypeSize_32,
-    iscn_basetypeSize_8    = isn_valueTypeSize_64,
-    iscn_basetypeSize_arch = isn_valueTypeSize_arch,
+    iscn_basetypeSize_0    = 0x00,
+    iscn_basetypeSize_8    = 0x01,
+    iscn_basetypeSize_16   = 0x02,
+    iscn_basetypeSize_32   = 0x04,
+    iscn_basetypeSize_64   = 0x08,
+    iscn_basetypeSize_arch = 0x0F,
 
-    iscn_basetypeKind_v = isn_valueTypeKind_v,
-    iscn_basetypeKind_i = isn_valueTypeKind_i,
-    iscn_basetypeKind_u = isn_valueTypeKind_u,
-    iscn_basetypeKind_f = isn_valueTypeKind_f,
-    iscn_basetypeKind_p = isn_valueTypeKind_p,
-
+    iscn_basetypeKind_o = 0x10, // bottom islang-expression: `()!`,  zero inhabitant
+    iscn_basetypeKind_n = 0x20, // unit   islang-expression: `()`,   one  inhabitant
+    iscn_basetypeKind_b = 0x30, // bool   islang-expression: `bool`, two  inhabitant
+    iscn_basetypeKind_i = 0x40, // int
+    iscn_basetypeKind_u = 0x50, // unsinged int
+    iscn_basetypeKind_f = 0x60, // float
+    iscn_basetypeKind_s = 0xE0, // str
+    iscn_basetypeKind_p = 0xF0, // ptr
 } _iscn_basetypeCons;
+
 typedef enum iscn_basetype {
-    iscn_basetype_unk = isn_valueType_unk,
+    iscn_basetype_unk,
+    iscn_basetype_bottom = iscn_basetypeKind_o | iscn_basetypeSize_0,
+    iscn_basetype_unit   = iscn_basetypeKind_n | iscn_basetypeSize_0,
 
-    iscn_basetype_void = iscn_basetypeKind_v | iscn_basetypeSize_0,
+    iscn_basetype_bool = iscn_basetypeKind_b | iscn_basetypeSize_8,
 
-    iscn_basetype_bool = isn_valueType_bool,
+    iscn_basetype_i8    = iscn_basetypeKind_i | iscn_basetypeSize_8,
+    iscn_basetype_i16   = iscn_basetypeKind_i | iscn_basetypeSize_16,
+    iscn_basetype_i32   = iscn_basetypeKind_i | iscn_basetypeSize_32,
+    iscn_basetype_i64   = iscn_basetypeKind_i | iscn_basetypeSize_64,
+    iscn_basetype_isize = iscn_basetypeKind_i | iscn_basetypeSize_arch,
 
-    iscn_basetype_i8    = isn_valueType_i8,
-    iscn_basetype_i16   = isn_valueType_i16,
-    iscn_basetype_i32   = isn_valueType_i32,
-    iscn_basetype_i64   = isn_valueType_i64,
-    iscn_basetype_isize = isn_valueType_isize,
+    iscn_basetype_u8    = iscn_basetypeKind_u | iscn_basetypeSize_8,
+    iscn_basetype_u16   = iscn_basetypeKind_u | iscn_basetypeSize_16,
+    iscn_basetype_u32   = iscn_basetypeKind_u | iscn_basetypeSize_32,
+    iscn_basetype_u64   = iscn_basetypeKind_u | iscn_basetypeSize_64,
+    iscn_basetype_usize = iscn_basetypeKind_u | iscn_basetypeSize_arch,
 
-    iscn_basetype_u8    = isn_valueType_u8,
-    iscn_basetype_u16   = isn_valueType_u16,
-    iscn_basetype_u32   = isn_valueType_u32,
-    iscn_basetype_u64   = isn_valueType_u64,
-    iscn_basetype_usize = isn_valueType_usize,
+    iscn_basetype_f32 = iscn_basetypeKind_f | iscn_basetypeSize_32,
+    iscn_basetype_f64 = iscn_basetypeKind_f | iscn_basetypeSize_64,
 
-    iscn_basetype_f32 = isn_valueType_f32,
-    iscn_basetype_f64 = isn_valueType_f64,
-
-    iscn_basetype_str = isn_valueType_str,
-    iscn_basetype_adr = isn_valueType_adr,
+    iscn_basetype_adr = iscn_basetypeKind_p | iscn_basetypeSize_arch,
+    iscn_basetype_str = iscn_basetypeKind_s | iscn_basetypeSize_arch,
 
 } iscn_basetype;
 
