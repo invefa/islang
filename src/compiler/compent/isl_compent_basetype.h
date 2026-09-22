@@ -6,34 +6,34 @@
 
 /**
  * `iscn_basetype` is a mapping for `isn_valueType`,
- * ISlang_CompEnt_sTruct::basetype  => isct_basetype
- * ISlang_CompEnt_eNum::basetype::X => iscn_basetype_X
+ * ISlang_Compent_sTruct::basetype  => isct_basetype
+ * ISlang_Compent_eNum::basetype::X => iscn_basetype_X
  */
 
 
 typedef void isct_basetype_void;
 
-typedef ist_valueAs_bool isct_basetype_bool;
+typedef ist_bool isct_basetype_bool;
 
-typedef ist_valueAs_i8  isct_basetype_i8;
-typedef ist_valueAs_i16 isct_basetype_i16;
-typedef ist_valueAs_i32 isct_basetype_i32;
-typedef ist_valueAs_i64 isct_basetype_i64;
+typedef ist_i8  isct_basetype_i8;
+typedef ist_i16 isct_basetype_i16;
+typedef ist_i32 isct_basetype_i32;
+typedef ist_i64 isct_basetype_i64;
 
-typedef ist_valueAs_u8    isct_basetype_u8;
-typedef ist_valueAs_u16   isct_basetype_u16;
-typedef ist_valueAs_u32   isct_basetype_u32;
-typedef ist_valueAs_u64   isct_basetype_u64;
-typedef ist_valueAs_usize isct_basetype_usize;
+typedef ist_u8    isct_basetype_u8;
+typedef ist_u16   isct_basetype_u16;
+typedef ist_u32   isct_basetype_u32;
+typedef ist_u64   isct_basetype_u64;
+typedef ist_usize isct_basetype_usize;
 
-typedef ist_valueAs_f32 isct_basetype_f32;
-typedef ist_valueAs_f64 isct_basetype_f64;
+typedef ist_f32 isct_basetype_f32;
+typedef ist_f64 isct_basetype_f64;
 
-typedef ist_valueAs_str isct_basetype_str;
-typedef ist_valueAs_adr isct_basetype_adr;
+typedef ist_string isct_basetype_str;
+typedef ist_vptr   isct_basetype_adr;
 
 
-typedef enum _isn_valueTypeCons {
+typedef enum _iscn_basetypeCons {
 
     iscn_basetypeMask_kind = 0xF0,
     iscn_basetypeMask_size = 0x0F,
@@ -45,9 +45,9 @@ typedef enum _isn_valueTypeCons {
     iscn_basetypeSize_64   = 0x08,
     iscn_basetypeSize_arch = 0x0F,
 
-    iscn_basetypeKind_o = 0x10, // bottom islang-expression: `()!`,  zero inhabitant
-    iscn_basetypeKind_n = 0x20, // unit   islang-expression: `()`,   one  inhabitant
-    iscn_basetypeKind_b = 0x30, // bool   islang-expression: `bool`, two  inhabitant
+    iscn_basetypeKind_o = 0x10, // bottom islang-expression: `()!`,  non inhabitant
+    iscn_basetypeKind_n = 0x20, // unit   islang-expression: `()`,   one inhabitant
+    iscn_basetypeKind_b = 0x30, // bool   islang-expression: `bool`, two inhabitant
     iscn_basetypeKind_i = 0x40, // int
     iscn_basetypeKind_u = 0x50, // unsinged int
     iscn_basetypeKind_f = 0x60, // float

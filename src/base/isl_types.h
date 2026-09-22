@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+// clang-format off
 
 typedef size_t ist_usize;
 static_assert(sizeof(ist_usize) == sizeof(void*),
@@ -29,7 +30,7 @@ typedef char     ist_char;
 typedef void*    ist_vptr; /* void pointer, aka adr */
 #define ist_vptr_ (ist_vptr)
 
-typedef ist_u8   ist_bool;
+typedef ist_i8   ist_bool;
 #define ist_bool_(_expr) !!(_expr)
 
 #define true  ist_bool_(1)
@@ -61,5 +62,6 @@ typedef ist_usize           ist_compentRef;
 /* This is using to make a temp variable for somewhere need a data pointer */
 #define isl_span(_type) (_type[1])
 
+// clang-format on
 
 #endif // ISC_TYPES_H
