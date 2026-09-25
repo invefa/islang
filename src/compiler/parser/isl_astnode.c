@@ -234,7 +234,7 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
                     .count   = 2,
                     ist_dumpitemar_{
                         {"location", ist_location_dump, &this->location},
-                        {"name", ist_cstring_dump, &name.name},
+                        {"ident", ist_cstring_dump, &name.ident},
                     },
                 },
                 dctx

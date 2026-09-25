@@ -16,7 +16,14 @@ manifest(formarg_list, (ist_astnodeAs_list))
 /* some basic parsent */
 manifest(scope, (struct { ist_parsentList stmts; }))
 manifest(literal, (struct { ist_tvalue this; }))
-manifest(name, (struct { ist_cstring name; }))
+manifest(name, (struct { ist_cstring ident; }))
+
+manifest(region, (struct {
+             ist_parsent type;
+             ist_parsent name;
+             ist_parsent value;
+         }))
+
 
 /* expr parsent */
 manifest(expr, (struct {

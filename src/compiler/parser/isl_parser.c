@@ -59,6 +59,7 @@ ist_parseYield parse_expr(ist_parser* this, ist_optbindpower lhsrbp);
 
 ist_parseYield parse_nud_literal(ist_parser* this);
 ist_parseYield parse_nud_name(ist_parser* this);
+ist_parseYield parse_nud_let(ist_parser* this);
 ist_parseYield parse_nud_prefix_expr(ist_parser* this);
 
 ist_parseYield parse_led_suffix_expr(ist_parser* this, ist_astnode* lhs);
@@ -188,20 +189,21 @@ enum ist_optbindpower {
     OBP_LOWEST    = 0x1,       // reserved for parse enterance.
     OBP_RPARE     = 0x2,       // reserved for rpare.
     OBP_ASSIGN    = 0x10,      // = += -= *= /= %= ^= |= &= ...
+    OBP_LET       = 0x12,      // `let:Type=_` `let:=_` `let Name:Type=_` `let Name=_`
     OBP_CONDITION = 0x20,      // ?:
     OBP_LOGIC_OR  = 0x30,      // ||
     OBP_LOGIC_AND = 0x40,      // &&
     OBP_EQUALITY  = 0x50,      // == !=
-    OBP_COMPARE   = 0x60,      // < > <= >= <=>
+    OBP_COMPARE   = 0x60,      // < > <= >=
     OBP_BIT_OR    = 0x70,      // |
     OBP_BIT_AND   = 0x80,      // &
     BOP_BIT_SHIFT = 0x90,      // << >>
     OBP_ARITH     = 0xA0,      // + -
     OBP_TERM      = 0xB0,      // * / %
     OBP_FACTOR    = 0xC0,      // ^
-    OBP_PREFIX    = 0xD0,      // ++ -- * & ! ~
-    OBP_SUFFIX    = 0xE0,      // ++ -- * & ^ ! ?
-    OBP_CALL      = 0xF0,      // (...) [...] <...> . ->
+    OBP_PREFIX    = 0xD0,      // ++_ --_ *_ &_ !_ ~_
+    OBP_SUFFIX    = 0xE0,      // _++ _-- _* _& _! _?
+    OBP_CALL      = 0xF0,      // (...) [...] <...> . -> ^
     OBP_ATOM      = 0XFFF,     // reserved for identifier or unit.
     OBP_HIGHEST   = INT16_MAX, // highest of i16.
 };
@@ -340,6 +342,8 @@ struct ist_nudoptattr {
     [ISL_TOKENT_SELFADD] = {parse_nud_prefix_expr, OBP_PREFIX},
     [ISL_TOKENT_SELFSUB] = {parse_nud_prefix_expr, OBP_PREFIX},
 
+    [ISL_TOKENT_KW_LET] = {parse_nud_let, OBP_LET},
+
     [ISL_TOKENT_VL_INT]    = {parse_nud_literal, OBP_NONE},
     [ISL_TOKENT_VL_REAL]   = {parse_nud_literal, OBP_NONE},
     [ISL_TOKENT_VL_STRING] = {parse_nud_literal, OBP_NONE},
@@ -472,11 +476,41 @@ ist_parseYield parse_nud_name(ist_parser* this) {
             ist_astnodeKind_name,
             pre_token().location,
             ist_astnodeAs_{
-                .name.name = id,
+                .name.ident = id,
             }
         ),
     };
 }
+
+ist_parseYield parse_nud_let(ist_parser* this) {
+    assert_token(ISL_TOKENT_KW_LET, null);
+    ist_token curtok = cur_token();
+
+    ist_astnode* node =
+        ist_astnode_createby_full(ist_astnodeKind_region, pre_token().location, ist_astnodeAs_{});
+
+    if (match_token(this, ISL_TOKENT_COLON)) {
+        if (cur_token().type == ISL_TOKENT_EQUAL) goto label_parse_value;
+        else {
+            node->as.region.type = parse_force(
+                parse_nud_name(this),
+                (rid_syntax_error, curtok.location, "expect a name for region's type site.")
+            );
+        }
+    }
+label_parse_value:
+    if (match_token(this, ISL_TOKENT_EQUAL)) {
+        curtok = cur_token();
+
+        node->as.region.value = parse_force(
+            parse_expr(this, nudoptattrs[ISL_TOKENT_KW_LET].rbp),
+            (rid_syntax_error, curtok.location, "expect a expr for region's value site.")
+        );
+    }
+
+    return ist_parseYield_{node};
+}
+
 
 ist_parseYield parse_nud_prefix_expr(ist_parser* this) {
     ist_token optok = advance(this);
