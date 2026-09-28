@@ -9,6 +9,9 @@ typedef ist_char* ist_cstring;
 /* ist_string was the byte isl_list actually, restrict type that must allocate at heap */
 typedef ist_cstring ist_string;
 
+/* ist_rstring can be ist_string or ist_cstring, `r` means reference, it can't take ownership */
+typedef ist_cstring ist_rstring;
+
 
 ist_string  ist_string_consby_ref(ist_cstring _cstring, ist_usize _length);
 ist_string* ist_string_initby_ref(ist_string* this, ist_cstring _cstring, ist_usize _length);

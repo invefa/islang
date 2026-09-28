@@ -60,6 +60,7 @@ ist_parseYield parse_expr(ist_parser* this, ist_optbindpower lhsrbp);
 ist_parseYield parse_nud_literal(ist_parser* this);
 ist_parseYield parse_nud_name(ist_parser* this);
 ist_parseYield parse_nud_let(ist_parser* this);
+ist_parseYield parse_nud_type(ist_parser* this);
 ist_parseYield parse_nud_prefix_expr(ist_parser* this);
 
 ist_parseYield parse_led_suffix_expr(ist_parser* this, ist_astnode* lhs);
@@ -204,7 +205,7 @@ enum ist_optbindpower {
     OBP_PREFIX    = 0xD0,      // ++_ --_ *_ &_ !_ ~_
     OBP_SUFFIX    = 0xE0,      // _++ _-- _* _& _! _?
     OBP_CALL      = 0xF0,      // (...) [...] <...> . -> ^
-    OBP_ATOM      = 0XFFF,     // reserved for identifier or unit.
+    OBP_ATOM      = 0X7FF0,    // reserved for identifier or unit.
     OBP_HIGHEST   = INT16_MAX, // highest of i16.
 };
 
@@ -482,17 +483,33 @@ ist_parseYield parse_nud_name(ist_parser* this) {
     };
 }
 
+ist_parseYield parse_nud_type(ist_parser* this) {
+    ist_astnodeAs_type type   = {};
+    ist_location       curloc = cur_token().location;
+    if (match_token(this, ISL_TOKENT_ID)) {
+        type.repr =
+            parse_force(parse_nud_name(this), (rid_syntax_error, curloc, "type name incorrect."));
+    } else
+        raise_parsing_fail(
+            (rid_syntax_error, curloc, "type must be a single identifier now."),
+            NULL
+        );
+
+    return ist_parseYield_{
+        ist_astnode_createby_full(ist_astnodeKind_type, curloc, ist_astnodeAs_{.type = type})
+    };
+}
+
 ist_parseYield parse_nud_let(ist_parser* this) {
     assert_token(ISL_TOKENT_KW_LET, null);
     ist_token curtok = cur_token();
 
-    ist_astnode* node =
-        ist_astnode_createby_full(ist_astnodeKind_region, pre_token().location, ist_astnodeAs_{});
+    ist_astnodeAs_let let = {};
 
     if (match_token(this, ISL_TOKENT_COLON)) {
         if (cur_token().type == ISL_TOKENT_EQUAL) goto label_parse_value;
         else {
-            node->as.region.type = parse_force(
+            let.type = parse_force(
                 parse_nud_name(this),
                 (rid_syntax_error, curtok.location, "expect a name for region's type site.")
             );
@@ -502,13 +519,18 @@ label_parse_value:
     if (match_token(this, ISL_TOKENT_EQUAL)) {
         curtok = cur_token();
 
-        node->as.region.value = parse_force(
+        let.value = parse_force(
             parse_expr(this, nudoptattrs[ISL_TOKENT_KW_LET].rbp),
-            (rid_syntax_error, curtok.location, "expect a expr for region's value site.")
+            (rid_syntax_error, curtok.location, "expect a expr for region's value site."),
+            (let.type)
         );
     }
 
-    return ist_parseYield_{node};
+    return ist_parseYield_{ist_astnode_createby_full(
+        ist_astnodeKind_let,
+        pre_token().location,
+        ist_astnodeAs_{.let = let}
+    )};
 }
 
 

@@ -5,6 +5,7 @@
 #include "isl_module.h"
 
 typedef struct ist_compctx {
+    ist_compctx*    upctx;
     ist_moduleList  modules;
     ist_compentList compents;
 } ist_compctx;
