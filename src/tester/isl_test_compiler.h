@@ -25,13 +25,25 @@ ISL_TEST_HEAD {
     printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, DKIND_INDENT}));
     printf("%s\n", ist_parsent_dump(parser.root, ist_dumpctx_{dump_buffer, DKIND_INDENT}));
 
+    printf("sizeof(astnodeKind):    %zu\n", sizeof(ist_astnodeKind));
+    printf("sizeof(location):       %zu\n", sizeof(ist_location));
+    printf("sizeof(astnodeAs):      %zu\n", sizeof(ist_astnodeAs));
+    printf("sizeof(astnodeAs_expr): %zu\n", sizeof(ist_astnodeAs_expr));
+    printf("sizeof(astnode):        %zu\n", sizeof(ist_astnode));
+
     compiler.curpsent = parser.root;
     ist_compiler_compile(&compiler);
 
     ist_instream_dumpack_dump(&ist_instream_dumpack_{compiler.instream}, ist_dumpctx_{dump_buffer});
     printf("instream:\n%s\n", *dump_buffer);
-    printf("%p :", compiler.instream->data);
-    isg_list_foreach (instp, *compiler.instream) {
+    printf(
+        "instream<0x%zX> {length=%llu}",
+        (size_t)compiler.instream->data,
+        compiler.instream->size
+    );
+    isg_list_foreach (instp, *compiler.instream, i) {
+        if (i % 16 == 0) printf("\n");
+        if (i % 4 == 0) printf(" ");
         printf("%02X ", *instp);
     }
     printf("\n");
@@ -39,16 +51,8 @@ ISL_TEST_HEAD {
     ist_vm vm = ist_vm_consby_instream(*compiler.instream);
 
     ist_vm_run(&vm);
-    ist_i64_dump(&vm.sp[0].as.i64, ist_dumpctx_{dump_buffer});
-    printf("vm result: %s\n", *dump_buffer);
-    ist_i64_dump(isl_span(ist_i64){1 + (2 * 3 + (4 / 5 * (2 / 3)))}, ist_dumpctx_{dump_buffer});
-    printf("c  result: %s\n", *dump_buffer);
-
-    printf("sizeof(astnodeKind):    %zu\n", sizeof(ist_astnodeKind));
-    printf("sizeof(location):       %zu\n", sizeof(ist_location));
-    printf("sizeof(astnodeAs):      %zu\n", sizeof(ist_astnodeAs));
-    printf("sizeof(astnodeAs_expr): %zu\n", sizeof(ist_astnodeAs_expr));
-    printf("sizeof(astnode):        %zu\n", sizeof(ist_astnode));
+    printf("vm result: %lld\n", vm.sp[0].as.i64);
+    printf("c  result: %lld\n", (ist_i64)(1 + (2 * 3 + (4 / 5 * (2 / 3)))));
 
     ist_module_clean(&module);
     ist_parser_clean(&parser);

@@ -27,6 +27,7 @@ void ist_instream_append_f64(ist_instream* this, ist_f64 val);
 typedef struct ist_instream_dumpack {
     ist_instream* instream;
     ist_usize     index;
+    ist_bool      with_hex;
 } ist_instream_dumpack;
 #define ist_instream_dumpack_ (ist_instream_dumpack)
 
