@@ -42,6 +42,7 @@ int main(){
     // operator[]<ap: i32[]*, i: isize> => (*ap)[i];
 
     nested_matrix[1]^*[2]->println(); // 6
+    nested_matrix[1].*[2]->println(); // 6
     nested_matrix[1][2]->println();   // 6
     println(*<nested_matrix[1]>[2]);  // 6
     println(*(nested_matrix[1])[2]);  // 6

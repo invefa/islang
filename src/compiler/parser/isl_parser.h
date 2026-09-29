@@ -7,10 +7,10 @@
 typedef struct ist_parseYield {
     ist_parsent ok;
     enum ist_parseYieldStatus {
-        isn_pasreYieldStatus_success    = 0, /* success */
-        isn_pasreYieldStatus_reported   = 1, /* failure and unreported */
-        isn_pasreYieldStatus_unreported = 2, /* failure and reported */
-        isn_pasreYieldStatus_aheading   = 3, /* failure while aheading */
+        isn_pasreYieldStatus_success     = 0, /* success */
+        isn_pasreYieldStatus_fReported   = 1, /* failure and unreported */
+        isn_pasreYieldStatus_fUnreported = 2, /* failure and reported */
+        isn_pasreYieldStatus_fAheading   = 3, /* failure while aheading */
     } status;
 } ist_parseYield;
 #define ist_parseYield_ (ist_parseYield)

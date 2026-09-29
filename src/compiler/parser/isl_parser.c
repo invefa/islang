@@ -100,43 +100,43 @@ ist_parseYield parse_led_wrap_expr(ist_parser* this, ist_astnode* lhs);
  * handle ahead state, when aheading, do not report
  * anything about failure, just return to caller to notify it.
  */
-#define _handle_aheading(_node, _packs...)                                 \
-    do {                                                                   \
-        if (ist_lexer_islookahead(&this->lexer))                           \
-            _parse_fail_return(                                            \
-                (ist_parseYield_{(_node), isn_pasreYieldStatus_aheading}), \
-                ##_packs                                                   \
-            );                                                             \
+#define _handle_aheading(_node, _packs...)                                  \
+    do {                                                                    \
+        if (ist_lexer_islookahead(&this->lexer))                            \
+            _parse_fail_return(                                             \
+                (ist_parseYield_{(_node), isn_pasreYieldStatus_fAheading}), \
+                ##_packs                                                    \
+            );                                                              \
     } while (0)
 
 /* raise the parsing fail, and report the error message */
-#define raise_parsing_fail(_rargs, _node, _packs...)                                             \
-    do {                                                                                         \
-        _handle_aheading(_node, ##_packs);                                                       \
-        isl_report _rargs;                                                                       \
-        _parse_fail_return((ist_parseYield_{(_node), isn_pasreYieldStatus_reported}), ##_packs); \
+#define raise_parsing_fail(_rargs, _node, _packs...)                                              \
+    do {                                                                                          \
+        _handle_aheading(_node, ##_packs);                                                        \
+        isl_report _rargs;                                                                        \
+        _parse_fail_return((ist_parseYield_{(_node), isn_pasreYieldStatus_fReported}), ##_packs); \
     } while (0)
 
 /**
  * parse in force
  */
-#define parse_force(_fncall, _rargs, _packs...)                 \
-    ({                                                          \
-        ist_parseYield _yield_ = _fncall;                       \
-        _handle_aheading(_yield_.ok, ##_packs);                 \
-        switch (_yield_.status) {                               \
-            case isn_pasreYieldStatus_unreported:               \
-                isl_report _rargs;                              \
-                _yield_.status = isn_pasreYieldStatus_reported; \
-            case isn_pasreYieldStatus_reported:                 \
-            case isn_pasreYieldStatus_aheading:                 \
-                _parse_fail_return(_yield_, ##_packs);          \
-            case isn_pasreYieldStatus_success:                  \
-                break;                                          \
-            default:                                            \
-                isp_unreachable();                              \
-        }                                                       \
-        _yield_.ok;                                             \
+#define parse_force(_fncall, _rargs, _packs...)                  \
+    ({                                                           \
+        ist_parseYield _yield_ = _fncall;                        \
+        _handle_aheading(_yield_.ok, ##_packs);                  \
+        switch (_yield_.status) {                                \
+            case isn_pasreYieldStatus_fUnreported:               \
+                isl_report _rargs;                               \
+                _yield_.status = isn_pasreYieldStatus_fReported; \
+            case isn_pasreYieldStatus_fReported:                 \
+            case isn_pasreYieldStatus_fAheading:                 \
+                _parse_fail_return(_yield_, ##_packs);           \
+            case isn_pasreYieldStatus_success:                   \
+                break;                                           \
+            default:                                             \
+                isp_unreachable();                               \
+        }                                                        \
+        _yield_.ok;                                              \
     })
 
 
@@ -265,11 +265,11 @@ ist_parseYield parse_stmts(ist_parser* this) {
         ist_parseYield yield = parse_stmt(this);
         if (yield.ok) ist_parsentList_addm(&stmts->as.list.this, yield.ok);
         switch (yield.status) {
-            case isn_pasreYieldStatus_aheading:
-                return ist_parseYield_{stmts, isn_pasreYieldStatus_aheading};
-            case isn_pasreYieldStatus_unreported:
+            case isn_pasreYieldStatus_fAheading:
+                return ist_parseYield_{stmts, isn_pasreYieldStatus_fAheading};
+            case isn_pasreYieldStatus_fUnreported:
                 isl_report(rid_expect_stmt_parsent);
-            case isn_pasreYieldStatus_reported:
+            case isn_pasreYieldStatus_fReported:
                 while (pre_token().type != ISL_TOKENT_EOS) advance(this);
             case isn_pasreYieldStatus_success:
                 break;
