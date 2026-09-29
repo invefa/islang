@@ -1,11 +1,11 @@
 #include "isl_compiler.h"
 
-#define sem_info(_fmt, _vargs...)  isl_report(rid_semantic_info, _fmt, ##_vargs)
-#define sem_note(_fmt, _vargs...)  isl_report(rid_semantic_note, _fmt, ##_vargs)
-#define sem_warn(_fmt, _vargs...)  isl_report(rid_semantic_warn, _fmt, ##_vargs)
-#define sem_error(_fmt, _vargs...) isl_report(rid_semantic_error, _fmt, ##_vargs)
-#define sem_panic(_fmt, _vargs...) isl_report(rid_semantic_panic, _fmt, ##_vargs)
-#define sem_fatal(_fmt, _vargs...) isl_report(rid_semantic_fatal, _fmt, ##_vargs)
+#define info(_fmt, _vargs...)  isl_report(rid_semantic_info, _fmt, ##_vargs)
+#define note(_fmt, _vargs...)  isl_report(rid_semantic_note, _fmt, ##_vargs)
+#define warn(_fmt, _vargs...)  isl_report(rid_semantic_warn, _fmt, ##_vargs)
+#define error(_fmt, _vargs...) isl_report(rid_semantic_error, _fmt, ##_vargs)
+#define panic(_fmt, _vargs...) isl_report(rid_semantic_panic, _fmt, ##_vargs)
+#define fatal(_fmt, _vargs...) isl_report(rid_semantic_fatal, _fmt, ##_vargs)
 
 ist_semtree elab_scope(ist_compiler* this, ist_parsent node);
 ist_semtree elab_expr(ist_compiler* this, ist_parsent node);

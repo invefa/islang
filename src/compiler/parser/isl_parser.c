@@ -1,7 +1,12 @@
 #include "isl_parser.h"
 #include "isl_overload.h"
 
-
+#define info_(_loc, _fmt, _vargs...)  (rid_syntax_info, _loc, _fmt, ##_vargs)
+#define note_(_loc, _fmt, _vargs...)  (rid_syntax_note, _loc, _fmt, ##_vargs)
+#define warn_(_loc, _fmt, _vargs...)  (rid_syntax_warn, _loc, _fmt, ##_vargs)
+#define error_(_loc, _fmt, _vargs...) (rid_syntax_error, _loc, _fmt, ##_vargs)
+#define panic_(_loc, _fmt, _vargs...) (rid_syntax_panic, _loc, _fmt, ##_vargs)
+#define fatal_(_loc, _fmt, _vargs...) (rid_syntax_fatal, _loc, _fmt, ##_vargs)
 
 inline ist_parser ist_parser_consby_lexer(ist_lexer _lexer) {
     return (ist_parser){
@@ -485,18 +490,26 @@ ist_parseYield parse_nud_name(ist_parser* this) {
 
 ist_parseYield parse_nud_type(ist_parser* this) {
     ist_astnodeAs_type type   = {};
-    ist_location       curloc = cur_token().location;
+    ist_token          curtok = cur_token();
+
     if (match_token(this, ISL_TOKENT_ID)) {
-        type.repr =
-            parse_force(parse_nud_name(this), (rid_syntax_error, curloc, "type name incorrect."));
+        type.repr = parse_force(parse_nud_name(this), error_(curtok.location, "parse_nud_type"));
     } else
         raise_parsing_fail(
-            (rid_syntax_error, curloc, "type must be a single identifier now."),
+            error_(
+                curtok.location,
+                "expect an identifier for the type, but got token:`%s`.",
+                ist_token_names[curtok.type]
+            ),
             NULL
         );
 
     return ist_parseYield_{
-        ist_astnode_createby_full(ist_astnodeKind_type, curloc, ist_astnodeAs_{.type = type})
+        ist_astnode_createby_full(
+            ist_astnodeKind_type,
+            curtok.location,
+            ist_astnodeAs_{.type = type}
+        ),
     };
 }
 
@@ -507,21 +520,21 @@ ist_parseYield parse_nud_let(ist_parser* this) {
     ist_astnodeAs_let let = {};
 
     if (match_token(this, ISL_TOKENT_COLON)) {
-        if (cur_token().type == ISL_TOKENT_EQUAL) goto label_parse_value;
+        if (cur_token().type == ISL_TOKENT_ASSIGN) goto label_parse_value;
         else {
             let.type = parse_force(
                 parse_nud_name(this),
-                (rid_syntax_error, curtok.location, "expect a name for region's type site.")
+                error_(curtok.location, "expect a name for region's type site.")
             );
         }
     }
 label_parse_value:
-    if (match_token(this, ISL_TOKENT_EQUAL)) {
+    if (match_token(this, ISL_TOKENT_ASSIGN)) {
         curtok = cur_token();
 
         let.value = parse_force(
             parse_expr(this, nudoptattrs[ISL_TOKENT_KW_LET].rbp),
-            (rid_syntax_error, curtok.location, "expect a expr for region's value site."),
+            error_(curtok.location, "expect an expr for region's value site."),
             (let.type)
         );
     }

@@ -1,5 +1,6 @@
-#include "inttypes.h"
 #include "isl_astnode.h"
+#include "inttypes.h"
+
 
 
 ist_string ist_astnodeKindNames[] = {
@@ -83,6 +84,11 @@ void ist_parsent_delete(ist_parsent this) {
         case ist_astnodeKind_do_stmt:
             ist_parsent_delete(this->as.do_stmt.expr);
             break;
+        case ist_astnodeKind_let:
+            ist_parsent_delete(this->as.let.name);
+            ist_parsent_delete(this->as.let.type);
+            ist_parsent_delete(this->as.let.value);
+            break;
         default:
             isp_unreachable();
     }
@@ -111,7 +117,7 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
                     .name    = ist_astnodeKindNames[this->kind],
-                    .wrapkey = "type",
+                    .wrapkey = "kind",
                     .count   = 2,
                     ist_dumpitemar_{
                         {"location", ist_location_dump, &this->location},
@@ -139,7 +145,7 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
                     .name    = ist_astnodeKindNames[this->kind],
-                    .wrapkey = "type",
+                    .wrapkey = "kind",
                     .count   = 3,
                     ist_dumpitemar_{
                         {"location", ist_location_dump, &this->location},
@@ -159,7 +165,7 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
                     return ist_dumpimage_dump(
                         &ist_dumpimage_{
                             .name    = "binexpr",
-                            .wrapkey = "type",
+                            .wrapkey = "kind",
                             .count   = 4,
                             ist_dumpitemar_{
                                 {"location", ist_location_dump, &this->location},
@@ -178,13 +184,12 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
                     return ist_dumpimage_dump(
                         &ist_dumpimage_{
                             .name    = "unexpr",
-                            .wrapkey = "type",
+                            .wrapkey = "kind",
                             .count   = 4,
                             ist_dumpitemar_{
                                 {"location", ist_location_dump, &this->location},
-                                {"optype",
-                                 ist_cstring_dump_ident,
-                                 &ist_token_names[expr.as.unary.op]},
+                                {"optype", ist_cstring_dump_ident, &ist_token_names[expr.as.unary.op]
+                                },
                                 {"lhs", ist_parsent_dump, expr.as.unary.lhs},
                                 {"rhs", ist_parsent_dump, expr.as.unary.lhs},
                             },
@@ -198,7 +203,7 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
                     return ist_dumpimage_dump(
                         &ist_dumpimage_{
                             .name    = "fncallexpr",
-                            .wrapkey = "type",
+                            .wrapkey = "kind",
                             .count   = 3,
                             ist_dumpitemar_{
                                 {"location", ist_location_dump, &this->location},
@@ -230,7 +235,7 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
                     .name    = ist_astnodeKindNames[this->kind],
-                    .wrapkey = "type",
+                    .wrapkey = "kind",
                     .count   = 2,
                     ist_dumpitemar_{
                         {"location", ist_location_dump, &this->location},
@@ -247,12 +252,30 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
                     .name    = ist_astnodeKindNames[this->kind],
-                    .wrapkey = "type",
+                    .wrapkey = "kind",
                     .count   = 3,
                     ist_dumpitemar_{
                         {"location", ist_location_dump, &this->location},
                         {"lhs", ist_parsent_dump, stmt.lhs},
                         {"rhs", ist_parsent_dump, stmt.rhs},
+                    },
+                },
+                dctx
+            );
+            break;
+        }
+
+        case ist_astnodeKind_let: {
+            ist_astnodeAs_let let = this->as.let;
+            return ist_dumpimage_dump(
+                &ist_dumpimage_{
+                    .name    = ist_astnodeKindNames[this->kind],
+                    .wrapkey = "kind",
+                    .count   = 3,
+                    ist_dumpitemar_{
+                        {"name", ist_parsent_dump, let.name},
+                        {"type", ist_parsent_dump, let.type},
+                        {"value", ist_parsent_dump, let.value},
                     },
                 },
                 dctx
