@@ -140,8 +140,8 @@ void isl_report(isp_repid rid, ...);
 #define isl_dreport(_rid, _vargs...) isl_report(_rid, ##_vargs)
 #define isp_dunreachable()           isl_report(rid_unreachable_brench, isp_catch_coreloc)
 #else
-#define isl_dreport(_rid, _vargs...)
-#define isp_dunreachable()
+#define isl_dreport(_rid, _vargs...) _ISL_MAYBE_UNUSED 0
+#define isp_dunreachable()           _ISL_MAYBE_UNUSED 0
 #endif
 
 /* if expr is true, then report */

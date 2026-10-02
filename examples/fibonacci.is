@@ -1,0 +1,11 @@
+import std::io::println;
+
+use fib =
+    fn(x: u32): u32 =>
+        if x <= 2 {1}
+        else {fib(x-1)+fib(x-2)};
+
+fn main(): i32 {
+    println(fib(10)->str); // 55
+    return 0;
+}

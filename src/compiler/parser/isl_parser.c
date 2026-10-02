@@ -41,7 +41,7 @@ typedef enum ist_optbindpower ist_optbindpower;
 
 ist_token advance(ist_parser* this);
 ist_bool  match_token(ist_parser* this, ist_tokenType _type);
-
+ist_bool  test_token(ist_parser* this, ist_tokenType _type);
 
 ist_parseYield parse(ist_parser* this);
 
@@ -183,6 +183,11 @@ ist_bool match_token(ist_parser* this, ist_tokenType _type) {
     advance(this);
     return true;
 }
+
+ist_bool test_token(ist_parser* this, ist_tokenType _type) {
+    return cur_token().type == _type;
+}
+
 
 
 /**
@@ -444,7 +449,6 @@ ist_parseYield parse_expr(ist_parser* this, ist_optbindpower lhsrbp) {
     return yield;
 }
 
-
 ist_parseYield parse_nud_literal(ist_parser* this) {
     switch (cur_token().type) {
         case ISL_TOKENT_VL_INT:
@@ -545,7 +549,6 @@ label_parse_value:
         ist_astnodeAs_{.let = let}
     )};
 }
-
 
 ist_parseYield parse_nud_prefix_expr(ist_parser* this) {
     ist_token optok = advance(this);

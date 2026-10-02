@@ -1,4 +1,4 @@
-# this is a makfile common edition
+# this is a makefile common edition
 # writing by invefa
 
 ###########################
@@ -260,10 +260,10 @@ ifeq ($(OS),Windows_NT)
 	@$(echo_cmd)      debug        : run     project build-target with debugger
 	@$(echo_cmd)      build        : build   project build-target
 	@$(echo_cmd)      rebuild      : rebuild project build-target
-	@$(echo_cmd)      depend       : check project depending relevants and freash *.d files
+	@$(echo_cmd)      depend       : check project depending relevants and freashing *.d files
 	@$(echo_cmd)      clean        : clean object files
 	@$(echo_cmd)      clean-x      : clean files (x can be 'all','target','object','depend','dirs')
-	@$(echo_cmd)      echo         : echo infomations to debug for this makfile
+	@$(echo_cmd)      echo         : echo informations to debug for this makfile
 	@$(echo_cmd)   definition:
 	@$(echo_cmd)      mode         = release / debug
 	@$(echo_cmd)      target       = driver / tester
@@ -279,10 +279,10 @@ else
 	@$(echo_cmd) "     debug        : run     project build-target with debugger"
 	@$(echo_cmd) "     build        : build   project build-target"
 	@$(echo_cmd) "     rebuild      : rebuild project build-target"
-	@$(echo_cmd) "     depend       : check project depending relevants and freash *.d files"
+	@$(echo_cmd) "     depend       : check project depending relevants and freashing *.d files"
 	@$(echo_cmd) "     clean        : clean object files"
 	@$(echo_cmd) "     clean-x      : clean files (x can be 'all','target','object','depend','dirs')"
-	@$(echo_cmd) "     echo         : echo infomations to debug for this makfile"
+	@$(echo_cmd) "     echo         : echo informations to debug for this makfile"
 	@$(echo_cmd) "  definition:"
 	@$(echo_cmd) "     mode         = release / debug"
 	@$(echo_cmd) "     target       = driver / tester"

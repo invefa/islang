@@ -41,6 +41,6 @@
 
 
 int main(int argc, char* argv[]) {
-    printf("hello from isalng.\n");
+    printf("hello from islang.\n");
     return 0;
 }

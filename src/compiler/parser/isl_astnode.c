@@ -104,7 +104,7 @@ ist_string ist_parsentptr_dump(ist_parsent* this, ist_dumpctx dctx) {
 ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
     isl_dreport(rid_inform_dumping, "astnode", this);
     dctx.idxptr = dctx.idxptr ?: (ist_usize[1]){};
-    if (!this) return ist_strbuf_append_raw(dctx.buffer, dctx.idxptr, "null");
+    if (!this) return ist_strbuf_append_raw(dctx.buffer, dctx.idxptr, "(null)");
 
     // dctx.style |= DFLAG_HEAD_DOWRAP;
 

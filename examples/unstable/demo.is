@@ -47,7 +47,6 @@ int main(){
     println(*<nested_matrix[1]>[2]);  // 6
     println(*(nested_matrix[1])[2]);  // 6
 
-
     struct A {
         let {
             a: i32 = 0,
