@@ -1,5 +1,5 @@
-#ifndef ISC_CONTEXT_H
-#define ISC_CONTEXT_H
+#ifndef ISC_COMPCTX_H
+#define ISC_COMPCTX_H
 
 #include "isl_compent.h"
 #include "isl_module.h"
@@ -25,4 +25,4 @@ ist_moduleRef ist_compctx_acquire_moduletRef(ist_compctx* this);
 ist_module*   ist_compctx_acquire_module(ist_compctx* this);
 ist_moduleRef ist_compctx_register_module(ist_compctx* this, ist_module module);
 
-#endif // ISC_CONTEXT_H
+#endif // ISC_COMPCTX_H
