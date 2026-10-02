@@ -29,5 +29,8 @@ ist_semtree elab_binexpr(ist_compiler* this, ist_parsent node) {
     ist_semtree lhs = elab_expr(this, expr.lhs);
     ist_semtree rhs = elab_expr(this, expr.rhs);
 
+    _ISL_MAYBE_UNUSED lhs;
+    _ISL_MAYBE_UNUSED rhs;
+
     return null;
 }
