@@ -225,9 +225,9 @@ ist_parseYield ist_parser_parse(ist_parser* this) {
     if (!this) isp_unreachable();
     if (!this->root)
         this->root = ist_astnode_createby_full(
-            ist_astnodeKind_scope,
+            isn_astnodeKind_scope,
             cur_token().location,
-            ist_astnodeAs_{
+            isu_astnodeAs_{
                 .scope.stmts = ist_parsentList_consm(4),
             }
         );
@@ -259,9 +259,9 @@ ist_parseYield parse(ist_parser* this) {
 
 ist_parseYield parse_stmts(ist_parser* this) {
     ist_astnode* stmts = ist_astnode_createby_full(
-        ist_astnodeKind_list,
+        isn_astnodeKind_list,
         cur_token().location,
-        ist_astnodeAs_{
+        isu_astnodeAs_{
             .list.this = ist_parsentList_consm(4),
         }
     );
@@ -301,16 +301,16 @@ ist_parseYield parse_stmt(ist_parser* this) {
 }
 
 ist_parseYield parse_use_stmt(ist_parser* this) {
-    ist_astnodeAs_use_stmt use_stmt = {};
+    isu_astnodeAs_use_stmt use_stmt = {};
     assert_token(ISL_TOKENT_KW_USE, null);
     use_stmt.lhs = parse_force(parse_nud_name(this), (rid_expect_parsent_name));
     assert_token(ISL_TOKENT_ASSIGN, use_stmt.lhs);
     use_stmt.rhs = parse_force(parse(this), (rid_expect_parsent_expr), (use_stmt.lhs));
     return ist_parseYield_{
         ist_astnode_createby_full(
-            ist_astnodeKind_use_stmt,
+            isn_astnodeKind_use_stmt,
             cur_token().location,
-            ist_astnodeAs_{
+            isu_astnodeAs_{
                 .use_stmt = use_stmt,
             }
         ),
@@ -322,9 +322,9 @@ ist_parseYield parse_do_stmt(ist_parser* this) {
     assert_token(ISL_TOKENT_KW_DO, null);
     return ist_parseYield_{
         ist_astnode_createby_full(
-            ist_astnodeKind_do_stmt,
+            isn_astnodeKind_do_stmt,
             cur_token().location,
-            ist_astnodeAs_{
+            isu_astnodeAs_{
                 .do_stmt.expr = parse_force(parse_expr(this, OBP_LOWEST), (rid_expect_parsent_expr)),
             }
         ),
@@ -464,9 +464,9 @@ ist_parseYield parse_nud_literal(ist_parser* this) {
     }
     return ist_parseYield_{
         ist_astnode_createby_full(
-            ist_astnodeKind_literal,
+            isn_astnodeKind_literal,
             pre_token().location,
-            ist_astnodeAs_{
+            isu_astnodeAs_{
                 .literal.this =
                     ist_tvalue_{
                         .type = isl_toklitype_to_valueType[pre_token().type],
@@ -483,9 +483,9 @@ ist_parseYield parse_nud_name(ist_parser* this) {
     ist_module_register_string(this->module, id, ISL_MOSKIND_IDENTIFER);
     return ist_parseYield_{
         ist_astnode_createby_full(
-            ist_astnodeKind_name,
+            isn_astnodeKind_name,
             pre_token().location,
-            ist_astnodeAs_{
+            isu_astnodeAs_{
                 .name.ident = id,
             }
         ),
@@ -493,7 +493,7 @@ ist_parseYield parse_nud_name(ist_parser* this) {
 }
 
 ist_parseYield parse_nud_type(ist_parser* this) {
-    ist_astnodeAs_type type   = {};
+    isu_astnodeAs_type type   = {};
     ist_token          curtok = cur_token();
 
     if (match_token(this, ISL_TOKENT_ID)) {
@@ -510,9 +510,9 @@ ist_parseYield parse_nud_type(ist_parser* this) {
 
     return ist_parseYield_{
         ist_astnode_createby_full(
-            ist_astnodeKind_type,
+            isn_astnodeKind_type,
             curtok.location,
-            ist_astnodeAs_{.type = type}
+            isu_astnodeAs_{.type = type}
         ),
     };
 }
@@ -521,7 +521,7 @@ ist_parseYield parse_nud_let(ist_parser* this) {
     assert_token(ISL_TOKENT_KW_LET, null);
     ist_token curtok = cur_token();
 
-    ist_astnodeAs_let let = {};
+    isu_astnodeAs_let let = {};
 
     if (match_token(this, ISL_TOKENT_COLON)) {
         if (cur_token().type == ISL_TOKENT_ASSIGN) goto label_parse_value;
@@ -544,9 +544,9 @@ label_parse_value:
     }
 
     return ist_parseYield_{ist_astnode_createby_full(
-        ist_astnodeKind_let,
+        isn_astnodeKind_let,
         pre_token().location,
-        ist_astnodeAs_{.let = let}
+        isu_astnodeAs_{.let = let}
     )};
 }
 
@@ -554,9 +554,9 @@ ist_parseYield parse_nud_prefix_expr(ist_parser* this) {
     ist_token optok = advance(this);
     return ist_parseYield_{
         ist_astnode_createby_full(
-            ist_astnodeKind_expr,
+            isn_astnodeKind_expr,
             optok.location,
-            ist_astnodeAs_{
+            isu_astnodeAs_{
                 .expr.kind = isn_psentExprKind_unary,
 
                 .expr.as.unary.op  = optok.type,
@@ -573,9 +573,9 @@ ist_parseYield parse_led_suffix_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token optok = advance(this);
     return ist_parseYield_{
         ist_astnode_createby_full(
-            ist_astnodeKind_expr,
+            isn_astnodeKind_expr,
             optok.location,
-            ist_astnodeAs_{
+            isu_astnodeAs_{
                 .expr.kind = isn_psentExprKind_unary,
 
                 .expr.as.unary.op  = optok.type,
@@ -589,9 +589,9 @@ ist_parseYield parse_led_infix_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token optok = advance(this);
     return ist_parseYield_{
         ist_astnode_createby_full(
-            ist_astnodeKind_expr,
+            isn_astnodeKind_expr,
             optok.location,
-            ist_astnodeAs_{
+            isu_astnodeAs_{
                 .expr.kind = isn_psentExprKind_binary,
 
                 .expr.as.binary.op  = optok.type,
@@ -610,9 +610,9 @@ ist_parseYield parse_led_fncall_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token optok = advance(this);
     return ist_parseYield_{
         ist_astnode_createby_full(
-            ist_astnodeKind_expr,
+            isn_astnodeKind_expr,
             optok.location,
-            ist_astnodeAs_{
+            isu_astnodeAs_{
                 .expr.kind = isn_psentExprKind_fncall,
 
                 .expr.as.fncall.fn   = lhs,
@@ -643,9 +643,9 @@ ist_parseYield parse_led_wrap_expr(ist_parser* this, ist_astnode* lhs) {
     ist_token curtoken = advance(this);
     return ist_parseYield_{
         ist_astnode_createby_full(
-            ist_astnodeKind_expr,
+            isn_astnodeKind_expr,
             curtoken.location,
-            ist_astnodeAs_{
+            isu_astnodeAs_{
                 .expr.kind = isn_psentExprKind_fncall,
 
                 .expr.as.fncall.fn = parse_force(

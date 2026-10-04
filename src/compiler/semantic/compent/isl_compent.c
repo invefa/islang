@@ -15,11 +15,11 @@
 #define ISG_VALUE_FN_CLEAN(cpent_p) ist_compent_clean(cpent_p)
 #include "isg_list_code.h"
 
-ist_compent ist_compent_consby_full(ist_compentKind kind, ist_location loc, ist_compentAs as) {
+ist_compent ist_compent_consby_full(isn_compentKind kind, ist_location loc, isu_compentAs as) {
     return ist_compent_{.kind = kind, .location = loc, .as = as};
 }
 _isl_define_initby_createby_with_consby(
-    (ist_compentKind kind, ist_location loc, ist_compentAs as),
+    (isn_compentKind kind, ist_location loc, isu_compentAs as),
     (kind, loc, as),
     ist_compent,
     full
@@ -27,11 +27,11 @@ _isl_define_initby_createby_with_consby(
 
 void ist_compent_clean(ist_compent* this) {
     switch (this->kind) {
-        case ist_compentKind_unk:
+        case isn_compentKind_unk:
             break;
-        case ist_compentKind_entref:
-        case ist_compentKind_name:
-        case ist_compentKind_expr:
+        case isn_compentKind_entref:
+        case isn_compentKind_name:
+        case isn_compentKind_expr:
         default:
             isp_unreachable();
     }

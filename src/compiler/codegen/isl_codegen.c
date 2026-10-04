@@ -87,7 +87,7 @@ void codegen_ast_literal(ist_compiler* this) {
 void codegen_ast_expr(ist_compiler* this) {
     if (!this->curpsent) return;
     switch (this->curpsent->kind) {
-        case ist_astnodeKind_expr:
+        case isn_astnodeKind_expr:
             switch (this->curpsent->as.expr.kind) {
                 case isn_psentExprKind_unary:
                     codegen_ast_unexpr(this);
@@ -99,7 +99,7 @@ void codegen_ast_expr(ist_compiler* this) {
                     isp_unreachable();
             }
             break;
-        case ist_astnodeKind_literal:
+        case isn_astnodeKind_literal:
             codegen_ast_literal(this);
             break;
         default:

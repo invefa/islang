@@ -11,7 +11,7 @@ ISL_TEST_HEAD {
 
 
     /* init some basic information */
-    ist_string filepath            = ist_string_consby_raw("./scripts/test.is");
+    ist_string filepath            = ist_string_consby_raw("./examples/test.is");
     ist_string macro_after_wrapper = ist_string_consby_raw(u8"use main = fn(){\n"
                                                            u8"std::println(\"hello World!\");\n"
                                                            u8"//this is a line comment.\n"

@@ -31,11 +31,11 @@ ISL_TEST_HEAD {
 
     ist_moduleList* module_list = ist_moduleList_createc(10);
     ist_moduleList_addc(module_list,
-        ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is")));
+        ist_module_consby_filepath(ist_string_consby_raw("./examples/test.is")));
     ist_moduleList_addc(module_list,
-        ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is")));
+        ist_module_consby_filepath(ist_string_consby_raw("./examples/test.is")));
     ist_moduleList_addc(module_list,
-        ist_module_consby_filepath(ist_string_consby_raw("./scripts/test.is")));
+        ist_module_consby_filepath(ist_string_consby_raw("./examples/test.is")));
 
     ist_strbuf buffer = ist_strbuf_cons(142);
 

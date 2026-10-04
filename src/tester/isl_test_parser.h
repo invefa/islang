@@ -4,7 +4,7 @@
 #include "isg_test_defines.h"
 ISL_TEST_HEAD {
 
-    ist_string filepath = ist_string_consby_raw("./scripts/test.is");
+    ist_string filepath = ist_string_consby_raw("./examples/test.is");
     ist_module module   = ist_module_consby_filepath(filepath);
     ist_parser parser   = ist_parser_consby_module(&module);
 

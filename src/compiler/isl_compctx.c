@@ -3,7 +3,7 @@
 ist_compctx ist_compctx_consby_void() {
     return ist_compctx_{
         .modules  = ist_moduleList_consm(1),
-        .compents = ist_compentList_consm(1),
+        .compents = ist_compentList_consm(16),
     };
 }
 _isl_define_initby_createby_with_consby((), (), ist_compctx, void);

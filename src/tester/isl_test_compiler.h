@@ -6,7 +6,7 @@
 #include "isg_test_defines.h"
 ISL_TEST_HEAD {
 
-    ist_string   filepath = ist_string_consby_raw("./scripts/test.is");
+    ist_string   filepath = ist_string_consby_raw("./examples/test.is");
     ist_module   module   = ist_module_consby_filepath(filepath);
     ist_parser   parser   = ist_parser_consby_module(&module);
     ist_compiler compiler = ist_compiler_{
@@ -25,10 +25,10 @@ ISL_TEST_HEAD {
     printf("%s\n", ist_module_dump(&module, ist_dumpctx_{dump_buffer, DKIND_INDENT}));
     printf("%s\n", ist_parsent_dump(parser.root, ist_dumpctx_{dump_buffer, DKIND_INDENT}));
 
-    printf("sizeof(astnodeKind):    %zu\n", sizeof(ist_astnodeKind));
+    printf("sizeof(astnodeKind):    %zu\n", sizeof(isn_astnodeKind));
     printf("sizeof(location):       %zu\n", sizeof(ist_location));
-    printf("sizeof(astnodeAs):      %zu\n", sizeof(ist_astnodeAs));
-    printf("sizeof(astnodeAs_expr): %zu\n", sizeof(ist_astnodeAs_expr));
+    printf("sizeof(astnodeAs):      %zu\n", sizeof(isu_astnodeAs));
+    printf("sizeof(astnodeAs_expr): %zu\n", sizeof(isu_astnodeAs_expr));
     printf("sizeof(astnode):        %zu\n", sizeof(ist_astnode));
 
     compiler.curpsent = parser.root;

@@ -6,8 +6,8 @@
 #include "isl_token.h"
 
 
-typedef enum ist_astnodeKind ist_astnodeKind;
-typedef union ist_astnodeAs  ist_astnodeAs;
+typedef enum isn_astnodeKind isn_astnodeKind;
+typedef union isu_astnodeAs  isu_astnodeAs;
 typedef struct ist_astnode   ist_astnode;
 typedef struct ist_astnode*  ist_parsent;
 
@@ -23,26 +23,27 @@ typedef struct ist_astnode*  ist_parsent;
 
 
 /* the automatic definition of all the payload kind of astnodes */
-#define manifest(_name, _struct) typedef _ISL_MACRO_UNPACK _struct ist_astnodeAs_##_name;
+#define manifest(_name, _struct) typedef _ISL_MACRO_UNPACK _struct isu_astnodeAs_##_name;
 #include "isl_astnodes.h"
 #undef manifest
 
-typedef enum ist_astnodeKind {
-#define manifest(_name, _struct) ist_astnodeKind_##_name,
+typedef enum isn_astnodeKind {
+#define manifest(_name, _struct) isn_astnodeKind_##_name,
 #include "isl_astnodes.h"
 #undef manifest
-} ist_astnodeKind;
-#define ist_parsentKind_ (ist_astnodeKind)
+} isn_astnodeKind;
+#define isn_astnodeKind_ (isn_astnodeKind)
+#define isn_parsentKind_ (isn_astnodeKind)
 
 extern ist_string ist_astnodeKindNames[];
 
 
-typedef union ist_astnodeAs {
-#define manifest(_name, _struct) ist_astnodeAs_##_name _name;
+typedef union isu_astnodeAs {
+#define manifest(_name, _struct) isu_astnodeAs_##_name _name;
 #include "isl_astnodes.h"
 #undef manifest
-} ist_astnodeAs;
-#define ist_astnodeAs_ (ist_astnodeAs)
+} isu_astnodeAs;
+#define isu_astnodeAs_ (isu_astnodeAs)
 
 /**
  * `kind` means the ASTNode kind.
@@ -51,18 +52,18 @@ typedef union ist_astnodeAs {
  * that contain the various infomation of this ASTNode.
  */
 typedef struct ist_astnode {
-    ist_astnodeKind kind;
+    isn_astnodeKind kind;
     ist_location    location;
-    ist_astnodeAs   as;
+    isu_astnodeAs   as;
 } ist_astnode;
 #define ist_astnode_ (ist_astnode)
 
 ist_astnode ist_astnode_consby_location(ist_location loc);
-ist_astnode ist_astnode_consby_full(ist_astnodeKind kind, ist_location loc, ist_astnodeAs as);
+ist_astnode ist_astnode_consby_full(isn_astnodeKind kind, ist_location loc, isu_astnodeAs as);
 
 _isl_declare_initby_createby_with_consby((ist_location loc), ist_astnode, location);
 _isl_declare_initby_createby_with_consby(
-    (ist_astnodeKind kind, ist_location loc, ist_astnodeAs as),
+    (isn_astnodeKind kind, ist_location loc, isu_astnodeAs as),
     ist_astnode,
     full
 );

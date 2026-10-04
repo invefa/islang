@@ -9,28 +9,70 @@
 
 ist_semtree elab_scope(ist_compiler* this, ist_parsent node);
 ist_semtree elab_expr(ist_compiler* this, ist_parsent node);
-ist_semtree elab_binexpr(ist_compiler* this, ist_parsent node);
-ist_semtree elab_unexpr(ist_compiler* this, ist_parsent node);
+ist_semtree elab_expr_binary(ist_compiler* this, ist_parsent node);
+ist_semtree elab_expr_unary(ist_compiler* this, ist_parsent node);
 ist_semtree elab_literal(ist_compiler* this, ist_parsent node);
 
-void ist_compiler_elaborate(ist_compiler* this) {}
+void ist_compiler_elaborate(ist_compiler* this) {
+    isl_assert(this && this->curpsent);
+    switch (this->curpsent->kind) {
+        case isn_astnodeKind_scope:
+            this->cursemt = elab_scope(this, this->curpsent);
+            break;
+        case isn_astnodeKind_expr:
+            this->cursemt = elab_expr(this, this->curpsent);
+            break;
+        case isn_astnodeKind_literal:
+            this->cursemt = elab_literal(this, this->curpsent);
+            break;
+        case isn_astnodeKind_unk:
+        default:
+            isp_unreachable();
+    }
+}
 
 ist_semtree elab_expr(ist_compiler* this, ist_parsent node) {
+    isl_assert(this && node);
+    isl_assert(node->kind == isn_astnodeKind_expr);
+    switch (node->as.expr.kind) {
+        case isn_psentExprKind_unary:
+            return elab_expr_unary(this, node);
+            break;
+        case isn_psentExprKind_binary:
+            return elab_expr_binary(this, node);
+            break;
+        default:
+            isp_unreachable();
+    }
+
     return null;
 }
 
-ist_semtree elab_binexpr(ist_compiler* this, ist_parsent node) {
-    isl_assert(
-        node && node->kind == ist_astnodeKind_expr && node->as.expr.kind == isn_psentExprKind_binary
-    );
+ist_semtree elab_expr_binary(ist_compiler* this, ist_parsent node) {
+    isl_assert(this && node);
+    isl_assert(node->kind == isn_astnodeKind_expr && node->as.expr.kind == isn_psentExprKind_binary);
 
-    struct ist_astnodeAs_exprAs_binary expr = node->as.expr.as.binary;
+    struct ist_astnodeAs_exprAs_binary binary = node->as.expr.as.binary;
 
-    ist_semtree lhs = elab_expr(this, expr.lhs);
-    ist_semtree rhs = elab_expr(this, expr.rhs);
+    ist_semtree lhs = elab_expr(this, binary.lhs);
+    ist_semtree rhs = elab_expr(this, binary.rhs);
+
+    ist_semnodeAs_expr ret = {.op = binary.op};
 
     _ISL_MAYBE_UNUSED lhs;
     _ISL_MAYBE_UNUSED rhs;
 
+    return null;
+}
+
+ist_semtree elab_expr_unary(ist_compiler* this, ist_parsent node) {
+    return null;
+}
+
+ist_semtree elab_literal(ist_compiler* this, ist_parsent node) {
+    return null;
+}
+
+ist_semtree elab_scope(ist_compiler* this, ist_parsent node) {
     return null;
 }

@@ -7,7 +7,7 @@
 #include "isl_string.h"
 #include "isl_types.h"
 
-#include "isl_compent_basetype.h"
+#include "islce_basetype.h"
 
 
 #define ISG_STRUCT_NAME ist_compentRefList
@@ -16,33 +16,33 @@
 
 
 // TODO: make the enum name form more concord!
-typedef enum ist_compentKind {
-#define manifest(_name, _struct) ist_compentKind_##_name,
+typedef enum isn_compentKind {
+#define manifest(_name, _struct) isn_compentKind_##_name,
 #include "isl_compents.h"
 #undef manifest
-} ist_compentKind;
+} isn_compentKind;
 
 
-#define manifest(_name, _struct) typedef _ISL_MACRO_UNPACK _struct ist_compentAs_##_name;
+#define manifest(_name, _struct) typedef _ISL_MACRO_UNPACK _struct isu_compentAs_##_name;
 #include "isl_compents.h"
 #undef manifest
 
-typedef union ist_compentAs {
-#define manifest(_name, _struct) ist_compentAs_##_name _name;
+typedef union isu_compentAs {
+#define manifest(_name, _struct) isu_compentAs_##_name _name;
 #include "isl_compents.h"
 #undef manifest
-} ist_compentAs;
+} isu_compentAs;
 
 typedef struct ist_compent {
-    ist_compentKind kind;
+    isn_compentKind kind;
     ist_location    location;
-    ist_compentAs   as;
+    isu_compentAs   as;
 } ist_compent;
 #define ist_compent_ (ist_compent)
 
-ist_compent ist_compent_consby_full(ist_compentKind kind, ist_location loc, ist_compentAs as);
+ist_compent ist_compent_consby_full(isn_compentKind kind, ist_location loc, isu_compentAs as);
 _isl_declare_initby_createby_with_consby(
-    (ist_compentKind kind, ist_location loc, ist_compentAs as),
+    (isn_compentKind kind, ist_location loc, isu_compentAs as),
     ist_compent,
     full
 );

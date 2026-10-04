@@ -4,7 +4,7 @@
 
 
 ist_string ist_astnodeKindNames[] = {
-#define manifest(_name, _struct) [ist_astnodeKind_##_name] = #_name,
+#define manifest(_name, _struct) [isn_astnodeKind_##_name] = #_name,
 #include "isl_astnodes.h"
 #undef manifest
 };
@@ -16,11 +16,11 @@ ist_string ist_astnodeKindNames[] = {
 #include "isg_list_code.h"
 
 
-ist_astnode ist_astnode_consby_full(ist_astnodeKind kind, ist_location loc, ist_astnodeAs as) {
+ist_astnode ist_astnode_consby_full(isn_astnodeKind kind, ist_location loc, isu_astnodeAs as) {
     return ist_astnode_{.kind = kind, .location = loc, .as = as};
 }
 _isl_define_initby_createby_with_consby(
-    (ist_astnodeKind kind, ist_location loc, ist_astnodeAs as),
+    (isn_astnodeKind kind, ist_location loc, isu_astnodeAs as),
     (kind, loc, as),
     ist_astnode,
     full
@@ -43,15 +43,15 @@ void ist_astnode_delete(ist_astnode* this) {
 void ist_parsent_delete(ist_parsent this) {
     if (!this) return;
     switch (this->kind) {
-        case ist_astnodeKind_unk:
-        case ist_astnodeKind_literal:
-        case ist_astnodeKind_name:
+        case isn_astnodeKind_unk:
+        case isn_astnodeKind_literal:
+        case isn_astnodeKind_name:
             break;
-        case ist_astnodeKind_list:
+        case isn_astnodeKind_list:
             ist_parsentList_clean(&this->as.list.this);
             break;
-        case ist_astnodeKind_expr: {
-            ist_astnodeAs_expr expr = this->as.expr;
+        case isn_astnodeKind_expr: {
+            isu_astnodeAs_expr expr = this->as.expr;
             switch (this->as.expr.kind) {
                 case isn_psentExprKind_unary:
                     ist_parsent_delete(expr.as.unary.lhs);
@@ -74,17 +74,17 @@ void ist_parsent_delete(ist_parsent this) {
             }
             break;
         }
-        case ist_astnodeKind_scope:
+        case isn_astnodeKind_scope:
             ist_parsentList_clean(&this->as.scope.stmts);
             break;
-        case ist_astnodeKind_use_stmt:
+        case isn_astnodeKind_use_stmt:
             ist_parsent_delete(this->as.use_stmt.lhs);
             ist_parsent_delete(this->as.use_stmt.rhs);
             break;
-        case ist_astnodeKind_do_stmt:
+        case isn_astnodeKind_do_stmt:
             ist_parsent_delete(this->as.do_stmt.expr);
             break;
-        case ist_astnodeKind_let:
+        case isn_astnodeKind_let:
             ist_parsent_delete(this->as.let.name);
             ist_parsent_delete(this->as.let.type);
             ist_parsent_delete(this->as.let.value);
@@ -109,10 +109,10 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
     // dctx.style |= DFLAG_HEAD_DOWRAP;
 
     switch (this->kind) {
-        case ist_astnodeKind_unk:
+        case isn_astnodeKind_unk:
             break;
 
-        case ist_astnodeKind_scope: {
+        case isn_astnodeKind_scope: {
             ist_parsentList list = this->as.scope.stmts;
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
@@ -140,8 +140,8 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
             break;
         }
 
-        case ist_astnodeKind_literal: {
-            ist_astnodeAs_literal literal = this->as.literal;
+        case isn_astnodeKind_literal: {
+            isu_astnodeAs_literal literal = this->as.literal;
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
                     .name    = ist_astnodeKindNames[this->kind],
@@ -158,8 +158,8 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
             break;
         }
 
-        case ist_astnodeKind_expr: {
-            ist_astnodeAs_expr expr = this->as.expr;
+        case isn_astnodeKind_expr: {
+            isu_astnodeAs_expr expr = this->as.expr;
             switch (expr.kind) {
                 case isn_psentExprKind_binary:
                     return ist_dumpimage_dump(
@@ -230,8 +230,8 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
                     break;
             }
         }
-        case ist_astnodeKind_name: {
-            ist_astnodeAs_name name = this->as.name;
+        case isn_astnodeKind_name: {
+            isu_astnodeAs_name name = this->as.name;
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
                     .name    = ist_astnodeKindNames[this->kind],
@@ -247,8 +247,8 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
             break;
         }
 
-        case ist_astnodeKind_use_stmt: {
-            ist_astnodeAs_use_stmt stmt = this->as.use_stmt;
+        case isn_astnodeKind_use_stmt: {
+            isu_astnodeAs_use_stmt stmt = this->as.use_stmt;
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
                     .name    = ist_astnodeKindNames[this->kind],
@@ -265,8 +265,8 @@ ist_string ist_parsent_dump(ist_parsent this, ist_dumpctx dctx) {
             break;
         }
 
-        case ist_astnodeKind_let: {
-            ist_astnodeAs_let let = this->as.let;
+        case isn_astnodeKind_let: {
+            isu_astnodeAs_let let = this->as.let;
             return ist_dumpimage_dump(
                 &ist_dumpimage_{
                     .name    = ist_astnodeKindNames[this->kind],

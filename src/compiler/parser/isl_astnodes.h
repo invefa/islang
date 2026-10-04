@@ -8,10 +8,10 @@ manifest(unk, (ist_usize))
 manifest(list, (struct { ist_parsentList this; }))
 
 /* basic components, aka pattern parsent */
-manifest(fnarg_list, (ist_astnodeAs_list))
-manifest(fnparam_list, (ist_astnodeAs_list))
-manifest(formparam_list, (ist_astnodeAs_list))
-manifest(formarg_list, (ist_astnodeAs_list))
+manifest(fnarg_list, (isu_astnodeAs_list))
+manifest(fnparam_list, (isu_astnodeAs_list))
+manifest(formparam_list, (isu_astnodeAs_list))
+manifest(formarg_list, (isu_astnodeAs_list))
 
 /* some basic parsent */
 manifest(scope, (struct { ist_parsentList stmts; }))

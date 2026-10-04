@@ -1,0 +1,5 @@
+#ifndef ISC_COMPENT_TYPE_H
+#define ISC_COMPENT_TYPE_H
+
+
+#endif // ISC_COMPENT_TYPE_H
