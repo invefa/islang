@@ -50,14 +50,15 @@ ist_semtree elab_expr(ist_compiler* this, ist_parsent node) {
 
 ist_semtree elab_expr_binary(ist_compiler* this, ist_parsent node) {
     isl_assert(this && node);
-    isl_assert(node->kind == isn_astnodeKind_expr && node->as.expr.kind == isn_psentExprKind_binary);
+    isl_assert(node->kind == isn_astnodeKind_expr);
+    isl_assert(node->as.expr.kind == isn_psentExprKind_binary);
 
     struct ist_astnodeAs_exprAs_binary binary = node->as.expr.as.binary;
 
     ist_semtree lhs = elab_expr(this, binary.lhs);
     ist_semtree rhs = elab_expr(this, binary.rhs);
 
-    ist_semnodeAs_expr ret = {.op = binary.op};
+    ist_semnodeAs_expr ret = {.opkind = binary.op};
 
     _ISL_MAYBE_UNUSED lhs;
     _ISL_MAYBE_UNUSED rhs;

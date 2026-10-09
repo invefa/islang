@@ -14,7 +14,7 @@ manifest(formcall, (struct {
          }))
 
 manifest(expr, (struct {
-             ist_compentRef op;
+             ist_tokenType  opkind;
              ist_semtrees   args;
              ist_compentRef type;
          }))
